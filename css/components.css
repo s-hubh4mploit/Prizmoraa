@@ -1,15 +1,14 @@
 /* ---------- NAV ---------- */
 header.nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  /* Slightly less translucent so logo and controls remain readable */
-  background: linear-gradient(180deg, rgba(176,138,78,0.12), rgba(233,220,199,0.08));
+  background: #F9EADF;
   backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(58, 42, 29, 0.08);
   transition: box-shadow .3s ease, background .3s ease;
 }
 header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
 .nav-inner {
-  max-width: var(--max); margin: 0 auto; padding: 18px 32px;
+  max-width: var(--max); margin: 0 auto; padding: 14px 32px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .logotype {
@@ -20,7 +19,7 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   display: inline-flex; align-items: center; gap: 10px;
 }
 
-.logotype img { height: 72px; width: auto; display: block; }
+.logotype img { height: 76px; width: auto; display: block; }
 .nav-links { display: flex; gap: 34px; list-style: none; }
 .nav-links a {
   font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
