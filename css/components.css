@@ -15,6 +15,7 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   letter-spacing: 0.22em;
   font-weight: 600;
   display: inline-flex; align-items: center; gap: 10px;
+  margin-left: -20px;
 }
 
 .logotype img { height: 128px; width: auto; display: block; }
