@@ -1,10 +1,8 @@
 /* ---------- NAV ---------- */
 header.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: relative;
   background: #F9EADF;
-  backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(58, 42, 29, 0.08);
-  transition: box-shadow .3s ease, background .3s ease;
 }
 header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
 .nav-inner {

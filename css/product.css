@@ -1,7 +1,7 @@
 /* ---------- LUXURY PRODUCT PAGE STYLES ---------- */
 
 .product-page {
-  padding: 130px 0 100px;
+  padding: 50px 0 100px;
   min-height: 100svh;
   background: var(--ivory);
 }
