@@ -12,19 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const links = document.querySelector('.nav-links');
   if (toggle && links) {
     toggle.addEventListener('click', () => {
-      const open = links.style.display === 'flex';
-      links.style.display = open ? 'none' : 'flex';
-      if (!open) {
-        links.style.cssText = 'display:flex; position:absolute; top:64px; left:0; right:0; background:#FBF7F1; flex-direction:column; padding:20px 32px; gap:18px; border-bottom:1px solid rgba(58,42,29,0.08);';
-      }
-    });
+      links.classList.toggle('open');
+  });
 
     document.querySelectorAll('.nav-links a').forEach(a => {
-      a.addEventListener('click', () => {
-        if (window.innerWidth <= 980) links.style.display = 'none';
-      });
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
     });
-  }
+  });
+}
 
   // Reveal on scroll
   const reveals = document.querySelectorAll('.reveal');

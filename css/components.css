@@ -31,13 +31,22 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   background: var(--gold); transition: width .3s ease;
 }
 .nav-links a:hover::after { width: 100%; }
-.nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
 .nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; padding: 8px; }
 .nav-toggle span { width: 26px; height: 2px; background: var(--espresso); display: block; border-radius: 2px; }
 
 /* Mobile menu overrides when opened by inline JS */
-.nav-links[style] { background: rgba(250,248,243,0.98); padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
-.nav-links[style] a { display: block; padding: 12px 8px; font-size: 16px; border-bottom: 1px solid rgba(58,42,29,0.04); }
+.nav-links.open {
+  display: flex !important;
+  position: absolute;
+  top: 64px; left: 0; right: 0;
+  background: #FBF7F1;
+  flex-direction: column;
+  padding: 20px 32px;
+  gap: 18px;
+  border-bottom: 1px solid rgba(58,42,29,0.08);
+  z-index: 50;
+}
+.nav-links.open a { display: block; padding: 12px 8px; font-size: 16px; border-bottom: 1px solid rgba(58,42,29,0.04); }
 
 /* ensure clickable area for desktop nav items */
 .nav-links a { padding: 10px 6px; }
