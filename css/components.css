@@ -2,11 +2,12 @@
 header.nav {
   position: relative;
   background: #F9EADF;
-  border-bottom: 1px solid rgba(58, 42, 29, 0.08);
+  border-bottom: 1px solid rgba(58, 42, 29, 0.10);
+  box-shadow: 0 2px 14px rgba(58, 42, 29, 0.05);
 }
 header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
 .nav-inner {
-  width: 100%; padding: 8px 24px;
+  width: 100%; padding: 18px 40px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .logotype {
@@ -15,10 +16,9 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   letter-spacing: 0.22em;
   font-weight: 600;
   display: inline-flex; align-items: center; gap: 10px;
-  margin-left: -10px;
 }
 
-.logotype img { height: 128px; width: auto; display: block; }
+.logotype img { height: 74px; width: auto; display: block; }
 .nav-links { display: flex; gap: 34px; list-style: none; }
 .nav-links a {
   font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
