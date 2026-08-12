@@ -6,7 +6,7 @@ header.nav {
 }
 header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
 .nav-inner {
-  width: 100%; padding: 10px 24px;
+  width: 100%; padding: 8px 24px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .logotype {
