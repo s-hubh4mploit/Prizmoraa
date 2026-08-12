@@ -1,0 +1,722 @@
+// Data Manager for PRIZMORAA Products - Universal file:// and http:// compatibility
+
+(function() {
+  const INVENTORY_KEY = 'prizmoraa_inventory_v19';
+
+  const defaultProducts = [
+  {
+    "id": "duette-amora-heart",
+    "name": "Duette Amora Heart",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3299,
+    "status": "Active",
+    "desc": "Our signature dual-piercing statement piece. A delicate 18k gold-plated chain bridges your upper and lower earlobe, anchored by a sparkling pave heart charm designed to move gracefully with you.",
+    "image": "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+    "images": [
+      "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+      "images/prizmora/bracelets/amora-heart-bracelet/ca5248a7-e12b-4478-a390-001f261db845.jpg",
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-2.jpeg",
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-1.jpeg",
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg"
+    ]
+  },
+  {
+    "id": "duette-aurelia-hoop",
+    "name": "Duette Aurelia Hoop & Stud",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Intertwining modern geometry with effortless elegance, this signature Duette connects a sleek huggie hoop to a polished stud via a shimmering linked fine chain.",
+    "image": "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+    "images": [
+      "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+      "images/prizmora/bracelets/aurelia-baguette-bangle/7d906859-22e1-4964-8a50-debc20af5552.jpg",
+      "images/prizmora/bracelets/aurelia-baguette-bangle/c2410b6b-2776-49e9-abb1-42e00ffd28c5.jpg",
+      "images/prizmora/earings/aurelia-princess-hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
+      "images/prizmora/earings/aurelia-princess-hoops/chatgpt-image-jul-22-2026-08-49-12-pm.png",
+      "images/prizmora/earings/aurelia-princess-hoops/whatsapp-image-2026-07-23-at-6-33-56-pm.jpeg"
+    ]
+  },
+  {
+    "id": "duette-celeste-moon",
+    "name": "Duette Celeste Moon",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3699,
+    "status": "Active",
+    "desc": "Celestial magic for your ears. Connect your double piercings with a shimmering star and moon motif linked by an ultra-fine 18k gold chain that catches the light from every angle.",
+    "image": "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+    "images": [
+      "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+      "images/prizmora/earings/celeste-duo-drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+      "images/prizmora/earings/celeste-duo-drops/5807af95-7538-4553-aa67-1395de3b628a.jpeg",
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-01-pm.png",
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-07-pm.png",
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-15-pm.png"
+    ]
+  },
+  {
+    "id": "duette-bella-clover",
+    "name": "Duette Bella Clover",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3599,
+    "status": "Active",
+    "desc": "A symbol of luck and timeless beauty. Features two four-leaf clover studs linked by a delicate gold chain for double pierced ears.",
+    "image": "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
+    "images": [
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-15-pm.png",
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-29-pm.png",
+      "images/prizmora/earings/bella-bow-studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
+      "images/prizmora/earings/bella-bow-studs/3670a9e2-6ee1-4b88-9d44-78ae5acce2db.jpg",
+      "images/prizmora/earings/bella-bow-studs/50bf0874-8518-43bb-87ea-ee8003d100ab.jpg"
+    ]
+  },
+  {
+    "id": "brac-amora-heart-bracelet",
+    "name": "Amora Heart Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Delicately linked with a romantic heart charm, the Amora Heart Bracelet captures timeless romance and graceful sparkle. Finished with an enduring 18k champagne gold polish.",
+    "image": "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+    "images": [
+      "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+      "images/prizmora/bracelets/amora-heart-bracelet/ca5248a7-e12b-4478-a390-001f261db845.jpg"
+    ]
+  },
+  {
+    "id": "brac-aurelia-baguette-bangle",
+    "name": "Aurelia Baguette Bangle",
+    "category": "bracelets",
+    "subcategory": "Bangles",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Featuring precision-cut baguette cubic zirconia channel-set along a polished minimalist band, the Aurelia Baguette Bangle brings modern architectural glamour to your jewellery stack.",
+    "image": "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+    "images": [
+      "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+      "images/prizmora/bracelets/aurelia-baguette-bangle/7d906859-22e1-4964-8a50-debc20af5552.jpg",
+      "images/prizmora/bracelets/aurelia-baguette-bangle/c2410b6b-2776-49e9-abb1-42e00ffd28c5.jpg"
+    ]
+  },
+  {
+    "id": "brac-bloom-grace-bracelet",
+    "name": "Bloom Grace Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Inspired by spring blossoms in bloom, this refined bracelet features delicate floral clusters interwoven with sparkling cubic zirconia crystals on a fluid chain.",
+    "image": "images/prizmora/bracelets/bloom-grace-bracelet/f20787ec-0c58-4a65-92ee-a24b448cc387.jpg",
+    "images": [
+      "images/prizmora/bracelets/bloom-grace-bracelet/f20787ec-0c58-4a65-92ee-a24b448cc387.jpg",
+      "images/prizmora/bracelets/bloom-grace-bracelet/8a1f6aa5-e71f-419e-87cd-c2ad45f60359.jpg",
+      "images/prizmora/bracelets/bloom-grace-bracelet/ee923c7b-553d-4c6b-9c87-f390a34661cf.jpg"
+    ]
+  },
+  {
+    "id": "brac-flora-spark-gold-bracelet",
+    "name": "Flora Spark Gold Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Warm 18k gold plating forms delicate flower petals centered with brilliant-cut crystals, creating a feminine wrist accent that radiates warmth and elegance.",
+    "image": "images/prizmora/bracelets/flora-spark-gold-bracelet/1d35afe5-a6de-445d-8faf-2a0c8d5931d0.jpg",
+    "images": [
+      "images/prizmora/bracelets/flora-spark-gold-bracelet/1d35afe5-a6de-445d-8faf-2a0c8d5931d0.jpg",
+      "images/prizmora/bracelets/flora-spark-gold-bracelet/5e9bf2f5-e153-4d8e-afee-7dcb87c0cd7d.jpg",
+      "images/prizmora/bracelets/flora-spark-gold-bracelet/89c6a379-b016-42a3-8dad-e32c6af23d93.jpg"
+    ]
+  },
+  {
+    "id": "brac-flora-spark-silver-bracelet",
+    "name": "Flora Spark Silver Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Crafted in luminous rhodium silver finish, the Flora Spark Silver Bracelet delivers icy brilliance with hand-set crystal floral motifs.",
+    "image": "images/prizmora/bracelets/flora-spark-silver-bracelet/0c3b44c2-04d3-4637-8ee7-1bd60fe5baf8.jpg",
+    "images": [
+      "images/prizmora/bracelets/flora-spark-silver-bracelet/0c3b44c2-04d3-4637-8ee7-1bd60fe5baf8.jpg",
+      "images/prizmora/bracelets/flora-spark-silver-bracelet/7a656f7b-e730-4c6f-9897-5ea9946f8017.jpg",
+      "images/prizmora/bracelets/flora-spark-silver-bracelet/9ebdec84-d41a-4aca-8f30-4dae7c591e04.jpg"
+    ]
+  },
+  {
+    "id": "brac-imperia-grid-bangle",
+    "name": "Imperia Grid bangle",
+    "category": "bracelets",
+    "subcategory": "Bangles",
+    "price": 2999,
+    "status": "Active",
+    "desc": "A bold geometric statement. The Imperia Grid Bangle combines structured lattice metalwork with subtle crystal accents for a contemporary luxury feel.",
+    "image": "images/prizmora/bracelets/imperia-grid-bangle/whatsapp-image-2026-07-22-at-10-35-22-pm.jpeg",
+    "images": [
+      "images/prizmora/bracelets/imperia-grid-bangle/whatsapp-image-2026-07-22-at-10-35-22-pm.jpeg",
+      "images/prizmora/bracelets/imperia-grid-bangle/whatsapp-image-2026-07-22-at-10-34-01-pm-1.jpeg",
+      "images/prizmora/bracelets/imperia-grid-bangle/whatsapp-image-2026-07-22-at-10-34-01-pm.jpeg"
+    ]
+  },
+  {
+    "id": "brac-lumi-solitaire-bracelet",
+    "name": "Lumi Solitaire Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Minimalist luxury at its finest. A single bezel-set solitaire crystal rests seamlessly on a delicate adjustable gold chain.",
+    "image": "images/prizmora/bracelets/lumi-solitaire-bracelet/0b115038-33f7-4dfb-9db8-5d6971237baa.jpg",
+    "images": [
+      "images/prizmora/bracelets/lumi-solitaire-bracelet/0b115038-33f7-4dfb-9db8-5d6971237baa.jpg",
+      "images/prizmora/bracelets/lumi-solitaire-bracelet/whatsapp-image-2026-07-22-at-8-49-27-pm.jpeg",
+      "images/prizmora/bracelets/lumi-solitaire-bracelet/whatsapp-image-2026-07-23-at-6-18-14-pm.jpeg"
+    ]
+  },
+  {
+    "id": "brac-mosaic-spark-gold",
+    "name": "Mosaic Spark Gold",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Interlocking mosaic shapes studded with micro-pave crystals capture and reflect light continuously around your wrist.",
+    "image": "images/prizmora/bracelets/mosaic-spark-gold/49a31b8f-a342-4ea9-80fb-040ffe6baf25.jpg",
+    "images": [
+      "images/prizmora/bracelets/mosaic-spark-gold/49a31b8f-a342-4ea9-80fb-040ffe6baf25.jpg",
+      "images/prizmora/bracelets/mosaic-spark-gold/94732433-1258-4ef6-b87d-540e04ee1840.jpg"
+    ]
+  },
+  {
+    "id": "brac-mosaic-spark-silver",
+    "name": "Mosaic Spark Silver",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Liquid silver finish meets brilliant crystal mosaic links, creating a stunning accent for evening events or chic everyday layering.",
+    "image": "images/prizmora/bracelets/mosaic-spark-silver/66cf322b-2633-48f7-9d80-b0fe97b4095c.jpg",
+    "images": [
+      "images/prizmora/bracelets/mosaic-spark-silver/66cf322b-2633-48f7-9d80-b0fe97b4095c.jpg",
+      "images/prizmora/bracelets/mosaic-spark-silver/6062ae8b-6cbb-4602-9349-6e6f4882a513.jpg"
+    ]
+  },
+  {
+    "id": "brac-serena-clover-gold",
+    "name": "Serena Clover Gold",
+    "category": "bracelets",
+    "subcategory": "Charm Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Iconic four-leaf clover motifs coated in radiant 18k yellow gold, offering timeless charm and effortless daily luxury.",
+    "image": "images/prizmora/bracelets/serena-clover-gold/14fd9ce8-707c-4fd1-a9a0-89c2ef2f12e7.jpg",
+    "images": [
+      "images/prizmora/bracelets/serena-clover-gold/14fd9ce8-707c-4fd1-a9a0-89c2ef2f12e7.jpg",
+      "images/prizmora/bracelets/serena-clover-gold/bfc91148-b191-43dd-92bf-75891c275b9e.jpg",
+      "images/prizmora/bracelets/serena-clover-gold/e8d12f66-e14b-44af-8f46-2fb28ce3e456.jpg"
+    ]
+  },
+  {
+    "id": "brac-serena-clover-silver",
+    "name": "Serena Clover Silver",
+    "category": "bracelets",
+    "subcategory": "Charm Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Sleek silver clover silhouettes filled with luminous mother-of-pearl shimmer, finished with anti-tarnish protective coating.",
+    "image": "images/prizmora/bracelets/serena-clover-silver/3e98439f-d857-4563-b662-ee612d8db5a3.jpg",
+    "images": [
+      "images/prizmora/bracelets/serena-clover-silver/3e98439f-d857-4563-b662-ee612d8db5a3.jpg",
+      "images/prizmora/bracelets/serena-clover-silver/64665cd1-318a-4c7b-8d29-d92323489fb9.jpg"
+    ]
+  },
+  {
+    "id": "earr-amora-heart-studs",
+    "name": "Amora Heart Studs",
+    "category": "earrings",
+    "subcategory": "Stud Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Sweet and romantic. Petite heart studs studded with sparkling cubic zirconia crystals for an effortless touch of everyday glamour.",
+    "image": "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-2.jpeg",
+    "images": [
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-2.jpeg",
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-1.jpeg"
+    ]
+  },
+  {
+    "id": "earr-aurelia-princess-hoops",
+    "name": "Aurelia Princess Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Classic princess-cut crystals line the front edge of these polished 18k gold hoops, adding instant radiance to any outfit.",
+    "image": "images/prizmora/earings/aurelia-princess-hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
+    "images": [
+      "images/prizmora/earings/aurelia-princess-hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
+      "images/prizmora/earings/aurelia-princess-hoops/whatsapp-image-2026-07-23-at-6-33-56-pm.jpeg",
+      "images/prizmora/earings/aurelia-princess-hoops/chatgpt-image-jul-22-2026-08-49-12-pm.png"
+    ]
+  },
+  {
+    "id": "earr-aurora-pinwheel",
+    "name": "Aurora Pinwheel",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Playful geometric symmetry. Dynamic pinwheel crystal studs designed to catch the light with subtle kinetic sparkle.",
+    "image": "images/prizmora/earings/aurora-pinwheel/0493450c-8f06-4801-8871-cb8499a805e6.jpeg",
+    "images": [
+      "images/prizmora/earings/aurora-pinwheel/0493450c-8f06-4801-8871-cb8499a805e6.jpeg",
+      "images/prizmora/earings/aurora-pinwheel/219c8c75-80ce-42e6-a442-b68e518546d0.jpeg",
+      "images/prizmora/earings/aurora-pinwheel/45a663bb-4e5e-4395-b9a7-7081102f553a.jpeg"
+    ]
+  },
+  {
+    "id": "earr-bella-bow-studs",
+    "name": "Bella Bow Studs",
+    "category": "earrings",
+    "subcategory": "Stud Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Charming bow motifs crafted with fine pave detailing. A feminine and whimsical addition to your earring collection.",
+    "image": "images/prizmora/earings/bella-bow-studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
+    "images": [
+      "images/prizmora/earings/bella-bow-studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
+      "images/prizmora/earings/bella-bow-studs/50bf0874-8518-43bb-87ea-ee8003d100ab.jpg",
+      "images/prizmora/earings/bella-bow-studs/3670a9e2-6ee1-4b88-9d44-78ae5acce2db.jpg"
+    ]
+  },
+  {
+    "id": "earr-celeste-duo-drops",
+    "name": "Celeste Duo Drops",
+    "category": "earrings",
+    "subcategory": "Drop Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Cascading dual-drop earrings featuring celestial starbursts and brilliant solitaire stones that sway elegantly.",
+    "image": "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+    "images": [
+      "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+      "images/prizmora/earings/celeste-duo-drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+      "images/prizmora/earings/celeste-duo-drops/5807af95-7538-4553-aa67-1395de3b628a.jpeg"
+    ]
+  },
+  {
+    "id": "earr-emerald-royal-huggies",
+    "name": "Emerald Royal Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Deep emerald-green glass crystals set in rich gold huggie hoops, echoing royal vintage sophistication.",
+    "image": "images/prizmora/earings/emerald-royal-huggies/dcab8ee4-7dd7-4be1-9b0e-a865a3a8b423.jpg",
+    "images": [
+      "images/prizmora/earings/emerald-royal-huggies/dcab8ee4-7dd7-4be1-9b0e-a865a3a8b423.jpg",
+      "images/prizmora/earings/emerald-royal-huggies/8f5a4e14-4d39-4026-9f8f-73f02fb2108a.jpg"
+    ]
+  },
+  {
+    "id": "earr-infinity-knot-huggies",
+    "name": "Infinity Knot Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Symbolizing eternal beauty and connection, these smooth infinity knot huggies hug your earlobes seamlessly.",
+    "image": "images/prizmora/earings/infinity-knot-huggies/5be43325-f52f-487b-97a6-3abb9c057680.jpg",
+    "images": [
+      "images/prizmora/earings/infinity-knot-huggies/5be43325-f52f-487b-97a6-3abb9c057680.jpg",
+      "images/prizmora/earings/infinity-knot-huggies/bb72bba9-9825-4d98-a58c-0b305873ca33.jpg",
+      "images/prizmora/earings/infinity-knot-huggies/98792219-25a2-4d3d-a920-203faa81e2ca.jpg"
+    ]
+  },
+  {
+    "id": "earr-lumi-blossom-huggies",
+    "name": "Lumi Blossom Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Tiny floral huggie hoops embellished with marquise-cut petals for a subtle botanical glow.",
+    "image": "images/prizmora/earings/lumi-blossom-huggies/08c34953-642b-4295-b817-0f53d854cc1b.jpg",
+    "images": [
+      "images/prizmora/earings/lumi-blossom-huggies/08c34953-642b-4295-b817-0f53d854cc1b.jpg",
+      "images/prizmora/earings/lumi-blossom-huggies/3cd71c99-d857-4b24-a5a7-6720c00a4c18.jpg",
+      "images/prizmora/earings/lumi-blossom-huggies/af558a6f-8d9a-456f-ba3a-c4c8b6255509.jpg"
+    ]
+  },
+  {
+    "id": "earr-luna-bow-drops",
+    "name": "Luna Bow Drops",
+    "category": "earrings",
+    "subcategory": "Drop Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Delicate ribbon bows flowing into sparkling teardrop crystals, creating dramatic movement for special occasions.",
+    "image": "images/prizmora/earings/luna-bow-drops/whatsapp-image-2026-07-22-at-6-16-02-pm.jpeg",
+    "images": [
+      "images/prizmora/earings/luna-bow-drops/whatsapp-image-2026-07-22-at-6-16-02-pm.jpeg",
+      "images/prizmora/earings/luna-bow-drops/whatsapp-image-2026-07-22-at-6-20-00-pm.jpeg",
+      "images/prizmora/earings/luna-bow-drops/whatsapp-image-2026-07-22-at-8-10-30-pm.jpeg"
+    ]
+  },
+  {
+    "id": "earr-nova-dot-hoops",
+    "name": "Nova Dot Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Minimalist dot-accented hoops that effortlessly bridge casual daytime wear and chic evening attire.",
+    "image": "images/prizmora/earings/nova-dot-hoops/407bff4a-50d4-4658-89ab-8ccedf5741f3.jpg",
+    "images": [
+      "images/prizmora/earings/nova-dot-hoops/407bff4a-50d4-4658-89ab-8ccedf5741f3.jpg",
+      "images/prizmora/earings/nova-dot-hoops/whatsapp-image-2026-07-22-at-10-51-00-pm.jpeg",
+      "images/prizmora/earings/nova-dot-hoops/whatsapp-image-2026-07-22-at-10-51-00-pm-1.jpeg"
+    ]
+  },
+  {
+    "id": "earr-radiant-frame",
+    "name": "Radiant Frame",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Architectural square halo frames showcasing radiant cushion-cut center stones.",
+    "image": "images/prizmora/earings/radiant-frame/a1ec347e-366b-4814-9976-5a719de73e47.jpg",
+    "images": [
+      "images/prizmora/earings/radiant-frame/a1ec347e-366b-4814-9976-5a719de73e47.jpg",
+      "images/prizmora/earings/radiant-frame/ac0163c7-07e1-4e61-9c71-75ae4f96579a.jpg",
+      "images/prizmora/earings/radiant-frame/7a0a6f84-7d8d-413d-b273-b492dd5cfaee.jpg"
+    ]
+  },
+  {
+    "id": "earr-regal-oval-hoops",
+    "name": "Regal Oval Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Elongated oval hoops lined with micro-pave crystals, accentuating the neck and jawline with regal grace.",
+    "image": "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+    "images": [
+      "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
+      "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-30-17-pm-1.jpeg",
+      "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-30-17-pm-2.jpeg",
+      "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-30-17-pm.jpeg"
+    ]
+  },
+  {
+    "id": "earr-stella-crown-huggies",
+    "name": "Stella Crown Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Subtle crown-tipped huggie hoops that add a hint of royal majesty to your ear stack.",
+    "image": "images/prizmora/earings/stella-crown-huggies/bdd15bd9-027b-4984-ae64-280729233709.jpg",
+    "images": [
+      "images/prizmora/earings/stella-crown-huggies/bdd15bd9-027b-4984-ae64-280729233709.jpg",
+      "images/prizmora/earings/stella-crown-huggies/016dac41-fff7-48f6-89ae-79c025d634b1.jpg",
+      "images/prizmora/earings/stella-crown-huggies/f072e051-f731-435c-861e-9374ff4271f4.jpg"
+    ]
+  },
+  {
+    "id": "earr-stellar-square",
+    "name": "Stellar Square",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Clean geometric square studs featuring princess-cut stones set in high-polish settings.",
+    "image": "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-44-57-pm-1.jpeg",
+    "images": [
+      "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-44-57-pm-1.jpeg",
+      "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-44-57-pm-2.jpeg",
+      "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-44-57-pm.jpeg",
+      "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-45-43-pm.jpeg"
+    ]
+  },
+  {
+    "id": "earr-sweet-spark-hearts",
+    "name": "Sweet Spark Hearts",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Delicate heart-shaped crystal studs designed with hypoallergenic posts for sensitive ears.",
+    "image": "images/prizmora/earings/sweet-spark-hearts/5231bcaa-eb27-431a-88ff-126ec2e1c59f.png",
+    "images": [
+      "images/prizmora/earings/sweet-spark-hearts/5231bcaa-eb27-431a-88ff-126ec2e1c59f.png",
+      "images/prizmora/earings/sweet-spark-hearts/67babdba-4c57-4ea8-b9a1-5dd551d2897d.png",
+      "images/prizmora/earings/sweet-spark-hearts/8f36f387-ec82-4536-9c8c-8aaffe8d0340.jpg",
+      "images/prizmora/earings/sweet-spark-hearts/ee144947-7064-4abe-8d9b-60d1733ee790.jpg"
+    ]
+  },
+  {
+    "id": "earr-trinity-luxe-huggies",
+    "name": "Trinity Luxe Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Trio-band huggies with alternating smooth gold and crystal-encrusted rows.",
+    "image": "images/prizmora/earings/trinity-luxe-huggies/c761fe0d-1013-4a79-a7ca-498f5187dd91.png",
+    "images": [
+      "images/prizmora/earings/trinity-luxe-huggies/c761fe0d-1013-4a79-a7ca-498f5187dd91.png",
+      "images/prizmora/earings/trinity-luxe-huggies/f6d6485f-c057-4274-a0e7-2f7097edcc8a.jpg",
+      "images/prizmora/earings/trinity-luxe-huggies/f99f4798-60d9-430d-9946-f9f4b66ec12c.jpg"
+    ]
+  },
+  {
+    "id": "neck-bella-clover-layers",
+    "name": "Bella Clover Layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Pre-layered perfection. Dual chains featuring delicate clover pendants that sit gracefully at the collarbone.",
+    "image": "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
+    "images": [
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-15-pm.png",
+      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-29-pm.png"
+    ]
+  },
+  {
+    "id": "neck-celeste-moon-layers",
+    "name": "Celeste Moon Layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "A enchanting layered necklace featuring a crescent moon pendant and a twinkling star accent chain.",
+    "image": "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-01-pm.png",
+    "images": [
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-01-pm.png",
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-07-pm.png",
+      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-15-pm.png"
+    ]
+  },
+  {
+    "id": "neck-heritage-glow-necklace",
+    "name": "Heritage Glow Necklace",
+    "category": "necklaces",
+    "subcategory": "Choker & Chain Necklaces",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Inspired by royal heirloom design, featuring a central glowing crystal pendant framed by ornate gold detailing.",
+    "image": "images/prizmora/necklace/heritage-glow-necklace/chatgpt-image-jul-22-2026-10-33-54-pm.png",
+    "images": [
+      "images/prizmora/necklace/heritage-glow-necklace/chatgpt-image-jul-22-2026-10-33-54-pm.png",
+      "images/prizmora/necklace/heritage-glow-necklace/chatgpt-image-jul-22-2026-10-34-00-pm.png",
+      "images/prizmora/necklace/heritage-glow-necklace/whatsapp-image-2026-07-22-at-10-38-52-pm.jpeg",
+      "images/prizmora/necklace/heritage-glow-necklace/whatsapp-image-2026-07-23-at-5-27-09-pm.jpeg"
+    ]
+  },
+  {
+    "id": "neck-lionheart-pendant-necklace",
+    "name": "Lionheart Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "A symbol of strength and inner confidence. Features an embossed lion crest medallion suspended on a heavy link chain.",
+    "image": "images/prizmora/necklace/lionheart-pendant-necklace/1957820e-f79d-4b08-a4a3-3846d655bb8c.jpeg",
+    "images": [
+      "images/prizmora/necklace/lionheart-pendant-necklace/1957820e-f79d-4b08-a4a3-3846d655bb8c.jpeg",
+      "images/prizmora/necklace/lionheart-pendant-necklace/chatgpt-image-jul-22-2026-10-41-46-pm.png",
+      "images/prizmora/necklace/lionheart-pendant-necklace/chatgpt-image-jul-22-2026-10-43-31-pm.png",
+      "images/prizmora/necklace/lionheart-pendant-necklace/de560806-d1f0-48c3-82be-2f2fcd886215.jpeg"
+    ]
+  },
+  {
+    "id": "neck-luna-drop-layers",
+    "name": "Luna Drop layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Triple-layered fine chains featuring teardrop crystal accents that cascade softly against the chest.",
+    "image": "images/prizmora/necklace/luna-drop-layers/4f5e36ce-f6c6-4a0e-86ff-9bb95d1851f7.jpg",
+    "images": [
+      "images/prizmora/necklace/luna-drop-layers/4f5e36ce-f6c6-4a0e-86ff-9bb95d1851f7.jpg",
+      "images/prizmora/necklace/luna-drop-layers/e15c0080-6ada-49b3-8552-2ffe5f2907d5.jpg"
+    ]
+  },
+  {
+    "id": "neck-sailors-spark-necklace",
+    "name": "Sailor's Spark Necklace",
+    "category": "necklaces",
+    "subcategory": "Choker & Chain Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Classic anchor chain design featuring a brilliant nautical medallion pendant that catches every beam of light.",
+    "image": "images/prizmora/necklace/sailors-spark-necklace/71f68856-b2f5-4622-a312-5242d5c9f738.jpeg",
+    "images": [
+      "images/prizmora/necklace/sailors-spark-necklace/71f68856-b2f5-4622-a312-5242d5c9f738.jpeg",
+      "images/prizmora/necklace/sailors-spark-necklace/82d78c9a-e0f0-4d64-b86c-fffc7aa42269.jpeg",
+      "images/prizmora/necklace/sailors-spark-necklace/ecd5ef74-9bfc-4e4a-8c87-2cd4719c833f.jpeg"
+    ]
+  },
+  {
+    "id": "neck-seraphina-pendant-necklace",
+    "name": "Seraphina Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Ethereal angel wing and halo pendant encrusted with brilliant micro-pave stones.",
+    "image": "images/prizmora/necklace/seraphina-pendant-necklace/whatsapp-image-2026-07-23-at-5-57-21-pm.jpeg",
+    "images": [
+      "images/prizmora/necklace/seraphina-pendant-necklace/whatsapp-image-2026-07-23-at-5-57-21-pm.jpeg",
+      "images/prizmora/necklace/seraphina-pendant-necklace/whatsapp-image-2026-07-23-at-5-57-22-pm-1.jpeg",
+      "images/prizmora/necklace/seraphina-pendant-necklace/whatsapp-image-2026-07-23-at-5-57-22-pm.jpeg"
+    ]
+  },
+  {
+    "id": "neck-verona-emerald-pendant-necklace",
+    "name": "Verona Emerald Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 3499,
+    "status": "Active",
+    "desc": "A striking emerald-green solitaire pendant surrounded by a sparkling halo of cubic zirconia, suspended on a fluid gold chain.",
+    "image": "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-22-at-10-36-15-pm.jpeg",
+    "images": [
+      "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-22-at-10-36-15-pm.jpeg",
+      "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-22-at-10-37-55-pm.jpeg",
+      "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-23-at-5-52-11-pm.jpeg"
+    ]
+  }
+];
+
+  async function fetchJson(endpoint, options = {}) {
+    try {
+      const response = await fetch(endpoint, options);
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
+      return await response.json();
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function getLocalProducts() {
+    try {
+      const data = localStorage.getItem(INVENTORY_KEY);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      localStorage.setItem(INVENTORY_KEY, JSON.stringify(defaultProducts));
+    } catch (e) {}
+    return defaultProducts;
+  }
+
+  function saveLocalProducts(data) {
+    try {
+      localStorage.setItem(INVENTORY_KEY, JSON.stringify(data));
+    } catch (e) {}
+  }
+
+  function resetLocalInventory() {
+    try {
+      localStorage.removeItem(INVENTORY_KEY);
+      localStorage.setItem(INVENTORY_KEY, JSON.stringify(defaultProducts));
+    } catch (e) {}
+    return defaultProducts;
+  }
+
+  async function getProducts() {
+    const serverData = await fetchJson('/api/products');
+    if (serverData && Array.isArray(serverData)) {
+      return serverData;
+    }
+    return getLocalProducts();
+  }
+
+  async function saveProduct(item) {
+    const payload = JSON.stringify(item);
+    const response = await fetchJson('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload
+    });
+    if (response) return response;
+    const products = getLocalProducts();
+    const existingIndex = products.findIndex(p => p.id === item.id);
+    if (existingIndex > -1) {
+      products[existingIndex] = item;
+    } else {
+      products.push(item);
+    }
+    saveLocalProducts(products);
+    return item;
+  }
+
+  async function deleteProduct(id) {
+    const response = await fetchJson(`/api/products/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    if (response) return response;
+    const products = getLocalProducts().filter(p => p.id !== id);
+    saveLocalProducts(products);
+    return { success: true };
+  }
+
+  async function resetInventoryToDefault() {
+    const response = await fetchJson('/api/products/reset', {
+      method: 'POST'
+    });
+    if (response && response.success) {
+      const refreshed = await getProducts();
+      return Array.isArray(refreshed) ? refreshed : [];
+    }
+    return resetLocalInventory();
+  }
+
+  async function getProductById(id) {
+    if (!id) return null;
+    const response = await fetchJson(`/api/products/${encodeURIComponent(id)}`);
+    if (response) return response;
+    const products = getLocalProducts();
+    return products.find(p => p.id === id) || null;
+  }
+
+  async function getProductsByCategory(category) {
+    const products = await getProducts();
+    if (!category || category.toLowerCase() === 'all') return products;
+    return products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+  }
+
+  async function getAllCategories() {
+    const products = await getProducts();
+    const categories = new Set(products.map(p => p.category));
+    return Array.from(categories);
+  }
+
+  window.PrizmoraaProducts = {
+    getProducts,
+    saveProduct,
+    deleteProduct,
+    resetInventoryToDefault,
+    getProductById,
+    getProductsByCategory,
+    getAllCategories
+  };
+})();

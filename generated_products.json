@@ -1,0 +1,607 @@
+[
+  {
+    "id": "duette-amora-heart",
+    "name": "Duette Amora Heart",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3299,
+    "status": "Active",
+    "desc": "Signature dual-piercing set with connected fine gold chain and twinkling heart charm.",
+    "image": "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/7d4425fa-edfe-4427-a507-102df61ea5a6.jpg",
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/ca5248a7-e12b-4478-a390-001f261db845.jpg"
+    ]
+  },
+  {
+    "id": "duette-aurelia-hoop",
+    "name": "Duette Aurelia Hoop & Stud",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Seamless connection between lower stud and upper huggie hoop with delicate linked chain.",
+    "image": "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (1).jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (1).jpeg",
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (2).jpeg",
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg"
+    ]
+  },
+  {
+    "id": "duette-celeste-moon",
+    "name": "Duette Celeste Moon",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3699,
+    "status": "Active",
+    "desc": "Celestial moon and stars connected by a shimmering chain for double pierced ears.",
+    "image": "images/PRIZMORA/EARINGS/Celeste Duo Drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/5807af95-7538-4553-aa67-1395de3b628a.jpeg",
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg"
+    ]
+  },
+  {
+    "id": "duette-bella-clover",
+    "name": "Duette Bella Clover",
+    "category": "duette",
+    "subcategory": "Signature Double Piercing",
+    "price": 3599,
+    "status": "Active",
+    "desc": "Lucky four-leaf clover motif with delicate connect-chain detail.",
+    "image": "images/PRIZMORA/Necklace/Bella Clover Layers/598af1b0-fa8c-4d63-b618-540a14c02226.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Bella Clover Layers/598af1b0-fa8c-4d63-b618-540a14c02226.jpg",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_09 PM.png",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_15 PM.png",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_29 PM.png"
+    ]
+  },
+  {
+    "id": "brac-amora-heart-bracelet",
+    "name": "Amora Heart Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted amora heart bracelet featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/7d4425fa-edfe-4427-a507-102df61ea5a6.jpg",
+      "images/PRIZMORA/BRACELETS/Amora Heart Bracelet/ca5248a7-e12b-4478-a390-001f261db845.jpg"
+    ]
+  },
+  {
+    "id": "brac-aurelia-baguette-bangle",
+    "name": "Aurelia Baguette Bangle",
+    "category": "bracelets",
+    "subcategory": "Bangles",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Exquisitely crafted aurelia baguette bangle featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Aurelia Baguette Bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Aurelia Baguette Bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
+      "images/PRIZMORA/BRACELETS/Aurelia Baguette Bangle/755af3d6-94e3-437f-86ae-227ccb3e36fb.jpg",
+      "images/PRIZMORA/BRACELETS/Aurelia Baguette Bangle/7d906859-22e1-4964-8a50-debc20af5552.jpg",
+      "images/PRIZMORA/BRACELETS/Aurelia Baguette Bangle/c2410b6b-2776-49e9-abb1-42e00ffd28c5.jpg"
+    ]
+  },
+  {
+    "id": "brac-bloom-grace-bracelet",
+    "name": "Bloom Grace Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted bloom grace bracelet featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Bloom Grace Bracelet/2f3c4ed3-2f4f-44fd-86dc-9fe418f53042.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Bloom Grace Bracelet/2f3c4ed3-2f4f-44fd-86dc-9fe418f53042.jpg",
+      "images/PRIZMORA/BRACELETS/Bloom Grace Bracelet/8a1f6aa5-e71f-419e-87cd-c2ad45f60359.jpg",
+      "images/PRIZMORA/BRACELETS/Bloom Grace Bracelet/ee923c7b-553d-4c6b-9c87-f390a34661cf.jpg",
+      "images/PRIZMORA/BRACELETS/Bloom Grace Bracelet/f20787ec-0c58-4a65-92ee-a24b448cc387.jpg"
+    ]
+  },
+  {
+    "id": "brac-flora-spark-gold-bracelet",
+    "name": "Flora Spark Gold Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted flora spark gold bracelet featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Flora Spark Gold Bracelet/1d35afe5-a6de-445d-8faf-2a0c8d5931d0.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Flora Spark Gold Bracelet/1d35afe5-a6de-445d-8faf-2a0c8d5931d0.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Gold Bracelet/5e9bf2f5-e153-4d8e-afee-7dcb87c0cd7d.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Gold Bracelet/6aef5952-3dca-4c06-ac4f-9062e50ced57.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Gold Bracelet/89c6a379-b016-42a3-8dad-e32c6af23d93.jpg"
+    ]
+  },
+  {
+    "id": "brac-flora-spark-silver-bracelet",
+    "name": "Flora Spark Silver Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted flora spark silver bracelet featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Flora Spark Silver Bracelet/0c3b44c2-04d3-4637-8ee7-1bd60fe5baf8.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Flora Spark Silver Bracelet/0c3b44c2-04d3-4637-8ee7-1bd60fe5baf8.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Silver Bracelet/6aef5952-3dca-4c06-ac4f-9062e50ced57.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Silver Bracelet/7a656f7b-e730-4c6f-9897-5ea9946f8017.jpg",
+      "images/PRIZMORA/BRACELETS/Flora Spark Silver Bracelet/9ebdec84-d41a-4aca-8f30-4dae7c591e04.jpg"
+    ]
+  },
+  {
+    "id": "brac-imperia-grid-bangle",
+    "name": "Imperia Grid bangle",
+    "category": "bracelets",
+    "subcategory": "Bangles",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Exquisitely crafted imperia grid bangle featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Imperia Grid bangle/6fb3d5ae-a8dc-415f-b9d4-8ac42c697093.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Imperia Grid bangle/6fb3d5ae-a8dc-415f-b9d4-8ac42c697093.jpg",
+      "images/PRIZMORA/BRACELETS/Imperia Grid bangle/WhatsApp Image 2026-07-22 at 10.34.01 PM (1).jpeg",
+      "images/PRIZMORA/BRACELETS/Imperia Grid bangle/WhatsApp Image 2026-07-22 at 10.34.01 PM.jpeg",
+      "images/PRIZMORA/BRACELETS/Imperia Grid bangle/WhatsApp Image 2026-07-22 at 10.35.22 PM.jpeg"
+    ]
+  },
+  {
+    "id": "brac-lumi-solitaire-bracelet",
+    "name": "Lumi Solitaire Bracelet",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted lumi solitaire bracelet featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Lumi Solitaire Bracelet/0b115038-33f7-4dfb-9db8-5d6971237baa.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Lumi Solitaire Bracelet/0b115038-33f7-4dfb-9db8-5d6971237baa.jpg",
+      "images/PRIZMORA/BRACELETS/Lumi Solitaire Bracelet/95423ffb-e10d-4866-8a51-282951956087.jpg",
+      "images/PRIZMORA/BRACELETS/Lumi Solitaire Bracelet/WhatsApp Image 2026-07-22 at 8.49.27 PM.jpeg",
+      "images/PRIZMORA/BRACELETS/Lumi Solitaire Bracelet/WhatsApp Image 2026-07-23 at 6.18.14 PM.jpeg"
+    ]
+  },
+  {
+    "id": "brac-mosaic-spark-gold",
+    "name": "Mosaic Spark Gold",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted mosaic spark gold featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Mosaic Spark Gold/49a31b8f-a342-4ea9-80fb-040ffe6baf25.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Gold/49a31b8f-a342-4ea9-80fb-040ffe6baf25.jpg",
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Gold/94732433-1258-4ef6-b87d-540e04ee1840.jpg",
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Gold/eb1862ff-133f-4d62-9f45-c851f68363de.jpg"
+    ]
+  },
+  {
+    "id": "brac-mosaic-spark-silver",
+    "name": "Mosaic Spark Silver",
+    "category": "bracelets",
+    "subcategory": "Chain Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted mosaic spark silver featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Mosaic Spark Silver/5026722c-b68a-46e4-85cf-e2c79bbcb98c.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Silver/5026722c-b68a-46e4-85cf-e2c79bbcb98c.jpg",
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Silver/6062ae8b-6cbb-4602-9349-6e6f4882a513.jpg",
+      "images/PRIZMORA/BRACELETS/Mosaic Spark Silver/66cf322b-2633-48f7-9d80-b0fe97b4095c.jpg"
+    ]
+  },
+  {
+    "id": "brac-serena-clover-gold",
+    "name": "Serena Clover Gold",
+    "category": "bracelets",
+    "subcategory": "Charm Bracelets",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted serena clover gold featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Serena Clover Gold/14fd9ce8-707c-4fd1-a9a0-89c2ef2f12e7.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Serena Clover Gold/14fd9ce8-707c-4fd1-a9a0-89c2ef2f12e7.jpg",
+      "images/PRIZMORA/BRACELETS/Serena Clover Gold/5026722c-b68a-46e4-85cf-e2c79bbcb98c.jpg",
+      "images/PRIZMORA/BRACELETS/Serena Clover Gold/bfc91148-b191-43dd-92bf-75891c275b9e.jpg",
+      "images/PRIZMORA/BRACELETS/Serena Clover Gold/e8d12f66-e14b-44af-8f46-2fb28ce3e456.jpg"
+    ]
+  },
+  {
+    "id": "brac-serena-clover-silver",
+    "name": "Serena Clover Silver",
+    "category": "bracelets",
+    "subcategory": "Charm Bracelets",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted serena clover silver featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/BRACELETS/Serena Clover Silver/3e98439f-d857-4563-b662-ee612d8db5a3.jpg",
+    "images": [
+      "images/PRIZMORA/BRACELETS/Serena Clover Silver/3e98439f-d857-4563-b662-ee612d8db5a3.jpg",
+      "images/PRIZMORA/BRACELETS/Serena Clover Silver/5026722c-b68a-46e4-85cf-e2c79bbcb98c.jpg",
+      "images/PRIZMORA/BRACELETS/Serena Clover Silver/64665cd1-318a-4c7b-8d29-d92323489fb9.jpg"
+    ]
+  },
+  {
+    "id": "earr-amora-heart-studs",
+    "name": "Amora Heart Studs",
+    "category": "earrings",
+    "subcategory": "Stud Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Exquisitely crafted amora heart studs featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (1).jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (1).jpeg",
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM (2).jpeg",
+      "images/PRIZMORA/EARINGS/Amora Heart Studs/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-aurelia-princess-hoops",
+    "name": "Aurelia Princess Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted aurelia princess hoops featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Aurelia Princess Hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Aurelia Princess Hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
+      "images/PRIZMORA/EARINGS/Aurelia Princess Hoops/ChatGPT Image Jul 22, 2026, 08_49_12 PM.png",
+      "images/PRIZMORA/EARINGS/Aurelia Princess Hoops/WhatsApp Image 2026-07-23 at 6.33.56 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-aurora-pinwheel",
+    "name": "Aurora Pinwheel",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted aurora pinwheel featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Aurora Pinwheel/0493450c-8f06-4801-8871-cb8499a805e6.jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Aurora Pinwheel/0493450c-8f06-4801-8871-cb8499a805e6.jpeg",
+      "images/PRIZMORA/EARINGS/Aurora Pinwheel/219c8c75-80ce-42e6-a442-b68e518546d0.jpeg",
+      "images/PRIZMORA/EARINGS/Aurora Pinwheel/45a663bb-4e5e-4395-b9a7-7081102f553a.jpeg"
+    ]
+  },
+  {
+    "id": "earr-bella-bow-studs",
+    "name": "Bella Bow Studs",
+    "category": "earrings",
+    "subcategory": "Stud Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Exquisitely crafted bella bow studs featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Bella Bow Studs/3670a9e2-6ee1-4b88-9d44-78ae5acce2db.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Bella Bow Studs/3670a9e2-6ee1-4b88-9d44-78ae5acce2db.jpg",
+      "images/PRIZMORA/EARINGS/Bella Bow Studs/50bf0874-8518-43bb-87ea-ee8003d100ab.jpg",
+      "images/PRIZMORA/EARINGS/Bella Bow Studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
+      "images/PRIZMORA/EARINGS/Bella Bow Studs/ed904103-7412-4b7d-a627-3fae8e88acae.jpg"
+    ]
+  },
+  {
+    "id": "earr-celeste-duo-drops",
+    "name": "Celeste Duo Drops",
+    "category": "earrings",
+    "subcategory": "Drop Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted celeste duo drops featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Celeste Duo Drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/5807af95-7538-4553-aa67-1395de3b628a.jpeg",
+      "images/PRIZMORA/EARINGS/Celeste Duo Drops/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-emerald-royal-huggies",
+    "name": "Emerald Royal Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted emerald royal huggies featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Emerald Royal Huggies/8f5a4e14-4d39-4026-9f8f-73f02fb2108a.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Emerald Royal Huggies/8f5a4e14-4d39-4026-9f8f-73f02fb2108a.jpg",
+      "images/PRIZMORA/EARINGS/Emerald Royal Huggies/dcab8ee4-7dd7-4be1-9b0e-a865a3a8b423.jpg"
+    ]
+  },
+  {
+    "id": "earr-infinity-knot-huggies",
+    "name": "Infinity Knot Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted infinity knot huggies featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Infinity Knot Huggies/5be43325-f52f-487b-97a6-3abb9c057680.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Infinity Knot Huggies/5be43325-f52f-487b-97a6-3abb9c057680.jpg",
+      "images/PRIZMORA/EARINGS/Infinity Knot Huggies/98792219-25a2-4d3d-a920-203faa81e2ca.jpg",
+      "images/PRIZMORA/EARINGS/Infinity Knot Huggies/bb72bba9-9825-4d98-a58c-0b305873ca33.jpg"
+    ]
+  },
+  {
+    "id": "earr-lumi-blossom-huggies",
+    "name": "Lumi Blossom Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted lumi blossom huggies featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Lumi Blossom Huggies/08c34953-642b-4295-b817-0f53d854cc1b.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Lumi Blossom Huggies/08c34953-642b-4295-b817-0f53d854cc1b.jpg",
+      "images/PRIZMORA/EARINGS/Lumi Blossom Huggies/3cd71c99-d857-4b24-a5a7-6720c00a4c18.jpg",
+      "images/PRIZMORA/EARINGS/Lumi Blossom Huggies/af558a6f-8d9a-456f-ba3a-c4c8b6255509.jpg"
+    ]
+  },
+  {
+    "id": "earr-luna-bow-drops",
+    "name": "Luna Bow Drops",
+    "category": "earrings",
+    "subcategory": "Drop Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted luna bow drops featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Luna Bow Drops/WhatsApp Image 2026-07-22 at 6.16.02 PM.jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Luna Bow Drops/WhatsApp Image 2026-07-22 at 6.16.02 PM.jpeg",
+      "images/PRIZMORA/EARINGS/Luna Bow Drops/WhatsApp Image 2026-07-22 at 6.20.00 PM.jpeg",
+      "images/PRIZMORA/EARINGS/Luna Bow Drops/WhatsApp Image 2026-07-22 at 8.10.30 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-nova-dot-hoops",
+    "name": "Nova Dot Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 1699,
+    "status": "Active",
+    "desc": "Exquisitely crafted nova dot hoops featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Nova Dot Hoops/407bff4a-50d4-4658-89ab-8ccedf5741f3.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Nova Dot Hoops/407bff4a-50d4-4658-89ab-8ccedf5741f3.jpg",
+      "images/PRIZMORA/EARINGS/Nova Dot Hoops/WhatsApp Image 2026-07-22 at 10.51.00 PM (1).jpeg",
+      "images/PRIZMORA/EARINGS/Nova Dot Hoops/WhatsApp Image 2026-07-22 at 10.51.00 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-radiant-frame",
+    "name": "Radiant Frame",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted radiant frame featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Radiant Frame/7a0a6f84-7d8d-413d-b273-b492dd5cfaee.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Radiant Frame/7a0a6f84-7d8d-413d-b273-b492dd5cfaee.jpg",
+      "images/PRIZMORA/EARINGS/Radiant Frame/a1ec347e-366b-4814-9976-5a719de73e47.jpg",
+      "images/PRIZMORA/EARINGS/Radiant Frame/ac0163c7-07e1-4e61-9c71-75ae4f96579a.jpg"
+    ]
+  },
+  {
+    "id": "earr-regal-oval-hoops",
+    "name": "Regal Oval Hoops",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted regal oval hoops featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Regal Oval Hoops/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Regal Oval Hoops/WhatsApp Image 2026-07-23 at 6.26.45 PM.jpeg",
+      "images/PRIZMORA/EARINGS/Regal Oval Hoops/WhatsApp Image 2026-07-23 at 6.30.17 PM (1).jpeg",
+      "images/PRIZMORA/EARINGS/Regal Oval Hoops/WhatsApp Image 2026-07-23 at 6.30.17 PM (2).jpeg",
+      "images/PRIZMORA/EARINGS/Regal Oval Hoops/WhatsApp Image 2026-07-23 at 6.30.17 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-stella-crown-huggies",
+    "name": "Stella Crown Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted stella crown huggies featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Stella Crown Huggies/016dac41-fff7-48f6-89ae-79c025d634b1.jpg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Stella Crown Huggies/016dac41-fff7-48f6-89ae-79c025d634b1.jpg",
+      "images/PRIZMORA/EARINGS/Stella Crown Huggies/bdd15bd9-027b-4984-ae64-280729233709.jpg",
+      "images/PRIZMORA/EARINGS/Stella Crown Huggies/f072e051-f731-435c-861e-9374ff4271f4.jpg"
+    ]
+  },
+  {
+    "id": "earr-stellar-square",
+    "name": "Stellar Square",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted stellar square featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Stellar Square/WhatsApp Image 2026-07-22 at 10.44.57 PM (1).jpeg",
+    "images": [
+      "images/PRIZMORA/EARINGS/Stellar Square/WhatsApp Image 2026-07-22 at 10.44.57 PM (1).jpeg",
+      "images/PRIZMORA/EARINGS/Stellar Square/WhatsApp Image 2026-07-22 at 10.44.57 PM (2).jpeg",
+      "images/PRIZMORA/EARINGS/Stellar Square/WhatsApp Image 2026-07-22 at 10.44.57 PM.jpeg",
+      "images/PRIZMORA/EARINGS/Stellar Square/WhatsApp Image 2026-07-22 at 10.45.43 PM.jpeg"
+    ]
+  },
+  {
+    "id": "earr-sweet-spark-hearts",
+    "name": "Sweet Spark Hearts",
+    "category": "earrings",
+    "subcategory": "Statement Earrings",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted sweet spark hearts featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Sweet Spark Hearts/5231bcaa-eb27-431a-88ff-126ec2e1c59f.png",
+    "images": [
+      "images/PRIZMORA/EARINGS/Sweet Spark Hearts/5231bcaa-eb27-431a-88ff-126ec2e1c59f.png",
+      "images/PRIZMORA/EARINGS/Sweet Spark Hearts/67babdba-4c57-4ea8-b9a1-5dd551d2897d.png",
+      "images/PRIZMORA/EARINGS/Sweet Spark Hearts/8f36f387-ec82-4536-9c8c-8aaffe8d0340.jpg",
+      "images/PRIZMORA/EARINGS/Sweet Spark Hearts/ee144947-7064-4abe-8d9b-60d1733ee790.jpg"
+    ]
+  },
+  {
+    "id": "earr-trinity-luxe-huggies",
+    "name": "Trinity Luxe Huggies",
+    "category": "earrings",
+    "subcategory": "Hoop & Huggie Earrings",
+    "price": 2199,
+    "status": "Active",
+    "desc": "Exquisitely crafted trinity luxe huggies featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/EARINGS/Trinity Luxe Huggies/c761fe0d-1013-4a79-a7ca-498f5187dd91.png",
+    "images": [
+      "images/PRIZMORA/EARINGS/Trinity Luxe Huggies/c761fe0d-1013-4a79-a7ca-498f5187dd91.png",
+      "images/PRIZMORA/EARINGS/Trinity Luxe Huggies/f6d6485f-c057-4274-a0e7-2f7097edcc8a.jpg",
+      "images/PRIZMORA/EARINGS/Trinity Luxe Huggies/f99f4798-60d9-430d-9946-f9f4b66ec12c.jpg"
+    ]
+  },
+  {
+    "id": "neck-bella-clover-layers",
+    "name": "Bella Clover Layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Exquisitely crafted bella clover layers featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Bella Clover Layers/598af1b0-fa8c-4d63-b618-540a14c02226.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Bella Clover Layers/598af1b0-fa8c-4d63-b618-540a14c02226.jpg",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_09 PM.png",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_15 PM.png",
+      "images/PRIZMORA/Necklace/Bella Clover Layers/ChatGPT Image Jul 22, 2026, 10_06_29 PM.png"
+    ]
+  },
+  {
+    "id": "neck-celeste-moon-layers",
+    "name": "Celeste Moon Layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Exquisitely crafted celeste moon layers featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Celeste Moon Layers/5a252c5c-b8b7-4024-a2ed-dec56502b506.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Celeste Moon Layers/5a252c5c-b8b7-4024-a2ed-dec56502b506.jpg",
+      "images/PRIZMORA/Necklace/Celeste Moon Layers/ChatGPT Image Jul 22, 2026, 10_33_01 PM.png",
+      "images/PRIZMORA/Necklace/Celeste Moon Layers/ChatGPT Image Jul 22, 2026, 10_33_07 PM.png",
+      "images/PRIZMORA/Necklace/Celeste Moon Layers/ChatGPT Image Jul 22, 2026, 10_33_15 PM.png"
+    ]
+  },
+  {
+    "id": "neck-heritage-glow-necklace",
+    "name": "Heritage Glow Necklace",
+    "category": "necklaces",
+    "subcategory": "Choker & Chain Necklaces",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted heritage glow necklace featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Heritage Glow Necklace/9b5a4c89-8ca9-452e-aa43-394ef3dcb3f1.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Heritage Glow Necklace/9b5a4c89-8ca9-452e-aa43-394ef3dcb3f1.jpg",
+      "images/PRIZMORA/Necklace/Heritage Glow Necklace/ChatGPT Image Jul 22, 2026, 10_33_54 PM.png",
+      "images/PRIZMORA/Necklace/Heritage Glow Necklace/ChatGPT Image Jul 22, 2026, 10_34_00 PM.png",
+      "images/PRIZMORA/Necklace/Heritage Glow Necklace/WhatsApp Image 2026-07-22 at 10.38.52 PM.jpeg",
+      "images/PRIZMORA/Necklace/Heritage Glow Necklace/WhatsApp Image 2026-07-23 at 5.27.09 PM.jpeg"
+    ]
+  },
+  {
+    "id": "neck-lionheart-pendant-necklace",
+    "name": "Lionheart Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted lionheart pendant necklace featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/1957820e-f79d-4b08-a4a3-3846d655bb8c.jpeg",
+    "images": [
+      "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/1957820e-f79d-4b08-a4a3-3846d655bb8c.jpeg",
+      "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/72fbc68e-4950-444c-91fe-82ade50fc7d6.jpg",
+      "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/ChatGPT Image Jul 22, 2026, 10_41_46 PM.png",
+      "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/ChatGPT Image Jul 22, 2026, 10_43_31 PM.png",
+      "images/PRIZMORA/Necklace/Lionheart Pendant Necklace/de560806-d1f0-48c3-82be-2f2fcd886215.jpeg"
+    ]
+  },
+  {
+    "id": "neck-luna-drop-layers",
+    "name": "Luna Drop layers",
+    "category": "necklaces",
+    "subcategory": "Layered Necklaces",
+    "price": 2999,
+    "status": "Active",
+    "desc": "Exquisitely crafted luna drop layers featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Luna Drop layers/4f5e36ce-f6c6-4a0e-86ff-9bb95d1851f7.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Luna Drop layers/4f5e36ce-f6c6-4a0e-86ff-9bb95d1851f7.jpg",
+      "images/PRIZMORA/Necklace/Luna Drop layers/79644e37-5592-41db-b492-a06be9a5eca2.jpg",
+      "images/PRIZMORA/Necklace/Luna Drop layers/e15c0080-6ada-49b3-8552-2ffe5f2907d5.jpg"
+    ]
+  },
+  {
+    "id": "neck-sailors-spark-necklace",
+    "name": "Sailor's Spark Necklace",
+    "category": "necklaces",
+    "subcategory": "Choker & Chain Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted sailor's spark necklace featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Sailor's Spark Necklace/71f68856-b2f5-4622-a312-5242d5c9f738.jpeg",
+    "images": [
+      "images/PRIZMORA/Necklace/Sailor's Spark Necklace/71f68856-b2f5-4622-a312-5242d5c9f738.jpeg",
+      "images/PRIZMORA/Necklace/Sailor's Spark Necklace/82d78c9a-e0f0-4d64-b86c-fffc7aa42269.jpeg",
+      "images/PRIZMORA/Necklace/Sailor's Spark Necklace/d9ac2c1f-68e9-46fe-aac6-d2f02923c8db.jpg",
+      "images/PRIZMORA/Necklace/Sailor's Spark Necklace/ecd5ef74-9bfc-4e4a-8c87-2cd4719c833f.jpeg"
+    ]
+  },
+  {
+    "id": "neck-seraphina-pendant-necklace",
+    "name": "Seraphina Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 2499,
+    "status": "Active",
+    "desc": "Exquisitely crafted seraphina pendant necklace featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Seraphina Pendant Necklace/8ffb0481-c9b0-4a9b-ae6c-fe0d2d9ba2a6.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Seraphina Pendant Necklace/8ffb0481-c9b0-4a9b-ae6c-fe0d2d9ba2a6.jpg",
+      "images/PRIZMORA/Necklace/Seraphina Pendant Necklace/WhatsApp Image 2026-07-23 at 5.57.21 PM.jpeg",
+      "images/PRIZMORA/Necklace/Seraphina Pendant Necklace/WhatsApp Image 2026-07-23 at 5.57.22 PM (1).jpeg",
+      "images/PRIZMORA/Necklace/Seraphina Pendant Necklace/WhatsApp Image 2026-07-23 at 5.57.22 PM.jpeg"
+    ]
+  },
+  {
+    "id": "neck-verona-emerald-pendant-necklace",
+    "name": "Verona Emerald Pendant Necklace",
+    "category": "necklaces",
+    "subcategory": "Pendant Necklaces",
+    "price": 3499,
+    "status": "Active",
+    "desc": "Exquisitely crafted verona emerald pendant necklace featuring premium 18k gold / rhodium plating and sparkling cubic zirconia stones. Tarnish-resistant, hypoallergenic, and designed to reflect effortless luxury.",
+    "image": "images/PRIZMORA/Necklace/Verona Emerald Pendant Necklace/2794c5bc-8c31-4500-baf4-c008156487b6.jpg",
+    "images": [
+      "images/PRIZMORA/Necklace/Verona Emerald Pendant Necklace/2794c5bc-8c31-4500-baf4-c008156487b6.jpg",
+      "images/PRIZMORA/Necklace/Verona Emerald Pendant Necklace/WhatsApp Image 2026-07-22 at 10.36.15 PM.jpeg",
+      "images/PRIZMORA/Necklace/Verona Emerald Pendant Necklace/WhatsApp Image 2026-07-22 at 10.37.55 PM.jpeg",
+      "images/PRIZMORA/Necklace/Verona Emerald Pendant Necklace/WhatsApp Image 2026-07-23 at 5.52.11 PM.jpeg"
+    ]
+  }
+]

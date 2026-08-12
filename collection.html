@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIZMORAA — Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/design-system.css">
+<link rel="stylesheet" href="./css/components.css">
+<link rel="stylesheet" href="./css/collections.css">
+</head>
+<body>
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA" style="height: 48px; mix-blend-mode: multiply;"></a>
+    <ul class="nav-links">
+      <li><a href="collection.html?cat=duette">Duette</a></li>
+      <li><a href="collections.html">Collections</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="collections-page">
+  <div class="wrap header-wrap">
+    <span class="eyebrow" id="colEyebrow">Collection</span>
+    <h1 id="colTitle">Loading...</h1>
+    <p id="colDesc">Explore our handcrafted pieces designed for effortless elegance.</p>
+  </div>
+  <div class="wrap">
+    <div class="product-grid" id="productGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <span class="logotype">PRIZMORAA</span>
+        <p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="collection.html?cat=duette">Duette</a>
+        <a href="collections.html">Collections</a>
+      </div>
+      <div class="footer-col">
+        <h4>Info</h4>
+
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 PRIZMORAA. All rights reserved.</span>
+      <span>Made with care</span>
+    </div>
+  </div>
+</footer>
+
+<script src="./js/products.js"></script>
+<script src="./js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { getProductsByCategory, getProducts } = window.PrizmoraaProducts;
+    
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat') || 'earrings';
+    
+    const formattedCat = cat.charAt(0).toUpperCase() + cat.slice(1);
+    document.getElementById('colTitle').textContent = formattedCat;
+    
+    let products = cat === 'all' ? await getProducts() : await getProductsByCategory(cat);
+    
+    if (cat === 'all') {
+      products = await getProducts();
+      document.getElementById('colTitle').textContent = 'All Jewellery';
+    }
+
+    const grid = document.getElementById('productGrid');
+    
+    if (products.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding: 60px 0;">New designs coming soon to this collection.</p>';
+      return;
+    }
+    
+    grid.innerHTML = products.map(p => {
+      const noHoverSwap = ['duette-amora-heart', 'duette-aurelia-hoop', 'duette-celeste-moon', 'duette-bella-clover'];
+      const hasSecondary = p.images && p.images.length > 1 && !noHoverSwap.includes(p.id);
+      const secondaryImg = hasSecondary ? p.images[1] : p.image;
+      // Strip any accidental "Product description:" prefix from desc
+      let cleanDesc = (p.desc || '').replace(/^product description[:\s]*/i, '').trim();
+      const imgSrc = p.image || 'images/hero.jpg';
+      
+      return `
+        <a href="product.html?id=${p.id}" class="prod-card">
+          <div class="img-wrap">
+            <img class="main-pic" src="${encodeURI(imgSrc)}" alt="${p.name}" loading="lazy">
+            ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name} detail view" loading="lazy">` : ''}
+            ${cleanDesc ? `<div class="hover-overlay">
+              <p class="hover-desc">${cleanDesc}</p>
+              <span class="hover-btn">View Details →</span>
+            </div>` : ''}
+          </div>
+          <span class="sub-badge">${p.subcategory || p.category}</span>
+          <h3>${p.name}</h3>
+          <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
+        </a>
+      `;
+    }).join('');
+  });
+</script>
+</body>
+</html>

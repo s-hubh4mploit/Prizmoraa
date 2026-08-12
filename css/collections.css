@@ -1,0 +1,115 @@
+/* Collections Page & Product Cards */
+.collections-page { padding: 120px 0; min-height: 80vh; }
+.header-wrap { text-align: center; max-width: 600px; margin-bottom: 60px; }
+.header-wrap h1 { font-size: clamp(36px, 5vw, 54px); margin-bottom: 16px; }
+.header-wrap p { color: var(--espresso-soft); font-size: 17px; }
+
+.col-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+.col-grid > *:first-child { grid-column: 1 / -1; }
+
+.col-card {
+  display: block; position: relative; border-radius: 4px; overflow: hidden;
+  background: var(--ivory-deep); border: 1px solid rgba(58,42,29,0.06);
+}
+.col-card .img-wrap { width: 100%; height: 350px; overflow: hidden; position: relative; }
+.col-card:first-child .img-wrap { height: 480px; }
+.col-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
+.col-card:hover img { transform: scale(1.05); }
+
+.col-info {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 40px; background: linear-gradient(to top, rgba(35,24,15,0.78) 0%, rgba(35,24,15,0.2) 60%, transparent 100%);
+  color: var(--ivory);
+}
+.col-info h2 { color: var(--gold-shimmer); margin-bottom: 8px; font-size: 28px; }
+.col-info span { font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: #E9DCC7; }
+
+/* Dynamic Collection Page & Product Cards */
+.product-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 36px;
+}
+.prod-card {
+  display: flex; flex-direction: column; text-align: left; text-decoration: none;
+  color: var(--espresso); transition: transform .35s ease, box-shadow .35s ease;
+  background: var(--ivory); border-radius: 6px; padding: 16px;
+  border: 1px solid rgba(58,42,29,0.08); position: relative; overflow: hidden;
+}
+.prod-card:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(58,42,29,0.1); }
+
+.prod-card .img-wrap {
+  width: 100%; aspect-ratio: 1/1; overflow: hidden; border-radius: 4px;
+  margin-bottom: 16px; background: var(--ivory-deep); position: relative;
+}
+.prod-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(0.16, 1, 0.3, 1), opacity .4s ease; }
+.prod-card .img-wrap img.hover-pic {
+  position: absolute; inset: 0; opacity: 0;
+}
+.prod-card:hover .img-wrap img.main-pic { transform: scale(1.06); }
+.prod-card:hover .img-wrap img.hover-pic { opacity: 1; transform: scale(1.06); }
+
+/* Universal Image Hover Overlay Card for Jewellery Description */
+.hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(20, 14, 8, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  transform: translateY(8px);
+  z-index: 10;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.prod-card:hover .hover-overlay,
+.duette-card:hover .hover-overlay,
+.col-card:hover .hover-overlay {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.hover-overlay .hover-desc {
+  color: #FBF7F1;
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin: 0 0 10px 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 54px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.hover-overlay .hover-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-shimmer);
+  font-weight: 500;
+}
+
+.prod-card .sub-badge {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 6px; font-weight: 500;
+}
+.prod-card h3 { font-size: 20px; font-family: var(--font-serif); margin-bottom: 6px; font-weight: 500; color: var(--espresso); }
+.prod-card .price { color: var(--espresso-soft); font-size: 16px; font-weight: 500; font-family: var(--font-serif); }
+
+@media (max-width: 768px) {
+  .col-grid { grid-template-columns: 1fr; }
+  .col-card .img-wrap { height: 300px; }
+  .col-card:first-child .img-wrap { height: 400px; }
+}

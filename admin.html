@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIZMORAA — Inventory Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/design-system.css">
+<link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+
+<!-- Security Login Overlay -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <h1 class="logotype">PRIZMORAA</h1>
+    <p>Admin Portal Access</p>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="adminUsername">Username</label>
+        <input type="text" id="adminUsername" value="admin" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" value="Prizmoraa2026" required autocomplete="current-password">
+      </div>
+      <p id="loginError" class="error-msg"></p>
+      <button type="submit" class="btn" style="width:100%; margin-bottom: 10px;">Login to Admin Portal</button>
+      <button type="button" id="quickFillBtn" class="btn btn-ghost" style="width:100%; font-size:12px;">Auto-Fill Admin Credentials</button>
+    </form>
+    <p class="security-note">Default login: <strong>admin</strong> / <strong>Prizmoraa2026</strong></p>
+  </div>
+</div>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logotype">PRIZMORAA</span>
+      <span class="sub-logo">Inventory Management</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="dashboard">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" data-view="inventory">
+        <span class="icon">💍</span> Inventory
+      </a>
+    </nav>
+    
+    <div class="sidebar-shortcuts">
+      <h4>Shortcuts</h4>
+      <ul>
+        <li>Ctrl+1-2 <span class="action">Navigate</span></li>
+        <li>Ctrl+N <span class="action">New Item</span></li>
+        <li>F5 <span class="action">Refresh</span></li>
+        <li>Esc <span class="action">Cancel/Back</span></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-footer">
+      <button id="logoutBtn" class="logout-btn">Log Out</button>
+      <p>© 2026 PRIZMORAA</p>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Top Header -->
+    <header class="main-header">
+      <div class="breadcrumbs">
+        <span class="icon">🏠</span> <span id="currentViewTitle">Dashboard</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-sm" id="btnNewItem">+ Add Item</button>
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" id="globalSearch" placeholder="Search inventory...">
+        </div>
+      </div>
+    </header>
+
+    <!-- Views Container -->
+    <div class="view-container">
+      
+      <!-- Dashboard View -->
+      <div id="view-dashboard" class="view active">
+        <div class="stats-row">
+          <div class="stat-card">
+            <h4>Total Products</h4>
+            <div class="value" id="statTotalItems">39</div>
+          </div>
+          <div class="stat-card">
+            <h4>Total Categories</h4>
+            <div class="value" id="statTotalCats">4</div>
+          </div>
+          <div class="stat-card">
+            <h4>Active Items</h4>
+            <div class="value" id="statInStock">39</div>
+          </div>
+          <div class="stat-card highlight">
+            <h4>Signature Edit</h4>
+            <div class="value">Duette</div>
+          </div>
+        </div>
+        
+        <div class="charts-row">
+          <div class="chart-card large">
+            <h3>Inventory Distribution</h3>
+            <div class="mock-chart bar-chart">
+               <div class="bar-group"><div class="bar" style="height: 40%"></div><span>Earrings (16)</span></div>
+               <div class="bar-group"><div class="bar" style="height: 30%"></div><span>Bracelets (11)</span></div>
+               <div class="bar-group"><div class="bar" style="height: 20%"></div><span>Necklaces (8)</span></div>
+               <div class="bar-group"><div class="bar" style="height: 10%; background: var(--gold)"></div><span>Duette (4)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory View -->
+      <div id="view-inventory" class="view">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Price (INR)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="table-footer">
+          <button class="btn btn-outline" id="btnExport">Export JSON</button>
+          <button class="btn btn-outline" id="btnResetCatalog" style="margin-left:auto; border-color:#d32f2f; color:#d32f2f;">Reset Catalog with Images</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="itemModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Item</h2>
+      <button class="close-btn" id="closeModal">×</button>
+    </div>
+    <form id="itemForm">
+      <input type="hidden" id="itemId">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Item Name</label>
+          <input type="text" id="itemName" required>
+        </div>
+        <div class="input-group">
+          <label>Price (INR)</label>
+          <input type="number" id="itemPrice" min="0" required>
+        </div>
+        <div class="input-group">
+          <label>Category</label>
+          <select id="itemCategory" required>
+            <option value="earrings">Earrings</option>
+            <option value="bracelets">Bracelets</option>
+            <option value="necklaces">Necklaces</option>
+            <option value="duette">Duette</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Sub-Category</label>
+          <input type="text" id="itemSubCategory">
+        </div>
+        <div class="input-group full-width">
+          <label>Image Path (e.g. images/PRIZMORA/EARINGS/...)</label>
+          <input type="text" id="itemImage" placeholder="images/hero.jpg">
+        </div>
+        <div class="input-group full-width">
+          <label>Upload Image(s)</label>
+          <input type="file" id="itemImageFile" accept="image/jpeg, image/png, image/webp, image/gif" multiple>
+          <div id="imagePreview" class="image-preview"></div>
+          <small class="field-note">Accepted: JPEG, PNG, WEBP, GIF. Selected files are stored in the admin (no code changes needed).</small>
+        </div>
+        <div class="input-group full-width">
+          <label>Description</label>
+          <textarea id="itemDesc" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelModal">Cancel</button>
+        <button type="submit" class="btn">Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="./js/products.js"></script>
+<script src="./js/admin.js"></script>
+</body>
+</html>
