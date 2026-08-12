@@ -12,12 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const links = document.querySelector('.nav-links');
   if (toggle && links) {
     toggle.addEventListener('click', () => {
-      links.classList.toggle('open');
+      const isOpen = links.classList.toggle('open');
+      toggle.classList.toggle('active', isOpen);
+      toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Menu');
+      document.body.classList.toggle('nav-open', isOpen);
   });
 
     document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', () => {
       links.classList.remove('open');
+      toggle.classList.remove('active');
+      document.body.classList.remove('nav-open');
     });
   });
 }
