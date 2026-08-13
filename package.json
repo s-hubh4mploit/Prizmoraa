@@ -9,6 +9,9 @@
     "postbuild": "node scripts/copy-images.js",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "razorpay": "^2.9.4"
+  },
   "devDependencies": {
     "vite": "^5.0.0"
   }
