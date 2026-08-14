@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const links = document.querySelector('.nav-links');
   if (toggle && links) {
     toggle.addEventListener('click', () => {
-      const isOpen = links.classList.toggle('open');
+      const isOpen = links.cla1ssList.toggle('open');
       toggle.classList.toggle('active', isOpen);
       toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Menu');
       document.body.classList.toggle('nav-open', isOpen);

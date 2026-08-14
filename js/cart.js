@@ -5,7 +5,7 @@ const WISHLIST_KEY = 'prizmoraa_wishlist_v1';
 const PROFILE_KEY = 'prizmoraa_profile_v1';
 
 // TODO: replace with your WhatsApp Business number — country code + number, digits only, no + or spaces
-const WHATSAPP_NUMBER = '91XXXXXXXXXX';
+const WHATSAPP_NUMBER = '918591262779';
 
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = (sel, root = document) => root.querySelector(sel);

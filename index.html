@@ -12,235 +12,258 @@
 <link rel="stylesheet" href="./css/animations.css">
 <link rel="stylesheet" href="./css/collections.css">
 <link rel="stylesheet" href="./css/home.css">
+<link rel="stylesheet" href="./css/cart.css">
 </head>
 <body>
 
 <header class="nav" id="siteNav">
-  <div class="nav-inner">
-    <a href="#top" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
-    <ul class="nav-links">
-      <li><a href="collection.html?cat=duette">Duette</a></li>
-      <li><a href="collections.html">Collections</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-    <button class="nav-toggle" id="navToggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
+<div class="nav-inner">
+<a href="#top" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
+<ul class="nav-links">
+<li><a href="collection.html?cat=duette">Duette</a></li>
+<li><a href="collections.html">Collections</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+<div class="nav-icons">
+  <button class="icon-btn" id="searchToggleBtn" aria-label="Search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <button class="icon-btn" id="accountToggleBtn" aria-label="Account">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </button>
+  <button class="icon-btn" id="wishlistToggleBtn" aria-label="Wishlist">
+    <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <span class="icon-badge" id="wishlistCount">0</span>
+  </button>
+  <button class="icon-btn" id="cartToggleBtn" aria-label="Cart">
+    <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="icon-badge" id="cartCount">0</span>
+  </button>
+</div>
+<button class="nav-toggle" id="navToggle" aria-label="Menu">
+<span></span><span></span><span></span>
+</button>
+</div>
 </header>
 
 <section class="hero" id="top">
-  <div class="hero-inner">
-    <div class="hero-copy">
-      <span class="eyebrow">Premium Fashion Jewellery</span>
-      <h1>PRIZMORAA</h1>
-      <p class="hero-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance — a place for radiant beauty and colourful sparkle.</p>
-      <div class="hero-actions">
-        <a href="collection.html?cat=duette" class="btn">Discover the Duette Collection</a>
-        <a href="collections.html" class="btn-ghost">View Collections</a>
-      </div>
-    </div>
-    <div class="hero-media">
-      <img src="images/hero.jpg" alt="PRIZMORAA jewellery, catching the light">
-    </div>
-  </div>
+<div class="hero-inner">
+<div class="hero-copy">
+<span class="eyebrow">Premium Fashion Jewellery</span>
+<h1>PRIZMORAA</h1>
+<p class="hero-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance — a place for radiant beauty and colourful sparkle.</p>
+<div class="hero-actions">
+<a href="collection.html?cat=duette" class="btn">Discover the Duette Collection</a>
+<a href="collections.html" class="btn-ghost">View Collections</a>
+</div>
+</div>
+<div class="hero-media">
+<img src="images/hero.jpg" alt="PRIZMORAA jewellery, catching the light">
+</div>
+</div>
 </section>
 
 <section class="story" id="story">
-  <div class="wrap reveal">
-    <blockquote>
-      <span class="line">Every woman has a story —</span>
-      <span class="line">a story of strength, of grace, of becoming.</span>
-    </blockquote>
-    <p class="story-p">
-      PRIZMORAA was born for the moments that don't need permission to shine — where timeless elegance meets everyday confidence. Every piece is thoughtfully chosen. Every detail is made to be remembered. Because luxury isn't about being loud. It's about how you feel when you wear it.
-    </p>
-    <span class="story-sign">This is more than fashion. This is your statement.</span>
-  </div>
+<div class="wrap reveal">
+<blockquote>
+<span class="line">Every woman has a story —</span>
+<span class="line">a story of strength, of grace, of becoming.</span>
+</blockquote>
+<p class="story-p">
+PRIZMORAA was born for the moments that don't need permission to shine — where timeless elegance meets everyday confidence. Every piece is thoughtfully chosen. Every detail is made to be remembered. Because luxury isn't about being loud. It's about how you feel when you wear it.
+</p>
+<span class="story-sign">This is more than fashion. This is your statement.</span>
+</div>
 </section>
 
 <section class="duette" id="duette">
-  <div class="wrap">
-    <div class="duette-intro reveal">
-      <div>
-        <span class="eyebrow">Signature Collection</span>
-        <h2>The Duette Collection</h2>
-      </div>
-      <div>
-        <p>Two piercings, one elegant statement. Thoughtfully designed to connect your upper and lower lobe with a delicate chain, creating an effortlessly layered look — made just for you.</p>
-        <div class="link-motif" aria-hidden="true">
-          <div class="dot filled"></div>
-          <div class="chain"></div>
-          <div class="dot"></div>
-        </div>
-      </div>
-    </div>
-
-      <div class="duette-grid reveal" id="duetteHomeGrid">
-      <!-- Populated dynamically with real products & images -->
-    </div>
-  </div>
+<div class="wrap">
+<div class="duette-intro reveal">
+<div>
+<span class="eyebrow">Signature Collection</span>
+<h2>The Duette Collection</h2>
+</div>
+<div>
+<p>Two piercings, one elegant statement. Thoughtfully designed to connect your upper and lower lobe with a delicate chain, creating an effortlessly layered look — made just for you.</p>
+<div class="link-motif" aria-hidden="true">
+<div class="dot filled"></div>
+<div class="chain"></div>
+<div class="dot"></div>
+</div>
+</div>
+</div>
+<div class="duette-grid reveal" id="duetteHomeGrid">
+<!-- Populated dynamically with real products & images -->
+</div>
+</div>
 </section>
 
 <section class="featured" id="featured">
-  <div class="wrap">
-    <div class="featured-head reveal">
-      <span class="eyebrow">Handpicked Bestsellers</span>
-      <h2>Featured Pieces</h2>
-      <p>Discover our most loved designs crafted with 18k gold polish and radiant cubic zirconia.</p>
-    </div>
-    <div class="product-grid reveal" id="featuredHomeGrid">
-      <!-- Populated dynamically via JS -->
-    </div>
-  </div>
+<div class="wrap">
+<div class="featured-head reveal">
+<span class="eyebrow">Handpicked Bestsellers</span>
+<h2>Featured Pieces</h2>
+<p>Discover our most loved designs crafted with 18k gold polish and radiant cubic zirconia.</p>
+</div>
+<div class="product-grid reveal" id="featuredHomeGrid">
+<!-- Populated dynamically via JS -->
+</div>
+</div>
 </section>
 
 <section class="collections" id="collections">
-  <div class="wrap">
-    <div class="collections-head reveal">
-      <span class="eyebrow">The Collection</span>
-      <h2>Explore by Category</h2>
-    </div>
-    <div class="cat-grid reveal" id="catHomeGrid">
-      <!-- Populated dynamically with real category thumbnails -->
-    </div>
-  </div>
+<div class="wrap">
+<div class="collections-head reveal">
+<span class="eyebrow">The Collection</span>
+<h2>Explore by Category</h2>
+</div>
+<div class="cat-grid reveal" id="catHomeGrid">
+<!-- Populated dynamically with real category thumbnails -->
+</div>
+</div>
 </section>
 
-
-
-
 <section class="cta" id="contact">
-  <div class="wrap reveal">
-    <span class="eyebrow">Join Us</span>
-    <h2>Let's build this dream together.</h2>
-    <p>Be the first to know when new Duette designs and edits drop — no noise, just the pieces worth waiting for.</p>
-    <form class="cta-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thank you';">
-      <input type="email" placeholder="Your email address" required>
-      <button type="submit">Notify Me</button>
-    </form>
-  </div>
+<div class="wrap reveal">
+<span class="eyebrow">Join Us</span>
+<h2>Let's build this dream together.</h2>
+<p>Be the first to know when new Duette designs and edits drop — no noise, just the pieces worth waiting for.</p>
+<form class="cta-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thank you';">
+<input type="email" placeholder="Your email address" required>
+<button type="submit">Notify Me</button>
+</form>
+</div>
 </section>
 
 <footer>
-  <div class="wrap">
-    <div class="footer-top">
-      <div>
-        <span class="logotype">PRIZMORAA</span>
-        <p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Explore</h4>
-        <a href="collection.html?cat=duette">Duette</a>
-        <a href="collections.html">Collections</a>
-      </div>
-      <div class="footer-col">
-        <h4>Info</h4>
-
-        <a href="contact.html">Contact</a>
-      </div>
-      <div class="footer-col">
-        <h4>Follow</h4>
-        <a href="#">Instagram</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 PRIZMORAA. All rights reserved.</span>
-      <span>Made with care</span>
-    </div>
-  </div>
+<div class="wrap">
+<div class="footer-top">
+<div>
+<span class="logotype">PRIZMORAA</span>
+<p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
+</div>
+<div class="footer-col">
+<h4>Explore</h4>
+<a href="collection.html?cat=duette">Duette</a>
+<a href="collections.html">Collections</a>
+</div>
+<div class="footer-col">
+<h4>Info</h4>
+<a href="contact.html">Contact</a>
+</div>
+<div class="footer-col">
+<h4>Follow</h4>
+<a href="#">Instagram</a>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 PRIZMORAA. All rights reserved.</span>
+<span>Made with care</span>
+</div>
+</div>
 </footer>
 
 <script type="module" src="./js/products.js"></script>
 <script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/cart.js"></script>
 <script type="module">
-  document.addEventListener('DOMContentLoaded', async () => {
-    const { getProducts, getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
+document.addEventListener('DOMContentLoaded', async () => {
+const { getProducts, getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
 
-    // Populate Duette Grid
-    const duetteProds = await getProductsByCategory('duette');
-    const duetteGrid = document.getElementById('duetteHomeGrid');
-    if (duetteGrid && duetteProds.length > 0) {
-      duetteGrid.innerHTML = duetteProds.map(p => {
-        const hoverText = p.category && p.category.toLowerCase() === 'duette' ? 'Signature double-piercing pieces connected by a delicate chain.' : p.desc;
-        return `
-        <a href="product.html?id=${p.id}" class="duette-card">
-          <div class="img-wrap">
-            <img src="${encodeURI(p.image)}" alt="${p.name}">
-            <div class="hover-overlay">
-              <p class="hover-desc">${hoverText}</p>
-              <span class="hover-btn">View Details →</span>
-            </div>
-          </div>
-          <h3>${p.name}</h3>
-          <p class="card-desc">${p.desc}</p>
-          <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
-        </a>
-      `}).join('');
-    }
+// Populate Duette Grid
+const duetteProds = await getProductsByCategory('duette');
+const duetteGrid = document.getElementById('duetteHomeGrid');
+if (duetteGrid && duetteProds.length > 0) {
+duetteGrid.innerHTML = duetteProds.map(p => {
+const hoverText = p.category && p.category.toLowerCase() === 'duette' ? 'Signature double-piercing pieces connected by a delicate chain.' : p.desc;
+return `
+<a href="product.html?id=${p.id}" class="duette-card">
+<div class="img-wrap">
+<img src="${encodeURI(p.image)}" alt="${p.name}">
+<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
+<div class="hover-overlay">
+<p class="hover-desc">${hoverText}</p>
+<span class="hover-btn">View Details →</span>
+</div>
+</div>
+<h3>${p.name}</h3>
+<p class="card-desc">${p.desc}</p>
+<div class="card-bottom-row">
+<span class="price">₹${p.price.toLocaleString('en-IN')}</span>
+<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>
+</div>
+</a>
+`}).join('');
+}
 
-    // Populate Featured Bestsellers Grid
-    const allProducts = await getProducts();
-    const featuredItems = allProducts.filter(p => p.category !== 'duette').slice(0, 4);
-    const featuredGrid = document.getElementById('featuredHomeGrid');
-    if (featuredGrid && featuredItems.length > 0) {
-      featuredGrid.innerHTML = featuredItems.map(p => {
-        const noHoverSwap = ['duette-amora-heart', 'duette-aurelia-hoop', 'duette-celeste-moon', 'duette-bella-clover'];
-        const hasSecondary = p.images && p.images.length > 1 && !noHoverSwap.includes(p.id);
-        const secondaryImg = hasSecondary ? p.images[1] : p.image;
-        return `
-          <a href="product.html?id=${p.id}" class="prod-card">
-            <div class="img-wrap">
-              <img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}">
-              ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
-              <div class="hover-overlay">
-                <p class="hover-desc">${p.desc}</p>
-                <span class="hover-btn">View Details →</span>
-              </div>
-            </div>
-            <span class="sub-badge">${p.subcategory || p.category}</span>
-            <h3>${p.name}</h3>
-            <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
-          </a>
-        `;
-      }).join('');
-    }
+// Populate Featured Bestsellers Grid
+const allProducts = await getProducts();
+const featuredItems = allProducts.filter(p => p.category !== 'duette').slice(0, 4);
+const featuredGrid = document.getElementById('featuredHomeGrid');
+if (featuredGrid && featuredItems.length > 0) {
+featuredGrid.innerHTML = featuredItems.map(p => {
+const noHoverSwap = ['duette-amora-heart', 'duette-aurelia-hoop', 'duette-celeste-moon', 'duette-bella-clover'];
+const hasSecondary = p.images && p.images.length > 1 && !noHoverSwap.includes(p.id);
+const secondaryImg = hasSecondary ? p.images[1] : p.image;
+return `
+<a href="product.html?id=${p.id}" class="prod-card">
+<div class="img-wrap">
+<img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}">
+${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
+<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
+<div class="hover-overlay">
+<p class="hover-desc">${p.desc}</p>
+<span class="hover-btn">View Details →</span>
+</div>
+</div>
+<span class="sub-badge">${p.subcategory || p.category}</span>
+<h3>${p.name}</h3>
+<div class="card-bottom-row">
+<span class="price">₹${p.price.toLocaleString('en-IN')}</span>
+<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>
+</div>
+</a>
+`;
+}).join('');
+}
 
-    // Populate Category Cards Grid
-    const catGrid = document.getElementById('catHomeGrid');
-    const categories = await getAllCategories();
-
-    const catMeta = {
-      'duette': { title: 'Duette Signature', count: 'Dual-Piercing Connected Chains' },
-      'earrings': { title: 'Earrings', count: 'Studs, Hoops & Drops' },
-      'bracelets': { title: 'Bracelets', count: 'Bangles & Charms' },
-      'necklaces': { title: 'Necklaces', count: 'Layered & Pendants' }
-    };
-
-    if (catGrid) {
-      const catBlocks = await Promise.all(categories.map(async (cat) => {
-        const prods = await getProductsByCategory(cat);
-        const img = prods.length > 0 ? prods[0].image : 'images/hero.jpg';
-        const encodedImg = encodeURI(img);
-        const meta = catMeta[cat] || {
-          title: cat.split(/[-_\s]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-          count: 'Explore pieces in this collection'
-        };
-        const countText = prods.length > 0 ? `${prods.length} Designs · ${meta.count}` : meta.count;
-        return `
-          <a href="collection.html?cat=${encodeURIComponent(cat)}" class="cat-card">
-            <div class="img-wrap">
-              <img src="${encodedImg}" alt="${meta.title}">
-            </div>
-            <h3>${meta.title}</h3>
-            <span class="cat-count">${countText}</span>
-            <span class="cat-more">Shop Collection →</span>
-          </a>
-        `;
-      }));
-      catGrid.innerHTML = catBlocks.join('');
-    }
-  });
+// Populate Category Cards Grid
+const catGrid = document.getElementById('catHomeGrid');
+const categories = await getAllCategories();
+const catMeta = {
+'duette': { title: 'Duette Signature', count: 'Dual-Piercing Connected Chains' },
+'earrings': { title: 'Earrings', count: 'Studs, Hoops & Drops' },
+'bracelets': { title: 'Bracelets', count: 'Bangles & Charms' },
+'necklaces': { title: 'Necklaces', count: 'Layered & Pendants' }
+};
+if (catGrid) {
+const catBlocks = await Promise.all(categories.map(async (cat) => {
+const prods = await getProductsByCategory(cat);
+const img = prods.length > 0 ? prods[0].image : 'images/hero.jpg';
+const encodedImg = encodeURI(img);
+const meta = catMeta[cat] || {
+title: cat.split(/[-_\s]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+count: 'Explore pieces in this collection'
+};
+const countText = prods.length > 0 ? `${prods.length} Designs · ${meta.count}` : meta.count;
+return `
+<a href="collection.html?cat=${encodeURIComponent(cat)}" class="cat-card">
+<div class="img-wrap">
+<img src="${encodedImg}" alt="${meta.title}">
+</div>
+<h3>${meta.title}</h3>
+<span class="cat-count">${countText}</span>
+<span class="cat-more">Shop Collection →</span>
+</a>
+`;
+}));
+catGrid.innerHTML = catBlocks.join('');
+}
+});
 </script>
 </body>
 </html>

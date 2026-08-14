@@ -8,176 +8,187 @@
 <link rel="stylesheet" href="./css/design-system.css">
 <link rel="stylesheet" href="./css/components.css">
 <link rel="stylesheet" href="./css/product.css">
+<link rel="stylesheet" href="./css/cart.css">
 </head>
 <body>
+
 <header class="nav" id="siteNav">
-  <div class="nav-inner">
-    <a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
-    <ul class="nav-links">
-      <li><a href="collection.html?cat=duette">Duette</a></li>
-      <li><a href="collections.html">Collections</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </div>
+<div class="nav-inner">
+<a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
+<ul class="nav-links">
+<li><a href="collection.html?cat=duette">Duette</a></li>
+<li><a href="collections.html">Collections</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+<div class="nav-icons">
+  <button class="icon-btn" id="searchToggleBtn" aria-label="Search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <button class="icon-btn" id="accountToggleBtn" aria-label="Account">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </button>
+  <button class="icon-btn" id="wishlistToggleBtn" aria-label="Wishlist">
+    <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <span class="icon-badge" id="wishlistCount">0</span>
+  </button>
+  <button class="icon-btn" id="cartToggleBtn" aria-label="Cart">
+    <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="icon-badge" id="cartCount">0</span>
+  </button>
+</div>
+</div>
 </header>
 
 <main class="product-page">
-  <div class="wrap">
-    <div class="prod-layout" id="prodContainer">
-      <!-- Injected via JS -->
-      <p style="padding: 100px 0; text-align: center;">Loading luxury product details...</p>
-    </div>
-  </div>
+<div class="wrap">
+<div class="prod-layout" id="prodContainer">
+<!-- Injected via JS -->
+<p style="padding: 100px 0; text-align: center;">Loading luxury product details...</p>
+</div>
+</div>
 </main>
 
 <footer>
-  <div class="wrap">
-    <div class="footer-top">
-      <div>
-        <span class="logotype">PRIZMORAA</span>
-        <p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Explore</h4>
-        <a href="collection.html?cat=duette">Duette</a>
-        <a href="collections.html">Collections</a>
-      </div>
-      <div class="footer-col">
-        <h4>Info</h4>
-
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 PRIZMORAA. All rights reserved.</span>
-      <span>Made with care</span>
-    </div>
-  </div>
+<div class="wrap">
+<div class="footer-top">
+<div>
+<span class="logotype">PRIZMORAA</span>
+<p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
+</div>
+<div class="footer-col">
+<h4>Explore</h4>
+<a href="collection.html?cat=duette">Duette</a>
+<a href="collections.html">Collections</a>
+</div>
+<div class="footer-col">
+<h4>Info</h4>
+<a href="contact.html">Contact</a>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 PRIZMORAA. All rights reserved.</span>
+<span>Made with care</span>
+</div>
+</div>
 </footer>
 
 <script type="module" src="./js/products.js"></script>
 <script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/cart.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    const { getProductById } = window.PrizmoraaProducts;
-    
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const product = await getProductById(id);
-    const container = document.getElementById('prodContainer');
-    
-    if (!product) {
-      container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding: 100px 0;">Product not found. <a href="collections.html" style="color:var(--gold); text-decoration:underline;">Return to collections</a></p>';
-      return;
-    }
-    
-    document.title = `PRIZMORAA — ${product.name}`;
-    
-    const productImages = (product.images && product.images.length > 0) ? product.images : [product.image || 'images/hero.jpg'];
-    const mainImgSrc = productImages[0];
+document.addEventListener('DOMContentLoaded', async () => {
+const { getProductById } = window.PrizmoraaProducts;
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+const product = await getProductById(id);
+const container = document.getElementById('prodContainer');
+if (!product) {
+container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding: 100px 0;">Product not found. <a href="collections.html" style="color:var(--gold); text-decoration:underline;">Return to collections</a></p>';
+return;
+}
+document.title = `PRIZMORAA — ${product.name}`;
+const productImages = (product.images && product.images.length > 0) ? product.images : [product.image || 'images/hero.jpg'];
+const mainImgSrc = productImages[0];
+const thumbsHtml = productImages.length > 1 ? `
+<div class="prod-thumbs">
+${productImages.map((img, idx) => `
+<button class="thumb-btn ${idx === 0 ? 'active' : ''}" data-src="${encodeURI(img)}" aria-label="View photo ${idx + 1}">
+<img src="${encodeURI(img)}" alt="${product.name} view ${idx + 1}">
+</button>
+`).join('')}
+</div>
+` : '';
 
-    const thumbsHtml = productImages.length > 1 ? `
-      <div class="prod-thumbs">
-        ${productImages.map((img, idx) => `
-          <button class="thumb-btn ${idx === 0 ? 'active' : ''}" data-src="${encodeURI(img)}" aria-label="View photo ${idx + 1}">
-            <img src="${encodeURI(img)}" alt="${product.name} view ${idx + 1}">
-          </button>
-        `).join('')}
-      </div>
-    ` : '';
-    
-    const waText = encodeURIComponent(`Hi Sayali! I would like to order/enquire about the ${product.name} (Item Code: ${product.id}). Could you please share availability and ordering details?`);
+const waText = encodeURIComponent(`Hi Sayali! I would like to order/enquire about the ${product.name} (Item Code: ${product.id}). Could you please share availability and ordering details?`);
 
-    container.innerHTML = `
-      <div class="prod-gallery">
-        <div class="prod-main-img">
-          <img id="mainProductImg" src="${encodeURI(mainImgSrc)}" alt="${product.name}">
-        </div>
-        ${thumbsHtml}
-      </div>
-      <div class="prod-details">
-        <span class="eyebrow"><span class="dot"></span> PRIZMORAA SIGNATURE • ${product.category.toUpperCase()} • ${product.subcategory.toUpperCase()}</span>
-        <h1>${product.name}</h1>
-        
-        <div class="price-row">
-          <span class="prod-price">₹${product.price.toLocaleString('en-IN')}</span>
-          <span class="tax-tag">(Taxes Included · Free Express Shipping)</span>
-        </div>
+container.innerHTML = `
+<div class="prod-gallery">
+<div class="prod-main-img">
+<img id="mainProductImg" src="${encodeURI(mainImgSrc)}" alt="${product.name}">
+</div>
+${thumbsHtml}
+</div>
+<div class="prod-details">
+<span class="eyebrow"><span class="dot"></span> PRIZMORAA SIGNATURE • ${product.category.toUpperCase()} • ${product.subcategory.toUpperCase()}</span>
+<h1>${product.name}</h1>
+<div class="price-row">
+<span class="prod-price">₹${product.price.toLocaleString('en-IN')}</span>
+<span class="tax-tag">(Taxes Included · Free Express Shipping)</span>
+</div>
+<div class="prod-desc-box">
+<p>${product.desc}</p>
+</div>
+<div class="highlights-grid">
+<div class="highlight-chip">
+<span class="icon">✨</span>
+<span>18K Gold / Rhodium Plated</span>
+</div>
+<div class="highlight-chip">
+<span class="icon">💎</span>
+<span>AAA+ Cubic Zirconia / Pearls</span>
+</div>
+<div class="highlight-chip">
+<span class="icon">🌿</span>
+<span>Anti-Tarnish & Hypoallergenic</span>
+</div>
+</div>
+<div class="prod-actions">
+<button class="btn" id="addToBagBtn"
+  data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-image="${encodeURI(mainImgSrc)}"
+  onclick="window.PrizmoraaCart.addFromBtn(this)">
+  Add to Bag
+</button>
+<a href="https://wa.me/message/YOURNUMBER?text=${waText}" target="_blank" class="btn-whatsapp">
+<svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.762.459 3.48 1.332 5.001l-1.416 5.166 5.289-1.385c1.47.801 3.13 1.222 4.782 1.223h.004c5.505 0 9.987-4.479 9.988-9.985 0-2.667-1.037-5.175-2.923-7.061s-4.394-2.943-7.066-2.943zm5.727 14.195c-.244.688-1.201 1.265-1.688 1.344-.457.074-1.049.124-3.045-.699-2.548-1.052-4.185-3.649-4.312-3.818-.127-.169-1.03-1.371-1.03-2.615 0-1.244.653-1.855.885-2.103.232-.248.508-.31.677-.31.169 0 .339.002.487.009.157.007.368-.06.575.438.212.512.721 1.76.784 1.888.063.127.106.275.021.444-.085.169-.127.275-.254.423-.127.148-.266.331-.38.444-.127.127-.26.265-.112.518.148.254.657 1.082 1.409 1.751.968.862 1.785 1.13 2.039 1.257.254.127.402.106.55-.063.148-.169.635-.74.804-1.015.169-.275.339-.232.571-.148.232.085 1.482.698 1.736.825.254.127.423.19.487.296.063.106.063.614-.181 1.302z"/></svg>
+Enquire & Order via WhatsApp
+</a>
+</div>
+<div class="accordion">
+<div class="acc-item active">
+<button class="acc-header">Craftsmanship & Materials <span class="icon">▼</span></button>
+<div class="acc-content">
+<p>Every PRIZMORAA piece is thoughtfully chosen and crafted with high-grade anti-tarnish protective coating over 18k champagne gold or rhodium silver. Embellished with hand-set AAA+ cubic zirconia crystals for breathtaking brilliance.</p>
+</div>
+</div>
+<div class="acc-item">
+<button class="acc-header">Care Instructions <span class="icon">▼</span></button>
+<div class="acc-content">
+<p>To maintain your jewellery's original luster, store in a cool, dry place when not in use. Avoid direct contact with perfumes, hairsprays, and harsh chemicals.</p>
+</div>
+</div>
+<div class="acc-item">
+<button class="acc-header">Shipping <span class="icon">▼</span></button>
+<div class="acc-content">
+<p>We offer free insured shipping across India in 3-5 business days. Every order is carefully packed to ensure your jewellery arrives in perfect condition.</p>
+</div>
+</div>
+</div>
+</div>
+`;
 
-        <div class="prod-desc-box">
-          <p>${product.desc}</p>
-        </div>
-        
-        <div class="highlights-grid">
-          <div class="highlight-chip">
-            <span class="icon">✨</span>
-            <span>18K Gold / Rhodium Plated</span>
-          </div>
-          <div class="highlight-chip">
-            <span class="icon">💎</span>
-            <span>AAA+ Cubic Zirconia / Pearls</span>
-          </div>
-          <div class="highlight-chip">
-            <span class="icon">🌿</span>
-            <span>Anti-Tarnish & Hypoallergenic</span>
-          </div>
+// Gallery thumbnail switcher logic
+const mainImg = document.getElementById('mainProductImg');
+const thumbBtns = document.querySelectorAll('.thumb-btn');
+thumbBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+thumbBtns.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+const newSrc = btn.getAttribute('data-src');
+mainImg.style.opacity = '0.2';
+setTimeout(() => {
+mainImg.src = newSrc;
+mainImg.style.opacity = '1';
+}, 150);
+});
+});
 
-        </div>
-
-        <div class="prod-actions">
-          <a href="https://wa.me/message/YOURNUMBER?text=${waText}" target="_blank" class="btn-whatsapp">
-            <svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.762.459 3.48 1.332 5.001l-1.416 5.166 5.289-1.385c1.47.801 3.13 1.222 4.782 1.223h.004c5.505 0 9.987-4.479 9.988-9.985 0-2.667-1.037-5.175-2.923-7.061s-4.394-2.943-7.066-2.943zm5.727 14.195c-.244.688-1.201 1.265-1.688 1.344-.457.074-1.049.124-3.045-.699-2.548-1.052-4.185-3.649-4.312-3.818-.127-.169-1.03-1.371-1.03-2.615 0-1.244.653-1.855.885-2.103.232-.248.508-.31.677-.31.169 0 .339.002.487.009.157.007.368-.06.575.438.212.512.721 1.76.784 1.888.063.127.106.275.021.444-.085.169-.127.275-.254.423-.127.148-.266.331-.38.444-.127.127-.26.265-.112.518.148.254.657 1.082 1.409 1.751.968.862 1.785 1.13 2.039 1.257.254.127.402.106.55-.063.148-.169.635-.74.804-1.015.169-.275.339-.232.571-.148.232.085 1.482.698 1.736.825.254.127.423.19.487.296.063.106.063.614-.181 1.302z"/></svg>
-            Enquire & Order via WhatsApp
-          </a>
-        </div>
-        
-        <div class="accordion">
-          <div class="acc-item active">
-            <button class="acc-header">Craftsmanship & Materials <span class="icon">▼</span></button>
-            <div class="acc-content">
-              <p>Every PRIZMORAA piece is thoughtfully chosen and crafted with high-grade anti-tarnish protective coating over 18k champagne gold or rhodium silver. Embellished with hand-set AAA+ cubic zirconia crystals for breathtaking brilliance.</p>
-            </div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-header">Care Instructions <span class="icon">▼</span></button>
-            <div class="acc-content">
-              <p>To maintain your jewellery's original luster, store in a cool, dry place when not in use. Avoid direct contact with perfumes, hairsprays, and harsh chemicals.</p>
-            </div>
-          </div>
-          <div class="acc-item">
-            <button class="acc-header">Shipping <span class="icon">▼</span></button>
-            <div class="acc-content">
-              <p>We offer free insured shipping across India in 3-5 business days. Every order is carefully packed to ensure your jewellery arrives in perfect condition.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Gallery thumbnail switcher logic
-    const mainImg = document.getElementById('mainProductImg');
-    const thumbBtns = document.querySelectorAll('.thumb-btn');
-    
-    thumbBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        thumbBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const newSrc = btn.getAttribute('data-src');
-        mainImg.style.opacity = '0.2';
-        setTimeout(() => {
-          mainImg.src = newSrc;
-          mainImg.style.opacity = '1';
-        }, 150);
-      });
-    });
-
-    // Accordion Logic
-    document.querySelectorAll('.acc-header').forEach(btn => {
-      btn.addEventListener('click', function() {
-        this.parentElement.classList.toggle('active');
-      });
-    });
-  });
+// Accordion Logic
+document.querySelectorAll('.acc-header').forEach(btn => {
+btn.addEventListener('click', function() {
+this.parentElement.classList.toggle('active');
+});
+});
+});
 </script>
 </body>
 </html>

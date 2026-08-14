@@ -9,99 +9,112 @@
 <link rel="stylesheet" href="./css/components.css">
 <link rel="stylesheet" href="./css/animations.css">
 <link rel="stylesheet" href="./css/collections.css">
+<link rel="stylesheet" href="./css/cart.css">
 </head>
 <body>
 
 <header class="nav" id="siteNav">
-  <div class="nav-inner">
-    <a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
-    <ul class="nav-links">
-      <li><a href="collection.html?cat=duette">Duette</a></li>
-      <li><a href="collections.html">Collections</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </div>
+<div class="nav-inner">
+<a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
+<ul class="nav-links">
+<li><a href="collection.html?cat=duette">Duette</a></li>
+<li><a href="collections.html">Collections</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+<div class="nav-icons">
+  <button class="icon-btn" id="searchToggleBtn" aria-label="Search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <button class="icon-btn" id="accountToggleBtn" aria-label="Account">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </button>
+  <button class="icon-btn" id="wishlistToggleBtn" aria-label="Wishlist">
+    <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <span class="icon-badge" id="wishlistCount">0</span>
+  </button>
+  <button class="icon-btn" id="cartToggleBtn" aria-label="Cart">
+    <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="icon-badge" id="cartCount">0</span>
+  </button>
+</div>
+</div>
 </header>
 
 <main class="collections-page">
-  <div class="wrap header-wrap reveal">
-    <span class="eyebrow">Discover</span>
-    <h1>Our Collections</h1>
-    <p>Explore the full range of PRIZMORAA pieces, designed to celebrate the woman who wears them.</p>
-  </div>
+<div class="wrap header-wrap reveal">
+<span class="eyebrow">Discover</span>
+<h1>Our Collections</h1>
+<p>Explore the full range of PRIZMORAA pieces, designed to celebrate the woman who wears them.</p>
+</div>
 
-  <div class="wrap reveal">
-    <div class="col-grid" id="collectionsGrid">
-      <!-- Populated by JS -->
-      <p style="grid-column:1/-1; text-align:center;">Loading collections...</p>
-    </div>
-  </div>
+<div class="wrap reveal">
+<div class="col-grid" id="collectionsGrid">
+<!-- Populated by JS -->
+<p style="grid-column:1/-1; text-align:center;">Loading collections...</p>
+</div>
+</div>
 </main>
 
 <footer>
-  <div class="wrap">
-    <div class="footer-top">
-      <div>
-        <span class="logotype">PRIZMORAA</span>
-        <p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Explore</h4>
-        <a href="collection.html?cat=duette">Duette</a>
-        <a href="collections.html">Collections</a>
-      </div>
-      <div class="footer-col">
-        <h4>Info</h4>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 PRIZMORAA. All rights reserved.</span>
-      <span>Made with care</span>
-    </div>
-  </div>
+<div class="wrap">
+<div class="footer-top">
+<div>
+<span class="logotype">PRIZMORAA</span>
+<p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
+</div>
+<div class="footer-col">
+<h4>Explore</h4>
+<a href="collection.html?cat=duette">Duette</a>
+<a href="collections.html">Collections</a>
+</div>
+<div class="footer-col">
+<h4>Info</h4>
+<a href="contact.html">Contact</a>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 PRIZMORAA. All rights reserved.</span>
+<span>Made with care</span>
+</div>
+</div>
 </footer>
 
 <script type="module" src="./js/products.js"></script>
 <script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/cart.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    const { getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
-    
-    const categories = await getAllCategories();
-    const grid = document.getElementById('collectionsGrid');
-    
-    const catMeta = {
-      'duette': { title: 'The Duette Collection', sub: 'Signature dual-piercing connected designs' },
-      'earrings': { title: 'Earrings Collection', sub: 'Studs, Hoops, Drops & Huggies' },
-      'bracelets': { title: 'Bracelets & Bangles', sub: 'Bangles, Tennis & Charm Bracelets' },
-      'necklaces': { title: 'Necklaces & Pendants', sub: 'Layered, Pendants & Chokers' }
-    };
-    
-    const categoryBlocks = await Promise.all(categories.map(async (cat) => {
-      const meta = catMeta[cat] || { 
-        title: cat.split(/[-_\s]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '), 
-        sub: 'Explore pieces in this collection'
-      };
-      
-      const prods = await getProductsByCategory(cat);
-      const featuredImage = prods.length > 0 ? (prods[0].image || 'images/hero.jpg') : 'images/hero.jpg';
-      const encodedImage = encodeURI(featuredImage);
-      const count = prods.length;
+document.addEventListener('DOMContentLoaded', async () => {
+const { getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
+const categories = await getAllCategories();
+const grid = document.getElementById('collectionsGrid');
+const catMeta = {
+'duette': { title: 'The Duette Collection', sub: 'Signature dual-piercing connected designs' },
+'earrings': { title: 'Earrings Collection', sub: 'Studs, Hoops, Drops & Huggies' },
+'bracelets': { title: 'Bracelets & Bangles', sub: 'Bangles, Tennis & Charm Bracelets' },
+'necklaces': { title: 'Necklaces & Pendants', sub: 'Layered, Pendants & Chokers' }
+};
 
-      return `
-        <a href="collection.html?cat=${encodeURIComponent(cat)}" class="col-card">
-          <div class="img-wrap"><img src="${encodedImage}" alt="${meta.title}"></div>
-          <div class="col-info">
-            <h2>${meta.title}</h2>
-            <span>${meta.sub} • ${count} Designs</span>
-          </div>
-        </a>
-      `;
-    }));
-
-    grid.innerHTML = categoryBlocks.join('');
-  });
+const categoryBlocks = await Promise.all(categories.map(async (cat) => {
+const meta = catMeta[cat] || {
+title: cat.split(/[-_\s]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+sub: 'Explore pieces in this collection'
+};
+const prods = await getProductsByCategory(cat);
+const featuredImage = prods.length > 0 ? (prods[0].image || 'images/hero.jpg') : 'images/hero.jpg';
+const encodedImage = encodeURI(featuredImage);
+const count = prods.length;
+return `
+<a href="collection.html?cat=${encodeURIComponent(cat)}" class="col-card">
+<div class="img-wrap"><img src="${encodedImage}" alt="${meta.title}"></div>
+<div class="col-info">
+<h2>${meta.title}</h2>
+<span>${meta.sub} • ${count} Designs</span>
+</div>
+</a>
+`;
+}));
+grid.innerHTML = categoryBlocks.join('');
+});
 </script>
 </body>
 </html>
