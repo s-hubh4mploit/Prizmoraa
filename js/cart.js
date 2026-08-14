@@ -80,7 +80,7 @@ function injectShell() {
 
     <aside class="priz-panel" id="prizCartPanel" aria-hidden="true">
       <div class="priz-panel-head">
-        <h3>Your Bag</h3>
+        <h3>Your Cart</h3>
         <button class="priz-close" data-close>&times;</button>
       </div>
       <div class="priz-panel-body" id="cartItemsWrap"></div>
@@ -164,7 +164,7 @@ function renderCartDrawer() {
   if (!wrap) return;
   const cart = getCart();
   if (cart.length === 0) {
-    wrap.innerHTML = '<p class="priz-empty">Your bag is empty.</p>';
+    wrap.innerHTML = '<p class="priz-empty">Your cart is empty.</p>';
     foot.innerHTML = '';
     return;
   }
