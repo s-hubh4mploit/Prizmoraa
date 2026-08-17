@@ -194,6 +194,7 @@ body {
   display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;
   background: #e8f5e9; color: #2e7d32;
 }
+.status-badge.out-of-stock { background: #fdecea; color: #b3261e; }
 .table-footer { display: flex; gap: 10px; margin-top: 20px; }
 .action-links button { background: none; border: none; color: var(--gold); cursor: pointer; margin-right: 10px; font-family: var(--font-sans); }
 .action-links button.delete { color: #d32f2f; }

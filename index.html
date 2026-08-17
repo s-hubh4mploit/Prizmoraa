@@ -177,15 +177,19 @@ const allProducts = await getProducts();
 // Populate "Scroll To Explore" horizontal scroll strip with every product
 const scrollTrack = document.getElementById('shopScrollTrack');
 if (scrollTrack && allProducts.length > 0) {
-scrollTrack.innerHTML = allProducts.map(p => `
+scrollTrack.innerHTML = allProducts.map(p => {
+const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
+return `
 <a href="product.html?id=${p.id}" class="scroll-card">
 <div class="img-wrap">
 <img src="${encodeURI(p.image)}" alt="${p.name}" loading="lazy">
+${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
 </div>
 <h3>${p.name}</h3>
 <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
 </a>
-`).join('');
+`;
+}).join('');
 
 const scrollLeftBtn = document.getElementById('scrollLeftBtn');
 const scrollRightBtn = document.getElementById('scrollRightBtn');
@@ -199,11 +203,13 @@ if (featuredGrid && featuredItems.length > 0) {
 featuredGrid.innerHTML = featuredItems.map(p => {
 const hasSecondary = p.images && p.images.length > 1;
 const secondaryImg = hasSecondary ? p.images[1] : p.image;
+const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
 return `
 <a href="product.html?id=${p.id}" class="prod-card">
 <div class="img-wrap">
 <img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}">
 ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
+${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
 <button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
 <div class="hover-overlay">
@@ -215,8 +221,10 @@ ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="$
 <h3>${p.name}</h3>
 <div class="card-bottom-row">
 <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
-<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
-  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>
+${inStock
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
+  : `<span class="quick-add-btn disabled">Out of Stock</span>`}
 </div>
 </a>
 `;

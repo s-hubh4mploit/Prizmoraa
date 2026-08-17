@@ -137,6 +137,14 @@
   letter-spacing: 0.03em;
 }
 
+.stock-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; letter-spacing: 0.04em; font-weight: 500;
+  margin-top: -8px; margin-bottom: 24px;
+}
+.stock-status.in-stock { color: var(--sage); }
+.stock-status.out-of-stock { color: #b3261e; }
+
 /* Luxury Description Callout Box */
 .prod-desc-box {
   background: var(--ivory-deep);

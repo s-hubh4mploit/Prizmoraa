@@ -185,6 +185,8 @@ function renderTable(filterText = '') {
     const tr = document.createElement('tr');
     const imgSrc = item.image ? item.image : 'images/hero.jpg';
     const encodedImage = encodeURI(imgSrc);
+    const stock = Number.isFinite(item.stock) ? item.stock : 0;
+    const inStock = stock > 0;
     tr.innerHTML = `
       <td>#${sanitizeInput(item.id)}</td>
       <td><img src="${encodedImage}" alt="${sanitizeInput(item.name)}" style="width:44px; height:44px; object-fit:cover; border-radius:4px; border: 1px solid rgba(58,42,29,0.1);"></td>
@@ -192,7 +194,8 @@ function renderTable(filterText = '') {
       <td style="text-transform: capitalize;">${sanitizeInput(item.category)}</td>
       <td>${sanitizeInput(item.subcategory || '')}</td>
       <td>₹${sanitizeInput(item.price ? item.price.toLocaleString('en-IN') : '0')}</td>
-      <td><span class="status-badge">${sanitizeInput(item.status || 'Active')}</span></td>
+      <td>${stock}</td>
+      <td><span class="status-badge ${inStock ? '' : 'out-of-stock'}">${inStock ? 'In Stock' : 'Out of Stock'}</span></td>
       <td class="action-links">
         <button type="button" onclick="editItem('${item.id}')">Edit</button>
         <button type="button" class="delete" onclick="deleteItem('${item.id}')">Delete</button>
@@ -305,6 +308,7 @@ if (itemForm) {
     const price = parseInt(document.getElementById('itemPrice').value) || 0;
     const category = sanitizeInput(document.getElementById('itemCategory').value);
     const subcategory = sanitizeInput(document.getElementById('itemSubCategory').value);
+    const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
     const imageInput = sanitizeInput(document.getElementById('itemImage').value) || 'images/hero.jpg';
     const image = uploadedImageURLs.length ? uploadedImageURLs[0] : imageInput;
     const desc = sanitizeInput(document.getElementById('itemDesc').value);
@@ -313,7 +317,7 @@ if (itemForm) {
     const existingItem = inventory[existingIndex] || {};
     const images = uploadedImageURLs.length ? uploadedImageURLs : (existingItem.images ? existingItem.images : [image]);
 
-    const newItem = { id, name, price, category, subcategory, image, images, desc, status: 'Active' };
+    const newItem = { id, name, price, category, subcategory, stock, image, images, desc, status: 'Active' };
 
     if (existingIndex > -1) {
       inventory[existingIndex] = newItem;
@@ -354,6 +358,7 @@ window.editItem = function(id) {
     document.getElementById('itemPrice').value = item.price;
     document.getElementById('itemCategory').value = item.category;
     document.getElementById('itemSubCategory').value = item.subcategory || '';
+    document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;
     document.getElementById('itemImage').value = item.image || '';
     document.getElementById('itemDesc').value = item.desc || '';
     document.getElementById('modalTitle').textContent = 'Edit Item';

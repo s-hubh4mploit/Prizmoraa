@@ -76,6 +76,10 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   cursor: pointer;
 }
 .btn:hover { transform: translateY(-2px); background: var(--gold); }
+.btn:disabled {
+  background: var(--beige); color: var(--espresso-soft); cursor: not-allowed;
+}
+.btn:disabled:hover { transform: none; background: var(--beige); }
 .btn-ghost {
   color: var(--espresso);
   font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;

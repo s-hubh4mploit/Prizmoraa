@@ -111,11 +111,13 @@ const hasSecondary = p.images && p.images.length > 1;
 const secondaryImg = hasSecondary ? p.images[1] : p.image;
 let cleanDesc = (p.desc || '').replace(/^product description[:\s]*/i, '').trim();
 const imgSrc = p.image || 'images/hero.jpg';
+const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
 return `
 <a href="product.html?id=${p.id}" class="prod-card">
 <div class="img-wrap">
 <img class="main-pic" src="${encodeURI(imgSrc)}" alt="${p.name}" loading="lazy">
 ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name} detail view" loading="lazy">` : ''}
+${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
 <button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(imgSrc)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
 ${cleanDesc ? `<div class="hover-overlay">
@@ -127,8 +129,10 @@ ${cleanDesc ? `<div class="hover-overlay">
 <h3>${p.name}</h3>
 <div class="card-bottom-row">
 <span class="price">₹${p.price.toLocaleString('en-IN')}</span>
-<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(imgSrc)}"
-  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>
+${inStock
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(imgSrc)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
+  : `<span class="quick-add-btn disabled">Out of Stock</span>`}
 </div>
 </a>
 `;

@@ -107,6 +107,17 @@
 .prod-card h3 { font-size: 20px; font-family: var(--font-serif); margin-bottom: 6px; font-weight: 500; color: var(--espresso); }
 .prod-card .price { color: var(--espresso-soft); font-size: 16px; font-weight: 500; font-family: var(--font-serif); }
 
+.oos-badge {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  background: var(--espresso); color: var(--ivory);
+  font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+  padding: 5px 10px; border-radius: 2px;
+}
+.quick-add-btn.disabled {
+  border: 1px solid rgba(58, 42, 29, 0.2); background: transparent; color: var(--espresso-soft);
+  padding: 6px 12px; font-size: 12px; letter-spacing: .05em; border-radius: 2px; cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .col-grid { grid-template-columns: 1fr; }
   .col-card .img-wrap { height: 300px; }

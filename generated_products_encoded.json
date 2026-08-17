@@ -6,6 +6,7 @@
     "subcategory": "Chain Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Delicately linked with a romantic heart charm, the Amora Heart Bracelet captures timeless romance and graceful sparkle. Finished with an enduring 18k champagne gold polish.",
     "image": "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
     "images": [
@@ -20,6 +21,7 @@
     "subcategory": "Bangles",
     "price": 2999,
     "status": "Active",
+    "stock": 10,
     "desc": "Featuring precision-cut baguette cubic zirconia channel-set along a polished minimalist band, the Aurelia Baguette Bangle brings modern architectural glamour to your jewellery stack.",
     "image": "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
     "images": [
@@ -35,6 +37,7 @@
     "subcategory": "Chain Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Inspired by spring blossoms in bloom, this refined bracelet features delicate floral clusters interwoven with sparkling cubic zirconia crystals on a fluid chain.",
     "image": "images/prizmora/bracelets/bloom-grace-bracelet/f20787ec-0c58-4a65-92ee-a24b448cc387.jpg",
     "images": [
@@ -50,6 +53,7 @@
     "subcategory": "Chain Bracelets",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "Warm 18k gold plating forms delicate flower petals centered with brilliant-cut crystals, creating a feminine wrist accent that radiates warmth and elegance.",
     "image": "images/prizmora/bracelets/flora-spark-gold-bracelet/1d35afe5-a6de-445d-8faf-2a0c8d5931d0.jpg",
     "images": [
@@ -65,6 +69,7 @@
     "subcategory": "Chain Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Crafted in luminous rhodium silver finish, the Flora Spark Silver Bracelet delivers icy brilliance with hand-set crystal floral motifs.",
     "image": "images/prizmora/bracelets/flora-spark-silver-bracelet/0c3b44c2-04d3-4637-8ee7-1bd60fe5baf8.jpg",
     "images": [
@@ -80,6 +85,7 @@
     "subcategory": "Bangles",
     "price": 2999,
     "status": "Active",
+    "stock": 10,
     "desc": "A bold geometric statement. The Imperia Grid Bangle combines structured lattice metalwork with subtle crystal accents for a contemporary luxury feel.",
     "image": "images/prizmora/bracelets/imperia-grid-bangle/whatsapp-image-2026-07-22-at-10-35-22-pm.jpeg",
     "images": [
@@ -95,6 +101,7 @@
     "subcategory": "Chain Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Minimalist luxury at its finest. A single bezel-set solitaire crystal rests seamlessly on a delicate adjustable gold chain.",
     "image": "images/prizmora/bracelets/lumi-solitaire-bracelet/0b115038-33f7-4dfb-9db8-5d6971237baa.jpg",
     "images": [
@@ -110,6 +117,7 @@
     "subcategory": "Chain Bracelets",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "Interlocking mosaic shapes studded with micro-pave crystals capture and reflect light continuously around your wrist.",
     "image": "images/prizmora/bracelets/mosaic-spark-gold/49a31b8f-a342-4ea9-80fb-040ffe6baf25.jpg",
     "images": [
@@ -124,6 +132,7 @@
     "subcategory": "Chain Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Liquid silver finish meets brilliant crystal mosaic links, creating a stunning accent for evening events or chic everyday layering.",
     "image": "images/prizmora/bracelets/mosaic-spark-silver/66cf322b-2633-48f7-9d80-b0fe97b4095c.jpg",
     "images": [
@@ -138,6 +147,7 @@
     "subcategory": "Charm Bracelets",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "Iconic four-leaf clover motifs coated in radiant 18k yellow gold, offering timeless charm and effortless daily luxury.",
     "image": "images/prizmora/bracelets/serena-clover-gold/14fd9ce8-707c-4fd1-a9a0-89c2ef2f12e7.jpg",
     "images": [
@@ -153,6 +163,7 @@
     "subcategory": "Charm Bracelets",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Sleek silver clover silhouettes filled with luminous mother-of-pearl shimmer, finished with anti-tarnish protective coating.",
     "image": "images/prizmora/bracelets/serena-clover-silver/3e98439f-d857-4563-b662-ee612d8db5a3.jpg",
     "images": [
@@ -167,6 +178,7 @@
     "subcategory": "Stud Earrings",
     "price": 1699,
     "status": "Active",
+    "stock": 10,
     "desc": "Sweet and romantic. Petite heart studs studded with sparkling cubic zirconia crystals for an effortless touch of everyday glamour.",
     "image": "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-2.jpeg",
     "images": [
@@ -182,6 +194,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Classic princess-cut crystals line the front edge of these polished 18k gold hoops, adding instant radiance to any outfit.",
     "image": "images/prizmora/earings/aurelia-princess-hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
     "images": [
@@ -197,6 +210,7 @@
     "subcategory": "Statement Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Playful geometric symmetry. Dynamic pinwheel crystal studs designed to catch the light with subtle kinetic sparkle.",
     "image": "images/prizmora/earings/aurora-pinwheel/0493450c-8f06-4801-8871-cb8499a805e6.jpeg",
     "images": [
@@ -212,6 +226,7 @@
     "subcategory": "Stud Earrings",
     "price": 1699,
     "status": "Active",
+    "stock": 10,
     "desc": "Charming bow motifs crafted with fine pave detailing. A feminine and whimsical addition to your earring collection.",
     "image": "images/prizmora/earings/bella-bow-studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
     "images": [
@@ -227,6 +242,7 @@
     "subcategory": "Drop Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Cascading dual-drop earrings featuring celestial starbursts and brilliant solitaire stones that sway elegantly.",
     "image": "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
     "images": [
@@ -242,6 +258,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "Deep emerald-green glass crystals set in rich gold huggie hoops, echoing royal vintage sophistication.",
     "image": "images/prizmora/earings/emerald-royal-huggies/dcab8ee4-7dd7-4be1-9b0e-a865a3a8b423.jpg",
     "images": [
@@ -256,6 +273,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Symbolizing eternal beauty and connection, these smooth infinity knot huggies hug your earlobes seamlessly.",
     "image": "images/prizmora/earings/infinity-knot-huggies/5be43325-f52f-487b-97a6-3abb9c057680.jpg",
     "images": [
@@ -271,6 +289,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Tiny floral huggie hoops embellished with marquise-cut petals for a subtle botanical glow.",
     "image": "images/prizmora/earings/lumi-blossom-huggies/08c34953-642b-4295-b817-0f53d854cc1b.jpg",
     "images": [
@@ -286,6 +305,7 @@
     "subcategory": "Drop Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Delicate ribbon bows flowing into sparkling teardrop crystals, creating dramatic movement for special occasions.",
     "image": "images/prizmora/earings/luna-bow-drops/whatsapp-image-2026-07-22-at-6-16-02-pm.jpeg",
     "images": [
@@ -301,6 +321,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 1699,
     "status": "Active",
+    "stock": 10,
     "desc": "Minimalist dot-accented hoops that effortlessly bridge casual daytime wear and chic evening attire.",
     "image": "images/prizmora/earings/nova-dot-hoops/407bff4a-50d4-4658-89ab-8ccedf5741f3.jpg",
     "images": [
@@ -316,6 +337,7 @@
     "subcategory": "Statement Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Architectural square halo frames showcasing radiant cushion-cut center stones.",
     "image": "images/prizmora/earings/radiant-frame/a1ec347e-366b-4814-9976-5a719de73e47.jpg",
     "images": [
@@ -331,6 +353,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Elongated oval hoops lined with micro-pave crystals, accentuating the neck and jawline with regal grace.",
     "image": "images/prizmora/earings/regal-oval-hoops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
     "images": [
@@ -347,6 +370,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Subtle crown-tipped huggie hoops that add a hint of royal majesty to your ear stack.",
     "image": "images/prizmora/earings/stella-crown-huggies/bdd15bd9-027b-4984-ae64-280729233709.jpg",
     "images": [
@@ -362,6 +386,7 @@
     "subcategory": "Statement Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Clean geometric square studs featuring princess-cut stones set in high-polish settings.",
     "image": "images/prizmora/earings/stellar-square/whatsapp-image-2026-07-22-at-10-44-57-pm-1.jpeg",
     "images": [
@@ -378,6 +403,7 @@
     "subcategory": "Statement Earrings",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Delicate heart-shaped crystal studs designed with hypoallergenic posts for sensitive ears.",
     "image": "images/prizmora/earings/sweet-spark-hearts/5231bcaa-eb27-431a-88ff-126ec2e1c59f.png",
     "images": [
@@ -394,6 +420,7 @@
     "subcategory": "Hoop & Huggie Earrings",
     "price": 2199,
     "status": "Active",
+    "stock": 10,
     "desc": "Trio-band huggies with alternating smooth gold and crystal-encrusted rows.",
     "image": "images/prizmora/earings/trinity-luxe-huggies/c761fe0d-1013-4a79-a7ca-498f5187dd91.png",
     "images": [
@@ -409,6 +436,7 @@
     "subcategory": "Layered Necklaces",
     "price": 2999,
     "status": "Active",
+    "stock": 10,
     "desc": "Pre-layered perfection. Dual chains featuring delicate clover pendants that sit gracefully at the collarbone.",
     "image": "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
     "images": [
@@ -424,6 +452,7 @@
     "subcategory": "Layered Necklaces",
     "price": 2999,
     "status": "Active",
+    "stock": 10,
     "desc": "A enchanting layered necklace featuring a crescent moon pendant and a twinkling star accent chain.",
     "image": "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-01-pm.png",
     "images": [
@@ -439,6 +468,7 @@
     "subcategory": "Choker & Chain Necklaces",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "Inspired by royal heirloom design, featuring a central glowing crystal pendant framed by ornate gold detailing.",
     "image": "images/prizmora/necklace/heritage-glow-necklace/chatgpt-image-jul-22-2026-10-33-54-pm.png",
     "images": [
@@ -455,6 +485,7 @@
     "subcategory": "Pendant Necklaces",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "A symbol of strength and inner confidence. Features an embossed lion crest medallion suspended on a heavy link chain.",
     "image": "images/prizmora/necklace/lionheart-pendant-necklace/1957820e-f79d-4b08-a4a3-3846d655bb8c.jpeg",
     "images": [
@@ -471,6 +502,7 @@
     "subcategory": "Layered Necklaces",
     "price": 2999,
     "status": "Active",
+    "stock": 10,
     "desc": "Triple-layered fine chains featuring teardrop crystal accents that cascade softly against the chest.",
     "image": "images/prizmora/necklace/luna-drop-layers/4f5e36ce-f6c6-4a0e-86ff-9bb95d1851f7.jpg",
     "images": [
@@ -485,6 +517,7 @@
     "subcategory": "Choker & Chain Necklaces",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Classic anchor chain design featuring a brilliant nautical medallion pendant that catches every beam of light.",
     "image": "images/prizmora/necklace/sailors-spark-necklace/71f68856-b2f5-4622-a312-5242d5c9f738.jpeg",
     "images": [
@@ -500,6 +533,7 @@
     "subcategory": "Pendant Necklaces",
     "price": 2499,
     "status": "Active",
+    "stock": 10,
     "desc": "Ethereal angel wing and halo pendant encrusted with brilliant micro-pave stones.",
     "image": "images/prizmora/necklace/seraphina-pendant-necklace/whatsapp-image-2026-07-23-at-5-57-21-pm.jpeg",
     "images": [
@@ -515,6 +549,7 @@
     "subcategory": "Pendant Necklaces",
     "price": 3499,
     "status": "Active",
+    "stock": 10,
     "desc": "A striking emerald-green solitaire pendant surrounded by a sparkling halo of cubic zirconia, suspended on a fluid gold chain.",
     "image": "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-22-at-10-36-15-pm.jpeg",
     "images": [
