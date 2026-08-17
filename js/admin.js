@@ -33,23 +33,18 @@ async function checkAuth() {
 }
 
 // --- Security & Login ---
+// Change the admin login by editing these two values.
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'Prizmoraa2026';
+
 const loginOverlay = document.getElementById('loginOverlay');
 const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 const logoutBtn = document.getElementById('logoutBtn');
-const quickFillBtn = document.getElementById('quickFillBtn');
 
 // Rate limiting variables
 let loginAttempts = 0;
 let lockTime = null;
-
-if (quickFillBtn) {
-  quickFillBtn.addEventListener('click', () => {
-    document.getElementById('adminUsername').value = 'admin';
-    document.getElementById('adminPassword').value = 'Prizmoraa2026';
-    if (loginError) loginError.style.display = 'none';
-  });
-}
 
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
@@ -67,8 +62,7 @@ if (loginForm) {
     const user = rawUser.trim().toLowerCase();
     const pass = rawPass.trim();
     
-    // Auth check: admin / Prizmoraa2026
-    if (user === 'admin' && pass === 'Prizmoraa2026') {
+    if (user === ADMIN_USERNAME.toLowerCase() && pass === ADMIN_PASSWORD) {
       sessionStorage.setItem(SESSION_KEY, 'secure-token-abc-123');
       if (loginError) loginError.style.display = 'none';
       if (loginOverlay) loginOverlay.style.display = 'none';
@@ -80,7 +74,7 @@ if (loginForm) {
           lockTime = Date.now() + 30000;
           loginError.textContent = 'Account locked for 30s for security.';
         } else {
-          loginError.textContent = 'Invalid credentials. Username: admin, Password: Prizmoraa2026';
+          loginError.textContent = 'Invalid username or password.';
         }
         loginError.style.display = 'block';
       }
