@@ -1,6 +1,10 @@
 // Admin Dashboard Logic - Universal file:// and http:// compatibility
 
 const SESSION_KEY = 'prizmoraa_admin_token';
+// NOTE: this key gates the /api/orders admin listing endpoint. Like the hardcoded
+// admin/Prizmoraa2026 login below, it lives in a public JS file and is only a
+// soft deterrent, not real security — anyone who views source can read it.
+const ADMIN_API_KEY = 'd0d858249913b45cbf92194158abaf5fb0d764885058422e';
 
 // Basic XSS Sanitizer
 function sanitizeInput(str) {
@@ -116,15 +120,55 @@ navItems.forEach(item => {
     e.preventDefault();
     navItems.forEach(n => n.classList.remove('active'));
     item.classList.add('active');
-    
+
     const viewId = item.getAttribute('data-view');
     views.forEach(v => v.classList.remove('active'));
     const targetView = document.getElementById('view-' + viewId);
     if (targetView) targetView.classList.add('active');
-    
+
     if (currentViewTitle) currentViewTitle.textContent = item.textContent.trim();
+
+    if (viewId === 'orders') fetchOrders();
   });
 });
+
+// --- Orders ---
+async function fetchOrders() {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="8">Loading orders...</td></tr>';
+  try {
+    const res = await fetch('/api/orders', { headers: { 'x-admin-key': ADMIN_API_KEY } });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      tbody.innerHTML = `<tr><td colspan="8">${sanitizeInput(data.error || 'Could not load orders.')}</td></tr>`;
+      return;
+    }
+    const orders = await res.json();
+    if (!Array.isArray(orders) || orders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8">No orders yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = orders.map(o => {
+      const itemsText = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
+      const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      return `
+        <tr>
+          <td>#${sanitizeInput(o.id)}</td>
+          <td>${sanitizeInput(date)}</td>
+          <td>${sanitizeInput(o.name)}</td>
+          <td>${sanitizeInput(o.phone)}${o.email ? '<br>' + sanitizeInput(o.email) : ''}</td>
+          <td>${sanitizeInput(itemsText)}</td>
+          <td>₹${sanitizeInput(Number(o.total).toLocaleString('en-IN'))}</td>
+          <td>${sanitizeInput(o.paymentId || '')}</td>
+          <td><span class="status-badge">${sanitizeInput(o.status || 'paid')}</span></td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="8">Could not load orders.</td></tr>';
+  }
+}
 
 // Table Rendering
 function renderTable(filterText = '') {

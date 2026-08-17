@@ -69,3 +69,37 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
 
 .priz-search-result { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(58, 42, 29, 0.08); text-decoration: none; color: inherit; }
 .priz-search-result img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+
+/* Account / auth */
+.priz-auth-tabs { display: flex; border-bottom: 1px solid rgba(58, 42, 29, 0.15); margin-bottom: 18px; }
+.priz-auth-tab {
+  flex: 1; background: none; border: none; cursor: pointer; padding: 10px 0;
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--espresso-soft);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.priz-auth-tab.active { color: var(--espresso); border-bottom-color: var(--gold); }
+.priz-auth-error { font-size: 13px; color: #b3261e; margin-bottom: 12px; }
+
+.priz-account-welcome { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+.priz-account-welcome strong { font-family: var(--font-serif); font-size: 19px; color: var(--espresso); }
+.priz-account-welcome span { font-size: 13px; color: var(--espresso-soft); }
+.priz-logout-btn {
+  background: none; border: 1px solid rgba(58, 42, 29, 0.25); color: var(--espresso-soft);
+  font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 8px 14px;
+  border-radius: 2px; cursor: pointer; margin-bottom: 22px;
+}
+.priz-logout-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.priz-panel-subhead {
+  font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);
+  margin: 22px 0 12px; font-weight: 500;
+}
+.priz-panel-subhead:first-of-type { margin-top: 0; }
+
+.priz-order-card {
+  border: 1px solid rgba(58, 42, 29, 0.12); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px;
+}
+.priz-order-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--espresso-soft); margin-bottom: 6px; }
+.priz-order-status { text-transform: capitalize; color: var(--gold); font-weight: 500; }
+.priz-order-items { font-size: 13px; color: var(--espresso); line-height: 1.5; }
+.priz-order-total { font-size: 14px; color: var(--espresso); font-family: var(--font-serif); font-weight: 600; margin-top: 6px; }

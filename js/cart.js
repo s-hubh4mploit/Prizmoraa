@@ -61,8 +61,8 @@ function wishlistFromBtn(btn) {
   toggleWishlistItem({ id: btn.dataset.id, name: btn.dataset.name, price: btn.dataset.price, image: btn.dataset.image });
 }
 
-/* ---------------- PROFILE (lightweight "account") ---------------- */
-function getProfile() { return readJSON(PROFILE_KEY, { name: '', phone: '', address: '', pincode: '' }); }
+/* ---------------- PROFILE (delivery details, saved on device) ---------------- */
+function getProfile() { return readJSON(PROFILE_KEY, { name: '', email: '', phone: '', address: '', pincode: '' }); }
 function saveProfile(p) { writeJSON(PROFILE_KEY, p); }
 
 /* ---------------- BADGES ---------------- */
@@ -108,17 +108,10 @@ function injectShell() {
 
     <aside class="priz-panel" id="prizAccountPanel" aria-hidden="true">
       <div class="priz-panel-head">
-        <h3>My Details</h3>
+        <h3 id="accountPanelTitle">My Account</h3>
         <button class="priz-close" data-close>&times;</button>
       </div>
-      <div class="priz-panel-body">
-        <p class="priz-hint">Saved on this device only — used to pre-fill checkout faster.</p>
-        <input type="text" id="profName" class="priz-input" placeholder="Full name">
-        <input type="tel" id="profPhone" class="priz-input" placeholder="WhatsApp number">
-        <textarea id="profAddress" class="priz-input" placeholder="Delivery address"></textarea>
-        <input type="text" id="profPincode" class="priz-input" placeholder="Pincode">
-        <button class="btn" id="saveProfileBtn" style="width:100%">Save</button>
-      </div>
+      <div class="priz-panel-body" id="accountPanelBody"></div>
     </aside>
   `;
   document.body.appendChild(div);
@@ -127,20 +120,6 @@ function injectShell() {
   $$('[data-close]').forEach(b => b.addEventListener('click', closeAllPanels));
 
   $('#prizSearchInput').addEventListener('input', onSearchInput);
-
-  $('#saveProfileBtn').addEventListener('click', () => {
-    saveProfile({
-      name: $('#profName').value.trim(),
-      phone: $('#profPhone').value.trim(),
-      address: $('#profAddress').value.trim(),
-      pincode: $('#profPincode').value.trim(),
-    });
-    closeAllPanels();
-  });
-
-  const p = getProfile();
-  $('#profName').value = p.name; $('#profPhone').value = p.phone;
-  $('#profAddress').value = p.address; $('#profPincode').value = p.pincode;
 }
 
 function openPanel(name) {
@@ -151,6 +130,7 @@ function openPanel(name) {
   document.body.classList.add('priz-lock');
   if (name === 'cart') renderCartDrawer();
   if (name === 'wishlist') renderWishlistDrawer();
+  if (name === 'account') renderAccountPanel();
 }
 function closeAllPanels() {
   $$('.priz-panel').forEach(p => p.classList.remove('open'));
@@ -189,12 +169,17 @@ function renderCartDrawer() {
   $$('[data-remove]').forEach(b => b.onclick = () => removeFromCart(b.dataset.remove));
 
   const p = getProfile();
+  const authUser = window.PrizmoraaAuth && window.PrizmoraaAuth.getUser();
+  const prefillName = p.name || (authUser && authUser.name) || '';
+  const prefillEmail = p.email || (authUser && authUser.email) || '';
+  const prefillPhone = p.phone || (authUser && authUser.phone) || '';
   foot.innerHTML = `
     <div class="priz-total-row"><span>Subtotal</span><strong>₹${cartTotal().toLocaleString('en-IN')}</strong></div>
     <p class="priz-hint">Prepaid orders only — we don't offer Cash on Delivery. Complete payment to confirm.</p>
     <form id="checkoutForm" class="priz-checkout-form">
-      <input required id="ckName" class="priz-input" placeholder="Full name" value="${p.name || ''}">
-      <input required id="ckPhone" class="priz-input" type="tel" placeholder="WhatsApp number" value="${p.phone || ''}">
+      <input required id="ckName" class="priz-input" placeholder="Full name" value="${prefillName}">
+      <input required id="ckEmail" class="priz-input" type="email" placeholder="Email (for order confirmation)" value="${prefillEmail}">
+      <input required id="ckPhone" class="priz-input" type="tel" placeholder="WhatsApp number" value="${prefillPhone}">
       <textarea required id="ckAddress" class="priz-input" placeholder="Delivery address">${p.address || ''}</textarea>
       <input required id="ckPincode" class="priz-input" placeholder="Pincode" value="${p.pincode || ''}">
       <button type="submit" class="btn" style="width:100%" id="payBtn">Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order</button>
@@ -227,6 +212,143 @@ function renderWishlistDrawer() {
   $$('[data-wl-remove]').forEach(b => b.onclick = () => toggleWishlistItem(list.find(i => i.id === b.dataset.wlRemove)));
 }
 
+/* ---------------- ACCOUNT (login / signup / order history) ---------------- */
+let authMode = 'login';
+
+function renderAccountPanel() {
+  const body = $('#accountPanelBody');
+  if (!body) return;
+  const auth = window.PrizmoraaAuth;
+  const title = $('#accountPanelTitle');
+  if (auth && auth.isLoggedIn()) {
+    if (title) title.textContent = 'My Account';
+    renderLoggedInAccount(body, auth.getUser());
+  } else {
+    if (title) title.textContent = authMode === 'login' ? 'Log In' : 'Create Account';
+    renderAuthForms(body);
+  }
+}
+
+function renderAuthForms(body) {
+  const isLogin = authMode === 'login';
+  body.innerHTML = `
+    <div class="priz-auth-tabs">
+      <button type="button" class="priz-auth-tab ${isLogin ? 'active' : ''}" data-auth-tab="login">Log In</button>
+      <button type="button" class="priz-auth-tab ${!isLogin ? 'active' : ''}" data-auth-tab="signup">Sign Up</button>
+    </div>
+    <p class="priz-auth-error" id="authError" style="display:none;"></p>
+    ${isLogin ? `
+      <form id="loginForm">
+        <input required type="email" id="loginEmail" class="priz-input" placeholder="Email" autocomplete="email">
+        <input required type="password" id="loginPassword" class="priz-input" placeholder="Password" autocomplete="current-password">
+        <button type="submit" class="btn" style="width:100%">Log In</button>
+      </form>
+    ` : `
+      <form id="signupForm">
+        <input required type="text" id="signupName" class="priz-input" placeholder="Full name" autocomplete="name">
+        <input required type="email" id="signupEmail" class="priz-input" placeholder="Email" autocomplete="email">
+        <input type="tel" id="signupPhone" class="priz-input" placeholder="WhatsApp number" autocomplete="tel">
+        <input required type="password" id="signupPassword" class="priz-input" placeholder="Password (min 6 characters)" autocomplete="new-password">
+        <button type="submit" class="btn" style="width:100%">Create Account</button>
+      </form>
+    `}
+    <p class="priz-hint">Signing in lets you track past orders and check out faster. Guest checkout is always available too.</p>
+  `;
+
+  $$('[data-auth-tab]', body).forEach(b => b.addEventListener('click', () => {
+    authMode = b.dataset.authTab;
+    renderAccountPanel();
+  }));
+
+  const errEl = $('#authError');
+  const showError = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; };
+
+  const form = isLogin ? $('#loginForm') : $('#signupForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    try {
+      if (isLogin) {
+        await window.PrizmoraaAuth.login({
+          email: $('#loginEmail').value.trim(),
+          password: $('#loginPassword').value,
+        });
+      } else {
+        await window.PrizmoraaAuth.signup({
+          name: $('#signupName').value.trim(),
+          email: $('#signupEmail').value.trim(),
+          phone: $('#signupPhone').value.trim(),
+          password: $('#signupPassword').value,
+        });
+      }
+      renderAccountPanel();
+      renderBadges();
+    } catch (err) {
+      showError(err.message || 'Something went wrong. Please try again.');
+      btn.disabled = false;
+    }
+  });
+}
+
+function renderLoggedInAccount(body, user) {
+  const p = getProfile();
+  body.innerHTML = `
+    <div class="priz-account-welcome">
+      <strong>Hi, ${user.name}</strong>
+      <span>${user.email}</span>
+    </div>
+    <button type="button" class="priz-logout-btn" id="logoutBtn">Log Out</button>
+    <h4 class="priz-panel-subhead">Delivery Details</h4>
+    <input type="tel" id="profPhone" class="priz-input" placeholder="WhatsApp number" value="${p.phone || user.phone || ''}">
+    <textarea id="profAddress" class="priz-input" placeholder="Delivery address">${p.address || ''}</textarea>
+    <input type="text" id="profPincode" class="priz-input" placeholder="Pincode" value="${p.pincode || ''}">
+    <button class="btn" id="saveProfileBtn" style="width:100%">Save Details</button>
+    <h4 class="priz-panel-subhead">My Orders</h4>
+    <div id="myOrdersWrap"><p class="priz-hint">Loading your orders...</p></div>
+  `;
+
+  $('#logoutBtn').addEventListener('click', () => {
+    window.PrizmoraaAuth.logout();
+    authMode = 'login';
+    renderAccountPanel();
+    renderBadges();
+  });
+
+  $('#saveProfileBtn').addEventListener('click', (e) => {
+    saveProfile({
+      name: user.name,
+      email: user.email,
+      phone: $('#profPhone').value.trim(),
+      address: $('#profAddress').value.trim(),
+      pincode: $('#profPincode').value.trim(),
+    });
+    const btn = e.currentTarget;
+    const original = btn.textContent;
+    btn.textContent = 'Saved!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  });
+
+  loadMyOrders();
+}
+
+async function loadMyOrders() {
+  const wrap = $('#myOrdersWrap');
+  if (!wrap) return;
+  const orders = await window.PrizmoraaAuth.fetchMyOrders();
+  if (!orders.length) { wrap.innerHTML = '<p class="priz-empty">No orders yet.</p>'; return; }
+  wrap.innerHTML = orders.map(o => `
+    <div class="priz-order-card">
+      <div class="priz-order-head">
+        <span>${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        <span class="priz-order-status">${o.status}</span>
+      </div>
+      <div class="priz-order-items">${o.items.map(i => `${i.name} × ${i.qty}`).join(', ')}</div>
+      <div class="priz-order-total">₹${Number(o.total).toLocaleString('en-IN')}</div>
+    </div>
+  `).join('');
+}
+
 /* ---------------- SEARCH ---------------- */
 async function onSearchInput(e) {
   const q = e.target.value.trim().toLowerCase();
@@ -257,13 +379,14 @@ async function handleCheckoutSubmit(e) {
   e.preventDefault();
   const payBtn = $('#payBtn');
   const name = $('#ckName').value.trim();
+  const email = $('#ckEmail').value.trim();
   const phone = $('#ckPhone').value.trim();
   const address = $('#ckAddress').value.trim();
   const pincode = $('#ckPincode').value.trim();
   const cart = getCart();
   if (cart.length === 0) return;
 
-  saveProfile({ name, phone, address, pincode });
+  saveProfile({ name, email, phone, address, pincode });
 
   payBtn.disabled = true; payBtn.textContent = 'Preparing payment...';
   try {
@@ -296,7 +419,9 @@ async function handleCheckoutSubmit(e) {
         });
         const verifyData = await verifyRes.json();
         if (verifyData.verified) {
-          sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId: response.razorpay_payment_id });
+          const paymentId = response.razorpay_payment_id;
+          await recordOrder({ name, email, phone, address, pincode, cart, paymentId });
+          sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId });
           clearCart();
           closeAllPanels();
         } else {
@@ -315,6 +440,25 @@ async function handleCheckoutSubmit(e) {
     console.error(err);
     alert('Something went wrong starting payment. Please try again.');
     payBtn.disabled = false; payBtn.textContent = `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
+  }
+}
+
+async function recordOrder({ name, email, phone, address, pincode, cart, paymentId }) {
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = window.PrizmoraaAuth && window.PrizmoraaAuth.getToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    await fetch('/api/orders', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
+        total: cartTotal(),
+        name, email, phone, address, pincode, paymentId,
+      }),
+    });
+  } catch (err) {
+    console.error('Failed to record order (payment already succeeded):', err);
   }
 }
 

@@ -2,6 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/products/:path*", "destination": "/api/products" }
+    { "source": "/api/products/:path*", "destination": "/api/products" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth" },
+    { "source": "/api/orders/:path*", "destination": "/api/orders" }
   ]
 }

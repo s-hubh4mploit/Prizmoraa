@@ -50,6 +50,9 @@
       <a href="#" class="nav-item" data-view="inventory">
         <span class="icon">💍</span> Inventory
       </a>
+      <a href="#" class="nav-item" data-view="orders">
+        <span class="icon">🧾</span> Orders
+      </a>
     </nav>
     
     <div class="sidebar-shortcuts">
@@ -146,6 +149,29 @@
         <div class="table-footer">
           <button class="btn btn-outline" id="btnExport">Export JSON</button>
           <button class="btn btn-outline" id="btnResetCatalog" style="margin-left:auto; border-color:#d32f2f; color:#d32f2f;">Reset Catalog with Images</button>
+        </div>
+      </div>
+
+      <!-- Orders View -->
+      <div id="view-orders" class="view">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Items</th>
+                <th>Total (INR)</th>
+                <th>Payment ID</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
         </div>
       </div>
 
