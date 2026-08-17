@@ -23,15 +23,13 @@ function getProductManager() {
   };
 }
 
+// Always land on the login screen when the admin URL is opened or reloaded —
+// no session is persisted across navigations, so a stale/leftover token
+// can never skip straight to the dashboard.
 async function checkAuth() {
-  const token = sessionStorage.getItem(SESSION_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
   const loginOverlay = document.getElementById('loginOverlay');
-  if (!token) {
-    if (loginOverlay) loginOverlay.style.display = 'flex';
-  } else {
-    if (loginOverlay) loginOverlay.style.display = 'none';
-    await initDashboard();
-  }
+  if (loginOverlay) loginOverlay.style.display = 'flex';
 }
 
 // --- Security & Login ---
