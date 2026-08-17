@@ -4,8 +4,7 @@ const CART_KEY = 'prizmoraa_cart_v1';
 const WISHLIST_KEY = 'prizmoraa_wishlist_v1';
 const PROFILE_KEY = 'prizmoraa_profile_v1';
 
-// TODO: replace with your WhatsApp Business number — country code + number, digits only, no + or spaces
-const WHATSAPP_NUMBER = '918591262779';
+const WHATSAPP_LINK = 'https://wa.me/message/JSHTXWJK5W6UK1';
 
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -168,25 +167,11 @@ function renderCartDrawer() {
   $$('[data-qty-down]').forEach(b => b.onclick = () => setQty(b.dataset.qtyDown, (cart.find(i => i.id === b.dataset.qtyDown).qty) - 1));
   $$('[data-remove]').forEach(b => b.onclick = () => removeFromCart(b.dataset.remove));
 
-  const p = getProfile();
-  const authUser = window.PrizmoraaAuth && window.PrizmoraaAuth.getUser();
-  const prefillName = p.name || (authUser && authUser.name) || '';
-  const prefillEmail = p.email || (authUser && authUser.email) || '';
-  const prefillPhone = p.phone || (authUser && authUser.phone) || '';
   foot.innerHTML = `
     <div class="priz-total-row"><span>Subtotal</span><strong>₹${cartTotal().toLocaleString('en-IN')}</strong></div>
-    <p class="priz-hint">Prepaid orders only — we don't offer Cash on Delivery. Complete payment to confirm.</p>
-    <form id="checkoutForm" class="priz-checkout-form">
-      <input required id="ckName" class="priz-input" placeholder="Full name" value="${prefillName}">
-      <input required id="ckEmail" class="priz-input" type="email" placeholder="Email (for order confirmation)" value="${prefillEmail}">
-      <input required id="ckPhone" class="priz-input" type="tel" placeholder="WhatsApp number" value="${prefillPhone}">
-      <textarea required id="ckAddress" class="priz-input" placeholder="Delivery address">${p.address || ''}</textarea>
-      <input required id="ckPincode" class="priz-input" placeholder="Pincode" value="${p.pincode || ''}">
-      <button type="submit" class="btn" style="width:100%" id="payBtn">Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order</button>
-    </form>
-    <a href="checkout.html" class="priz-full-checkout-link">Prefer a full page? Go to Checkout →</a>
+    <p class="priz-hint">Prepaid orders only — we don't offer Cash on Delivery. You'll enter delivery details and pay on the next page.</p>
+    <a href="checkout.html" class="btn" style="width:100%; justify-content:center;">Proceed to Payment</a>
   `;
-  $('#checkoutForm').addEventListener('submit', handleCheckoutSubmit);
 }
 
 function renderWishlistDrawer() {
@@ -446,26 +431,6 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
   }
 }
 
-async function handleCheckoutSubmit(e) {
-  e.preventDefault();
-  const payBtn = $('#payBtn');
-  const name = $('#ckName').value.trim();
-  const email = $('#ckEmail').value.trim();
-  const phone = $('#ckPhone').value.trim();
-  const address = $('#ckAddress').value.trim();
-  const pincode = $('#ckPincode').value.trim();
-  const resetLabel = () => `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
-
-  payBtn.disabled = true;
-  const result = await runCheckout({ name, email, phone, address, pincode }, {
-    onStatus: (msg) => { payBtn.textContent = msg; },
-    onError: (msg) => { alert(msg); },
-  });
-  payBtn.disabled = false;
-  payBtn.textContent = resetLabel();
-  if (result.success) closeAllPanels();
-}
-
 async function recordOrder({ name, email, phone, address, pincode, cart, paymentId }) {
   try {
     const headers = { 'Content-Type': 'application/json' };
@@ -500,7 +465,7 @@ Customer: ${name}
 Phone: ${phone}
 Address: ${address}, ${pincode}`
   );
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+  window.open(`${WHATSAPP_LINK}?text=${text}`, '_blank');
 }
 
 /* ---------------- NAV WIRING ---------------- */
