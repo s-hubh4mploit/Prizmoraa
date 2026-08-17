@@ -173,6 +173,8 @@ function renderTable(filterText = '') {
     (item.category && item.category.toLowerCase().includes(filterText.toLowerCase()))
   );
 
+  const featuredCount = inventory.filter(i => i.featured).length;
+
   filtered.forEach(item => {
     const tr = document.createElement('tr');
     const imgSrc = item.image ? item.image : 'images/hero.jpg';
@@ -188,6 +190,9 @@ function renderTable(filterText = '') {
       <td>₹${sanitizeInput(item.price ? item.price.toLocaleString('en-IN') : '0')}</td>
       <td>${stock}</td>
       <td><span class="status-badge ${inStock ? '' : 'out-of-stock'}">${inStock ? 'In Stock' : 'Out of Stock'}</span></td>
+      <td>
+        <button type="button" class="star-btn ${item.featured ? 'active' : ''}" title="${item.featured ? 'Remove from Featured Pieces' : 'Add to Featured Pieces'}" onclick="toggleFeatured('${item.id}')">${item.featured ? '★' : '☆'}</button>
+      </td>
       <td class="action-links">
         <button type="button" onclick="editItem('${item.id}')">Edit</button>
         <button type="button" class="delete" onclick="deleteItem('${item.id}')">Delete</button>
@@ -195,6 +200,12 @@ function renderTable(filterText = '') {
     `;
     tbody.appendChild(tr);
   });
+
+  const featuredWarning = document.getElementById('featuredWarning');
+  if (featuredWarning) {
+    featuredWarning.style.display = featuredCount > 4 ? 'block' : 'none';
+    featuredWarning.textContent = `${featuredCount} items are marked as Featured — only the first 4 will show on the homepage.`;
+  }
 }
 
 // Global search
@@ -301,6 +312,7 @@ if (itemForm) {
     const category = sanitizeInput(document.getElementById('itemCategory').value);
     const subcategory = sanitizeInput(document.getElementById('itemSubCategory').value);
     const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
+    const featured = document.getElementById('itemFeatured').checked;
     const imageInput = sanitizeInput(document.getElementById('itemImage').value) || 'images/hero.jpg';
     const image = uploadedImageURLs.length ? uploadedImageURLs[0] : imageInput;
     const desc = sanitizeInput(document.getElementById('itemDesc').value);
@@ -309,7 +321,7 @@ if (itemForm) {
     const existingItem = inventory[existingIndex] || {};
     const images = uploadedImageURLs.length ? uploadedImageURLs : (existingItem.images ? existingItem.images : [image]);
 
-    const newItem = { id, name, price, category, subcategory, stock, image, images, desc, status: 'Active' };
+    const newItem = { id, name, price, category, subcategory, stock, featured, image, images, desc, status: 'Active' };
 
     if (existingIndex > -1) {
       inventory[existingIndex] = newItem;
@@ -351,11 +363,21 @@ window.editItem = function(id) {
     document.getElementById('itemCategory').value = item.category;
     document.getElementById('itemSubCategory').value = item.subcategory || '';
     document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;
+    document.getElementById('itemFeatured').checked = !!item.featured;
     document.getElementById('itemImage').value = item.image || '';
     document.getElementById('itemDesc').value = item.desc || '';
     document.getElementById('modalTitle').textContent = 'Edit Item';
     if (modal) modal.classList.add('active');
   }
+};
+
+window.toggleFeatured = async function(id) {
+  const item = inventory.find(i => i.id === id);
+  if (!item) return;
+  item.featured = !item.featured;
+  const pm = getProductManager();
+  await pm.saveProduct(item);
+  renderTable();
 };
 
 window.deleteItem = async function(id) {

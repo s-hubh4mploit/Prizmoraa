@@ -197,7 +197,8 @@ const scrollByAmount = () => Math.min(scrollTrack.clientWidth * 0.8, 600);
 scrollLeftBtn?.addEventListener('click', () => scrollTrack.scrollBy({ left: -scrollByAmount(), behavior: 'smooth' }));
 scrollRightBtn?.addEventListener('click', () => scrollTrack.scrollBy({ left: scrollByAmount(), behavior: 'smooth' }));
 }
-const featuredItems = allProducts.slice(0, 4);
+const featuredPicks = allProducts.filter(p => p.featured);
+const featuredItems = (featuredPicks.length > 0 ? featuredPicks : allProducts).slice(0, 4);
 const featuredGrid = document.getElementById('featuredHomeGrid');
 if (featuredGrid && featuredItems.length > 0) {
 featuredGrid.innerHTML = featuredItems.map(p => {

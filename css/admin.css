@@ -194,6 +194,16 @@ body {
   background: #e8f5e9; color: #2e7d32;
 }
 .status-badge.out-of-stock { background: #fdecea; color: #b3261e; }
+.star-btn {
+  background: none; border: none; cursor: pointer; font-size: 20px; line-height: 1;
+  color: rgba(58, 42, 29, 0.3); padding: 2px;
+}
+.star-btn.active { color: var(--gold); }
+.star-btn:hover { color: var(--gold); }
+.featured-warning {
+  background: #fff8e6; color: #8a6d1a; border: 1px solid #f0d98c;
+  border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px;
+}
 .table-footer { display: flex; gap: 10px; margin-top: 20px; }
 .action-links button { background: none; border: none; color: var(--gold); cursor: pointer; margin-right: 10px; font-family: var(--font-sans); }
 .action-links button.delete { color: #d32f2f; }
@@ -218,6 +228,13 @@ body {
   width: 100%; padding: 10px; border: 1px solid rgba(58, 42, 29, 0.2); background: #fff; font-family: var(--font-sans);
 }
 .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: var(--gold); }
+.checkbox-field {
+  display: flex !important; align-items: center; gap: 8px;
+  padding: 10px; border: 1px solid rgba(58, 42, 29, 0.2); background: #fff; cursor: pointer;
+  margin-bottom: 0 !important; font-size: 14px !important; color: var(--espresso-soft) !important;
+}
+.checkbox-field input { width: auto !important; margin: 0; cursor: pointer; }
+.field-note { display: block; font-size: 11px; color: var(--espresso-soft); margin-top: 6px; }
 .image-preview { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
 .image-preview img { width:80px; height:80px; object-fit:cover; border-radius:6px; border:1px solid rgba(58,42,29,0.12); }
 .modal-footer { margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px; }
