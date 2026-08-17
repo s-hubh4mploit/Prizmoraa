@@ -67,7 +67,6 @@
 }
 
 .prod-card:hover .hover-overlay,
-.duette-card:hover .hover-overlay,
 .col-card:hover .hover-overlay {
   opacity: 1;
   visibility: visible;

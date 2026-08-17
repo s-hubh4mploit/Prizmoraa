@@ -17,7 +17,6 @@
 <div class="nav-inner">
 <a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
 <ul class="nav-links">
-<li><a href="collection.html?cat=duette">Duette</a></li>
 <li><a href="collections.html">Collections</a></li>
 <li><a href="contact.html">Contact</a></li>
 </ul>
@@ -64,7 +63,6 @@
 </div>
 <div class="footer-col">
 <h4>Explore</h4>
-<a href="collection.html?cat=duette">Duette</a>
 <a href="collections.html">Collections</a>
 </div>
 <div class="footer-col">
@@ -88,7 +86,6 @@ const { getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
 const categories = await getAllCategories();
 const grid = document.getElementById('collectionsGrid');
 const catMeta = {
-'duette': { title: 'The Duette Collection', sub: 'Signature dual-piercing connected designs' },
 'earrings': { title: 'Earrings Collection', sub: 'Studs, Hoops, Drops & Huggies' },
 'bracelets': { title: 'Bracelets & Bangles', sub: 'Bangles, Tennis & Charm Bracelets' },
 'necklaces': { title: 'Necklaces & Pendants', sub: 'Layered, Pendants & Chokers' }

@@ -1,5 +1,5 @@
 /* Nav icon group */
-.nav-icons { display: flex; align-items: center; gap: 18px; margin-left: auto; }
+.nav-icons { display: flex; align-items: center; gap: 18px; }
 .icon-btn { position: relative; background: none; border: none; cursor: pointer; padding: 4px; color: inherit; display: flex; }
 .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6; }
 .icon-badge {

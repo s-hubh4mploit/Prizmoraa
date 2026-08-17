@@ -5,77 +5,6 @@
 
   const defaultProducts = [
   {
-    "id": "duette-amora-heart",
-    "name": "Duette Amora Heart",
-    "category": "duette",
-    "subcategory": "Signature Double Piercing",
-    "price": 3299,
-    "status": "Active",
-    "desc": "Our signature dual-piercing statement piece. A delicate 18k gold-plated chain bridges your upper and lower earlobe, anchored by a sparkling pave heart charm designed to move gracefully with you.",
-    "image": "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
-    "images": [
-      "images/prizmora/bracelets/amora-heart-bracelet/4117a910-5002-4e5c-8c94-78a5e6ab5b1a.jpg",
-      "images/prizmora/bracelets/amora-heart-bracelet/ca5248a7-e12b-4478-a390-001f261db845.jpg",
-      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-2.jpeg",
-      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm-1.jpeg",
-      "images/prizmora/earings/amora-heart-studs/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg"
-    ]
-  },
-  {
-    "id": "duette-aurelia-hoop",
-    "name": "Duette Aurelia Hoop & Stud",
-    "category": "duette",
-    "subcategory": "Signature Double Piercing",
-    "price": 3499,
-    "status": "Active",
-    "desc": "Intertwining modern geometry with effortless elegance, this signature Duette connects a sleek huggie hoop to a polished stud via a shimmering linked fine chain.",
-    "image": "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
-    "images": [
-      "images/prizmora/bracelets/aurelia-baguette-bangle/47e8323c-3ce3-4ec9-844e-0613a98c65b2.jpg",
-      "images/prizmora/bracelets/aurelia-baguette-bangle/7d906859-22e1-4964-8a50-debc20af5552.jpg",
-      "images/prizmora/bracelets/aurelia-baguette-bangle/c2410b6b-2776-49e9-abb1-42e00ffd28c5.jpg",
-      "images/prizmora/earings/aurelia-princess-hoops/71d39549-17c5-4a94-9a78-a541864c0555.jpg",
-      "images/prizmora/earings/aurelia-princess-hoops/chatgpt-image-jul-22-2026-08-49-12-pm.png",
-      "images/prizmora/earings/aurelia-princess-hoops/whatsapp-image-2026-07-23-at-6-33-56-pm.jpeg"
-    ]
-  },
-  {
-    "id": "duette-celeste-moon",
-    "name": "Duette Celeste Moon",
-    "category": "duette",
-    "subcategory": "Signature Double Piercing",
-    "price": 3699,
-    "status": "Active",
-    "desc": "Celestial magic for your ears. Connect your double piercings with a shimmering star and moon motif linked by an ultra-fine 18k gold chain that catches the light from every angle.",
-    "image": "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
-    "images": [
-      "images/prizmora/earings/celeste-duo-drops/whatsapp-image-2026-07-23-at-6-26-45-pm.jpeg",
-      "images/prizmora/earings/celeste-duo-drops/2605fd82-2948-4552-9092-d907751c6d38.jpeg",
-      "images/prizmora/earings/celeste-duo-drops/5807af95-7538-4553-aa67-1395de3b628a.jpeg",
-      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-01-pm.png",
-      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-07-pm.png",
-      "images/prizmora/necklace/celeste-moon-layers/chatgpt-image-jul-22-2026-10-33-15-pm.png"
-    ]
-  },
-  {
-    "id": "duette-bella-clover",
-    "name": "Duette Bella Clover",
-    "category": "duette",
-    "subcategory": "Signature Double Piercing",
-    "price": 3599,
-    "status": "Active",
-    "desc": "A symbol of luck and timeless beauty. Features two four-leaf clover studs linked by a delicate gold chain for double pierced ears.",
-    "image": "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
-    "images": [
-      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-09-pm.png",
-      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-15-pm.png",
-      "images/prizmora/necklace/bella-clover-layers/chatgpt-image-jul-22-2026-10-06-29-pm.png",
-      "images/prizmora/earings/bella-bow-studs/7e6b51ab-9d2c-4902-bfde-35d48745553c.jpg",
-      "images/prizmora/earings/bella-bow-studs/3670a9e2-6ee1-4b88-9d44-78ae5acce2db.jpg",
-      "images/prizmora/earings/bella-bow-studs/50bf0874-8518-43bb-87ea-ee8003d100ab.jpg"
-    ]
-  },
-  {
     "id": "brac-amora-heart-bracelet",
     "name": "Amora Heart Bracelet",
     "category": "bracelets",
@@ -151,7 +80,7 @@
   },
   {
     "id": "brac-imperia-grid-bangle",
-    "name": "Imperia Grid bangle",
+    "name": "Imperia Grid Bangle",
     "category": "bracelets",
     "subcategory": "Bangles",
     "price": 2999,
@@ -542,7 +471,7 @@
   },
   {
     "id": "neck-luna-drop-layers",
-    "name": "Luna Drop layers",
+    "name": "Luna Drop Layers",
     "category": "necklaces",
     "subcategory": "Layered Necklaces",
     "price": 2999,

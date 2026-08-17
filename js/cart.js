@@ -214,7 +214,7 @@ function renderWishlistDrawer() {
       <div class="priz-line-info">
         <span class="priz-line-name">${i.name}</span>
         <span class="priz-line-price">₹${i.price.toLocaleString('en-IN')}</span>
-        <button class="quick-add-btn" data-wl-add="${i.id}">Move to Bag</button>
+        <button class="quick-add-btn" data-wl-add="${i.id}">Move to Cart</button>
       </div>
       <button class="priz-remove" data-wl-remove="${i.id}">&times;</button>
     </div>

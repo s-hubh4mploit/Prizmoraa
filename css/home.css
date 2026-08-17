@@ -92,43 +92,6 @@
   font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold);
 }
 
-/* ---------- DUETTE (signature) ---------- */
-.duette { background: var(--espresso); color: var(--ivory); padding: 140px 0; }
-.duette .eyebrow { color: var(--gold-light); }
-.duette h2 { color: var(--ivory); font-size: clamp(34px,4.6vw,50px); max-width: 640px; }
-.duette-intro {
-  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: start; margin-bottom: 60px;
-}
-.duette-intro p { color: #E7DDCD; font-size: 17px; margin-top: 22px; max-width: 540px; line-height: 1.7; }
-
-.link-motif { display: flex; align-items: center; gap: 0; margin-top: 36px; }
-.link-motif .dot {
-  width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--gold-light); background: transparent;
-}
-.link-motif .chain {
-  width: 64px; height: 1px;
-  background: repeating-linear-gradient(90deg, var(--gold-light) 0 4px, transparent 4px 8px);
-}
-.link-motif .dot.filled { background: var(--gold-light); }
-
-.duette-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-}
-.duette-card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(233,220,199,0.12);
-  border-radius: 6px; padding: 18px; text-decoration: none; color: var(--ivory);
-  transition: all .35s ease; display: flex; flex-direction: column; overflow: hidden;
-}
-.duette-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-6px); border-color: var(--gold-light); }
-.duette-card .img-wrap {
-  width: 100%; aspect-ratio: 1/1; border-radius: 4px; overflow: hidden; margin-bottom: 16px;
-  background: rgba(0,0,0,0.2); position: relative;
-}
-.duette-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(0.16, 1, 0.3, 1); }
-.duette-card:hover img { transform: scale(1.06); }
-.duette-card h3 { color: var(--gold-light); font-size: 21px; margin-bottom: 6px; font-family: var(--font-serif); }
-.duette-card .price { color: var(--gold-shimmer); font-size: 16px; font-weight: 500; font-family: var(--font-serif); margin-top: auto; }
-
 /* ---------- FEATURED BESTSELLERS ---------- */
 .featured { padding: 120px 0; background: var(--ivory); }
 .featured-head { text-align: center; max-width: 600px; margin: 0 auto 60px; }
@@ -196,8 +159,6 @@
   .hero-media { order: -1; max-width: 420px; margin: 0 auto; min-height: 260px; }
   .founder .wrap { grid-template-columns: 1fr; text-align: center; }
   .founder p { margin-left: auto; margin-right: auto; }
-  .duette-intro { grid-template-columns: 1fr; }
-  .duette-grid { grid-template-columns: repeat(2, 1fr); }
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .packaging .wrap { grid-template-columns: 1fr; }
 }
@@ -205,7 +166,6 @@
   .hero-inner { padding-left: 12px; padding-right: 12px; }
   .hero { padding: 60px 0 20px; }
   .hero-media { min-height: 200px; box-shadow: 0 8px 18px rgba(58,42,29,0.06); }
-  .duette-grid { grid-template-columns: 1fr; }
   .cat-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: clamp(36px, 8vw, 64px); }
   .hero-tagline { font-size: 15px; }
