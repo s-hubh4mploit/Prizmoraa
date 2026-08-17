@@ -1,3 +1,15 @@
+/* ---------- BACK TO HOME ---------- */
+.back-home-bar { max-width: var(--max); margin: 0 auto; padding: 26px 32px 0; }
+.back-home-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--espresso-soft); transition: color .2s ease;
+}
+.back-home-link:hover { color: var(--gold); }
+@media (max-width: 560px) {
+  .back-home-bar { padding-left: 20px; padding-right: 20px; }
+}
+
 /* ---------- NAV ---------- */
 header.nav {
   position: relative;
