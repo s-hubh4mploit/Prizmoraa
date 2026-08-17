@@ -1,12 +1,25 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { neon } from '@neondatabase/serverless';
 import { getUserIdFromRequest } from './auth.js';
 import { sendOrderConfirmationEmail } from './_lib/send-order-email.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Independently verifies the Razorpay payment signature server-side —
+// orders must never be trusted as "paid" purely because a client claims so.
+function isValidRazorpayPayment({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) {
+  if (!process.env.RAZORPAY_KEY_SECRET) return false;
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) return false;
+  const expected = crypto
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest('hex');
+  return expected === razorpay_signature;
+}
 
 const CONNECTION_STRING =
   process.env.DATABASE_URL ||
@@ -150,17 +163,22 @@ export default async (req, res) => {
   try {
     if (pathname === '/api/orders' && method === 'POST') {
       const body = await readBody(req);
-      const { items, total, name, phone, address, pincode, paymentId, email } = body;
+      const { items, total, name, phone, address, pincode, email,
+        razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
       if (!Array.isArray(items) || items.length === 0 || !total || !name || !phone || !address || !pincode) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing required order fields.' }));
+      }
+      if (!isValidRazorpayPayment({ razorpay_order_id, razorpay_payment_id, razorpay_signature })) {
+        res.statusCode = 402;
+        return res.end(JSON.stringify({ error: 'Payment could not be verified. This order was not recorded.' }));
       }
       const userId = getUserIdFromRequest(req);
       const order = {
         id: 'order-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
         userId: userId || null,
         name, email: email || null, phone, address, pincode,
-        items, total, paymentId: paymentId || null, status: 'paid',
+        items, total, paymentId: razorpay_payment_id, status: 'paid',
       };
       await store.create(order);
       const emailResult = await sendOrderConfirmationEmail(order);

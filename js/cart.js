@@ -409,7 +409,10 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
           const verifyData = await verifyRes.json();
           if (verifyData.verified) {
             const paymentId = response.razorpay_payment_id;
-            await recordOrder({ name, email, phone, address, pincode, cart, paymentId });
+            const recorded = await recordOrder({ name, email, phone, address, pincode, cart, razorpayResponse: response });
+            if (!recorded) {
+              onError && onError('Payment succeeded but the order could not be saved. Please contact us on WhatsApp with your payment ID.');
+            }
             sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId });
             clearCart();
             resolve({ success: true, paymentId });
@@ -431,22 +434,27 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
   }
 }
 
-async function recordOrder({ name, email, phone, address, pincode, cart, paymentId }) {
+async function recordOrder({ name, email, phone, address, pincode, cart, razorpayResponse }) {
   try {
     const headers = { 'Content-Type': 'application/json' };
     const token = window.PrizmoraaAuth && window.PrizmoraaAuth.getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    await fetch('/api/orders', {
+    const res = await fetch('/api/orders', {
       method: 'POST',
       headers,
       body: JSON.stringify({
         items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
         total: cartTotal(),
-        name, email, phone, address, pincode, paymentId,
+        name, email, phone, address, pincode,
+        razorpay_order_id: razorpayResponse.razorpay_order_id,
+        razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+        razorpay_signature: razorpayResponse.razorpay_signature,
       }),
     });
+    return res.ok;
   } catch (err) {
     console.error('Failed to record order (payment already succeeded):', err);
+    return false;
   }
 }
 
