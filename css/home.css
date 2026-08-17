@@ -53,17 +53,17 @@
 }
 
 /* ---------- STORY QUOTE ---------- */
-.story { padding: 140px 0 120px; text-align: center; }
+.story { padding: 140px 0 120px; text-align: center; background: var(--espresso); }
 .story .wrap { max-width: 760px; }
 .story blockquote {
   font-size: clamp(26px, 3.4vw, 38px);
   line-height: 1.5;
-  color: var(--espresso);
+  color: var(--ivory);
   font-style: italic;
   font-family: var(--font-serif);
 }
 .story blockquote .line { display: block; }
-.story-p { margin-top: 26px; font-size: 16px; color: var(--espresso-soft); line-height: 1.8; }
+.story-p { margin-top: 26px; font-size: 16px; color: #E7DDCD; line-height: 1.8; }
 .story-sign {
   display: block; margin-top: 40px;
   font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
