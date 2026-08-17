@@ -87,11 +87,19 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
   .logotype {
     position: absolute; left: 50%; top: 50%;
     transform: translate(-50%, -50%);
+    max-width: 40vw;
   }
+  /* Smaller than the desktop logo (74-76px) so it doesn't crowd the icon
+     groups on either side at narrow phone widths. */
+  .logotype img { height: 40px; width: auto; max-width: 100%; }
 
   #accountToggleBtn { order: 3; margin-left: auto; }
   #wishlistToggleBtn { order: 4; }
   #cartToggleBtn { order: 5; }
+}
+
+@media (max-width: 380px) {
+  .logotype img { height: 34px; }
 }
 
 @media (max-width: 560px) {
