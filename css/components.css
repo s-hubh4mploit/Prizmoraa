@@ -31,7 +31,7 @@ header.nav.scrolled { box-shadow: 0 8px 24px rgba(58, 42, 29, 0.06); }
   display: inline-flex; align-items: center; gap: 10px;
 }
 
-.logotype img { height: 74px; width: auto; display: block; }
+.logotype img { height: 84px; width: auto; display: block; }
 
 .nav-links { display: flex; gap: 34px; list-style: none; }
 .nav-links a {
@@ -180,5 +180,4 @@ footer {
   .footer-top { grid-template-columns: 1fr; }
   .cta-form { flex-direction: column; gap: 14px; align-items: flex-start; border-bottom: none; }
   .cta-form input { border-bottom: 1px solid var(--espresso); width: 100%; }
-  .logotype img { height: 76px; }
 }

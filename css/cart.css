@@ -78,7 +78,7 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
 /* ---------- MOBILE NAV LAYOUT ----------
    Menu + search on the left, logo centered, account/wishlist/cart on the right. */
 @media (max-width: 980px) {
-  .nav-inner { position: relative; min-height: 74px; justify-content: flex-start; gap: 14px; }
+  .nav-inner { position: relative; min-height: 88px; justify-content: flex-start; gap: 14px; }
   .nav-icons { display: contents; }
 
   .nav-toggle { order: 1; }
@@ -91,11 +91,11 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
   .nav-inner .logotype {
     position: absolute; left: 50%; top: 50%;
     transform: translate(-50%, -50%);
-    max-width: 40vw;
+    max-width: 34vw;
   }
-  /* Smaller than the desktop logo (74-76px) so it doesn't crowd the icon
-     groups on either side at narrow phone widths. */
-  .nav-inner .logotype img { height: 40px; width: auto; max-width: 100%; }
+  /* Bigger than before but still clear of the icon groups on either side
+     at narrow phone widths (checked against ~340-360px viewports). */
+  .nav-inner .logotype img { height: 52px; width: auto; max-width: 100%; }
 
   #accountToggleBtn { order: 3; margin-left: auto; }
   #wishlistToggleBtn { order: 4; }
@@ -103,11 +103,8 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
 }
 
 @media (max-width: 380px) {
-  .nav-inner .logotype img { height: 34px; }
-}
-
-@media (max-width: 560px) {
-  .nav-inner { min-height: 76px; }
+  .nav-inner .logotype img { height: 44px; }
+  .nav-inner { min-height: 80px; }
 }
 
 /* Account / auth */
