@@ -50,7 +50,7 @@
 <div class="wrap">
 <div class="shop-scroll-head">
 <div>
-<span class="eyebrow">Shop The Edit</span>
+<span class="eyebrow">Scroll To Explore</span>
 <h2>All Jewellery</h2>
 </div>
 <div class="scroll-arrows">
@@ -173,7 +173,7 @@ const { getProducts, getProductsByCategory, getAllCategories } = window.Prizmora
 // Populate Featured Bestsellers Grid
 const allProducts = await getProducts();
 
-// Populate "Shop The Edit" horizontal scroll strip with every product
+// Populate "Scroll To Explore" horizontal scroll strip with every product
 const scrollTrack = document.getElementById('shopScrollTrack');
 if (scrollTrack && allProducts.length > 0) {
 scrollTrack.innerHTML = allProducts.map(p => `
