@@ -1,7 +1,7 @@
 // Data Manager for PRIZMORAA Products - Universal file:// and http:// compatibility
 
 (function() {
-  const INVENTORY_KEY = 'prizmoraa_inventory_v19';
+  const INVENTORY_KEY = 'prizmoraa_inventory_v20';
 
   const defaultProducts = [
   {
