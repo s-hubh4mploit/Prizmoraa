@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>PRIZMORAA — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/design-system.css">
+<link rel="stylesheet" href="./css/components.css">
+<link rel="stylesheet" href="./css/cart.css">
+<link rel="stylesheet" href="./css/checkout.css">
+</head>
+<body>
+
+<header class="nav" id="siteNav">
+<div class="nav-inner">
+<a href="index.html" class="logotype"><img src="images/logo.png" alt="PRIZMORAA"></a>
+<ul class="nav-links">
+<li><a href="collections.html">Collections</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+<div class="nav-icons">
+  <button class="icon-btn" id="searchToggleBtn" aria-label="Search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <button class="icon-btn" id="accountToggleBtn" aria-label="Account">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </button>
+  <button class="icon-btn" id="wishlistToggleBtn" aria-label="Wishlist">
+    <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <span class="icon-badge" id="wishlistCount">0</span>
+  </button>
+  <button class="icon-btn" id="cartToggleBtn" aria-label="Cart">
+    <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="icon-badge" id="cartCount">0</span>
+  </button>
+</div>
+</div>
+</header>
+
+<main class="checkout-page">
+<div class="wrap">
+<div class="checkout-header">
+<span class="eyebrow">Secure Checkout</span>
+<h1>Complete Your Order</h1>
+</div>
+
+<div class="checkout-layout" id="checkoutLayout">
+
+<section class="checkout-form-col">
+<h2 class="checkout-subhead">Delivery Details</h2>
+<form id="checkoutPageForm" class="checkout-form">
+  <div class="form-row">
+    <input required id="cpName" class="priz-input" placeholder="Full name">
+    <input required id="cpEmail" class="priz-input" type="email" placeholder="Email (for order confirmation)">
+  </div>
+  <div class="form-row">
+    <input required id="cpPhone" class="priz-input" type="tel" placeholder="WhatsApp number">
+    <input required id="cpPincode" class="priz-input" placeholder="Pincode">
+  </div>
+  <textarea required id="cpAddress" class="priz-input" placeholder="Delivery address"></textarea>
+  <p class="priz-hint">Prepaid orders only — we don't offer Cash on Delivery. Payment is handled securely by Razorpay; we never see or store your card details.</p>
+  <button type="submit" class="btn" id="checkoutPagePayBtn" style="width:100%">Pay & Place Order</button>
+  <p class="checkout-badges">
+    <span>🔒 Secured by Razorpay</span>
+    <span>18K Gold / Rhodium Plated</span>
+    <span>Free Express Shipping</span>
+  </p>
+</form>
+</section>
+
+<aside class="checkout-summary-col">
+<h2 class="checkout-subhead">Order Summary</h2>
+<div id="checkoutItemsWrap"><p class="priz-hint">Loading your bag...</p></div>
+<div class="checkout-total-row">
+  <span>Subtotal</span>
+  <strong id="checkoutTotal">₹0</strong>
+</div>
+</aside>
+
+</div>
+
+<div id="checkoutSuccess" class="checkout-success" style="display:none;">
+  <span class="checkout-success-icon">✓</span>
+  <h2>Thank you — your order is confirmed!</h2>
+  <p id="checkoutSuccessDetail"></p>
+  <a href="collections.html" class="btn">Continue Shopping</a>
+</div>
+
+</div>
+</main>
+
+<footer>
+<div class="wrap">
+<div class="footer-top">
+<div>
+<span class="logotype">PRIZMORAA</span>
+<p class="footer-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance.</p>
+</div>
+<div class="footer-col">
+<h4>Explore</h4>
+<a href="collections.html">Collections</a>
+</div>
+<div class="footer-col">
+<h4>Info</h4>
+<a href="contact.html">Contact</a>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 PRIZMORAA. All rights reserved.</span>
+<span>Made with care</span>
+</div>
+</div>
+</footer>
+
+<script type="module" src="./js/products.js"></script>
+<script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/auth.js"></script>
+<script type="module" src="./js/cart.js"></script>
+<script type="module" src="./js/checkout.js"></script>
+</body>
+</html>

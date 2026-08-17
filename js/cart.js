@@ -184,6 +184,7 @@ function renderCartDrawer() {
       <input required id="ckPincode" class="priz-input" placeholder="Pincode" value="${p.pincode || ''}">
       <button type="submit" class="btn" style="width:100%" id="payBtn">Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order</button>
     </form>
+    <a href="checkout.html" class="priz-full-checkout-link">Prefer a full page? Go to Checkout →</a>
   `;
   $('#checkoutForm').addEventListener('submit', handleCheckoutSubmit);
 }
@@ -375,20 +376,22 @@ function loadRazorpayScript() {
   });
 }
 
-async function handleCheckoutSubmit(e) {
-  e.preventDefault();
-  const payBtn = $('#payBtn');
-  const name = $('#ckName').value.trim();
-  const email = $('#ckEmail').value.trim();
-  const phone = $('#ckPhone').value.trim();
-  const address = $('#ckAddress').value.trim();
-  const pincode = $('#ckPincode').value.trim();
+/**
+ * Shared Razorpay checkout flow — used by both the quick-checkout cart
+ * drawer and the dedicated /checkout.html page, so there's one code path
+ * for "create order -> open Razorpay -> verify -> record -> notify".
+ * Returns { success: boolean, paymentId?, dismissed? }.
+ */
+async function runCheckout({ name, email, phone, address, pincode }, { onStatus, onError } = {}) {
   const cart = getCart();
-  if (cart.length === 0) return;
+  if (cart.length === 0) {
+    onError && onError('Your cart is empty.');
+    return { success: false };
+  }
 
   saveProfile({ name, email, phone, address, pincode });
+  onStatus && onStatus('Preparing payment...');
 
-  payBtn.disabled = true; payBtn.textContent = 'Preparing payment...';
   try {
     const amountPaise = Math.round(cartTotal() * 100);
     const orderRes = await fetch('/api/create-order', {
@@ -401,46 +404,66 @@ async function handleCheckoutSubmit(e) {
 
     await loadRazorpayScript();
 
-    const rzp = new window.Razorpay({
-      key: order.keyId,
-      amount: order.amount,
-      currency: order.currency,
-      name: 'PRIZMORAA',
-      description: 'Jewellery order',
-      order_id: order.orderId,
-      prefill: { name, contact: phone },
-      theme: { color: '#1e2327' },
-      handler: async function (response) {
-        payBtn.textContent = 'Verifying payment...';
-        const verifyRes = await fetch('/api/verify-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(response),
-        });
-        const verifyData = await verifyRes.json();
-        if (verifyData.verified) {
-          const paymentId = response.razorpay_payment_id;
-          await recordOrder({ name, email, phone, address, pincode, cart, paymentId });
-          sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId });
-          clearCart();
-          closeAllPanels();
-        } else {
-          alert('Payment could not be verified. If money was deducted, please contact us on WhatsApp with your payment ID.');
+    return await new Promise((resolve) => {
+      const rzp = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'PRIZMORAA',
+        description: 'Jewellery order',
+        order_id: order.orderId,
+        prefill: { name, email, contact: phone },
+        theme: { color: '#1e2327' },
+        handler: async function (response) {
+          onStatus && onStatus('Verifying payment...');
+          const verifyRes = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(response),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.verified) {
+            const paymentId = response.razorpay_payment_id;
+            await recordOrder({ name, email, phone, address, pincode, cart, paymentId });
+            sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId });
+            clearCart();
+            resolve({ success: true, paymentId });
+          } else {
+            onError && onError('Payment could not be verified. If money was deducted, please contact us on WhatsApp with your payment ID.');
+            resolve({ success: false });
+          }
+        },
+        modal: {
+          ondismiss: function () { resolve({ success: false, dismissed: true }); }
         }
-        payBtn.disabled = false; payBtn.textContent = `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
-      },
-      modal: {
-        ondismiss: function () {
-          payBtn.disabled = false; payBtn.textContent = `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
-        }
-      }
+      });
+      rzp.open();
     });
-    rzp.open();
   } catch (err) {
     console.error(err);
-    alert('Something went wrong starting payment. Please try again.');
-    payBtn.disabled = false; payBtn.textContent = `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
+    onError && onError('Something went wrong starting payment. Please try again.');
+    return { success: false };
   }
+}
+
+async function handleCheckoutSubmit(e) {
+  e.preventDefault();
+  const payBtn = $('#payBtn');
+  const name = $('#ckName').value.trim();
+  const email = $('#ckEmail').value.trim();
+  const phone = $('#ckPhone').value.trim();
+  const address = $('#ckAddress').value.trim();
+  const pincode = $('#ckPincode').value.trim();
+  const resetLabel = () => `Pay ₹${cartTotal().toLocaleString('en-IN')} & Place Order`;
+
+  payBtn.disabled = true;
+  const result = await runCheckout({ name, email, phone, address, pincode }, {
+    onStatus: (msg) => { payBtn.textContent = msg; },
+    onError: (msg) => { alert(msg); },
+  });
+  payBtn.disabled = false;
+  payBtn.textContent = resetLabel();
+  if (result.success) closeAllPanels();
 }
 
 async function recordOrder({ name, email, phone, address, pincode, cart, paymentId }) {
@@ -498,4 +521,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBadges();
 });
 
-window.PrizmoraaCart = { addToCart, addFromBtn, wishlistFromBtn, toggleWishlistItem, openPanel, getCart, cartCount };
+window.PrizmoraaCart = {
+  addToCart, addFromBtn, wishlistFromBtn, toggleWishlistItem, openPanel,
+  getCart, cartCount, cartTotal, removeFromCart, setQty, clearCart,
+  getProfile, runCheckout,
+};

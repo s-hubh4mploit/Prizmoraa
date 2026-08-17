@@ -10,6 +10,7 @@ export default defineConfig({
         collections: resolve(__dirname, 'collections.html'),
         product: resolve(__dirname, 'product.html'),
         contact: resolve(__dirname, 'contact.html'),
+        checkout: resolve(__dirname, 'checkout.html'),
         admin: resolve(__dirname, 'admin.html')
       }
     }
