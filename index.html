@@ -248,14 +248,13 @@ const meta = catMeta[cat] || {
 title: cat.split(/[-_\s]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
 count: 'Explore pieces in this collection'
 };
-const countText = prods.length > 0 ? `${prods.length} Designs · ${meta.count}` : meta.count;
 return `
 <a href="collection.html?cat=${encodeURIComponent(cat)}" class="cat-card">
 <div class="img-wrap">
 <img src="${encodedImg}" alt="${meta.title}">
 </div>
 <h3>${meta.title}</h3>
-<span class="cat-count">${countText}</span>
+<span class="cat-count">${meta.count}</span>
 <span class="cat-more">Shop Collection →</span>
 </a>
 `;

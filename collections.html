@@ -107,13 +107,12 @@ sub: 'Explore pieces in this collection'
 const prods = await getProductsByCategory(cat);
 const featuredImage = prods.length > 0 ? (prods[0].image || 'images/hero.jpg') : 'images/hero.jpg';
 const encodedImage = encodeURI(featuredImage);
-const count = prods.length;
 return `
 <a href="collection.html?cat=${encodeURIComponent(cat)}" class="col-card">
 <div class="img-wrap"><img src="${encodedImage}" alt="${meta.title}"></div>
 <div class="col-info">
 <h2>${meta.title}</h2>
-<span>${meta.sub} • ${count} Designs</span>
+<span>${meta.sub}</span>
 </div>
 </a>
 `;
