@@ -28,7 +28,7 @@ const CONNECTION_STRING =
   process.env.POSTGRES_URL_NON_POOLING;
 
 const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
 
 function setJsonHeaders(res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
