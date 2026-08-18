@@ -223,14 +223,14 @@
           <small class="field-note">The homepage shows up to 4 featured items.</small>
         </div>
         <div class="input-group full-width">
-          <label>Image Path (e.g. images/PRIZMORA/EARINGS/...)</label>
-          <input type="text" id="itemImage" placeholder="images/hero.jpg">
+          <label>Product Images</label>
+          <div id="imageManager" class="image-manager"></div>
+          <input type="file" id="itemImageFile" accept="image/jpeg, image/png, image/webp, image/gif" multiple>
+          <small class="field-note">Click a photo to make it the main image, or the × to remove it. Uploading adds new photos without replacing the ones already here. Accepted: JPEG, PNG, WEBP, GIF.</small>
         </div>
         <div class="input-group full-width">
-          <label>Upload Image(s)</label>
-          <input type="file" id="itemImageFile" accept="image/jpeg, image/png, image/webp, image/gif" multiple>
-          <div id="imagePreview" class="image-preview"></div>
-          <small class="field-note">Accepted: JPEG, PNG, WEBP, GIF. Selected files are stored in the admin (no code changes needed).</small>
+          <label>Or set an image path manually (advanced)</label>
+          <input type="text" id="itemImage" placeholder="images/hero.jpg">
         </div>
         <div class="input-group full-width">
           <label>Description</label>

@@ -1,11 +1,18 @@
 /* ---------- BACK TO HOME ---------- */
-.back-home-bar { max-width: var(--max); margin: 0 auto; padding: 26px 32px 0; }
+.back-home-bar { max-width: var(--max); margin: 0 auto; padding: 22px 32px 4px; }
 .back-home-link {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
-  color: var(--espresso-soft); transition: color .2s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--espresso-soft);
+  padding: 9px 18px 9px 14px;
+  border: 1px solid rgba(58, 42, 29, 0.16);
+  border-radius: 30px;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
 }
-.back-home-link:hover { color: var(--gold); }
+.back-home-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+.back-home-link:hover {
+  color: var(--ivory); background: var(--espresso); border-color: var(--espresso);
+}
 @media (max-width: 560px) {
   .back-home-bar { padding-left: 20px; padding-right: 20px; }
 }

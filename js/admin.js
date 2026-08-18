@@ -93,7 +93,6 @@ checkAuth();
 
 // --- Dashboard Logic ---
 let inventory = [];
-let uploadedImageURLs = [];
 
 async function initDashboard() {
   const pm = getProductManager();
@@ -239,14 +238,49 @@ const closeModal = document.getElementById('closeModal');
 const cancelModal = document.getElementById('cancelModal');
 const itemForm = document.getElementById('itemForm');
 const itemImageFile = document.getElementById('itemImageFile');
-const imagePreview = document.getElementById('imagePreview');
+const imageManager = document.getElementById('imageManager');
 const btnResetCatalog = document.getElementById('btnResetCatalog');
+
+// Working set of images for whichever item is open in the modal. mainImageIndex
+// points at the one used as the product's primary/thumbnail image.
+let currentImages = [];
+let mainImageIndex = 0;
+
+function renderImageManager() {
+  if (!imageManager) return;
+  if (currentImages.length === 0) {
+    imageManager.innerHTML = '<p class="image-manager-empty">No images yet — upload at least one below.</p>';
+    return;
+  }
+  imageManager.innerHTML = currentImages.map((src, i) => `
+    <div class="image-thumb ${i === mainImageIndex ? 'is-main' : ''}" data-index="${i}" title="${i === mainImageIndex ? 'Main image' : 'Click to set as main image'}">
+      <img src="${encodeURI(src)}" alt="Product image ${i + 1}">
+      ${i === mainImageIndex ? '<span class="main-badge">Main</span>' : ''}
+      <button type="button" class="remove-thumb-btn" data-remove-index="${i}" aria-label="Remove image">×</button>
+    </div>
+  `).join('');
+
+  imageManager.querySelectorAll('.image-thumb').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.remove-thumb-btn')) return;
+      mainImageIndex = parseInt(el.dataset.index, 10);
+      renderImageManager();
+    });
+  });
+  imageManager.querySelectorAll('.remove-thumb-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.removeIndex, 10);
+      currentImages.splice(idx, 1);
+      if (mainImageIndex >= currentImages.length) mainImageIndex = Math.max(0, currentImages.length - 1);
+      else if (idx < mainImageIndex) mainImageIndex--;
+      renderImageManager();
+    });
+  });
+}
 
 if (itemImageFile) {
   itemImageFile.addEventListener('change', async (e) => {
-    uploadedImageURLs = [];
-    if (imagePreview) imagePreview.innerHTML = '';
-
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
 
@@ -257,14 +291,10 @@ if (itemImageFile) {
       reader.readAsDataURL(file);
     }));
 
-    const results = await Promise.all(readers);
-    uploadedImageURLs = results.filter(Boolean);
-
-    if (uploadedImageURLs.length && imagePreview) {
-      imagePreview.innerHTML = uploadedImageURLs.map(src => `<img src="${src}" alt="Selected image">`).join('');
-      const fileNames = files.map(file => file.name).filter(Boolean);
-      document.getElementById('itemImage').value = fileNames.length > 1 ? `${fileNames.length} images selected` : fileNames[0] || 'Image selected';
-    }
+    const results = (await Promise.all(readers)).filter(Boolean);
+    currentImages = currentImages.concat(results);
+    itemImageFile.value = '';
+    renderImageManager();
   });
 }
 
@@ -288,6 +318,9 @@ if (btnNewItem) {
     if (itemForm) itemForm.reset();
     document.getElementById('itemId').value = '';
     document.getElementById('modalTitle').textContent = 'Add New Item';
+    currentImages = [];
+    mainImageIndex = 0;
+    renderImageManager();
     if (modal) modal.classList.add('active');
   });
 }
@@ -295,9 +328,10 @@ if (btnNewItem) {
 function closeAndReset() {
   if (modal) modal.classList.remove('active');
   if (itemForm) itemForm.reset();
-  uploadedImageURLs = [];
+  currentImages = [];
+  mainImageIndex = 0;
   if (itemImageFile) itemImageFile.value = '';
-  if (imagePreview) imagePreview.innerHTML = '';
+  renderImageManager();
 }
 
 if (closeModal) closeModal.addEventListener('click', closeAndReset);
@@ -313,13 +347,12 @@ if (itemForm) {
     const subcategory = sanitizeInput(document.getElementById('itemSubCategory').value);
     const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
     const featured = document.getElementById('itemFeatured').checked;
-    const imageInput = sanitizeInput(document.getElementById('itemImage').value) || 'images/hero.jpg';
-    const image = uploadedImageURLs.length ? uploadedImageURLs[0] : imageInput;
+    const imageInput = sanitizeInput(document.getElementById('itemImage').value);
+    const images = currentImages.length ? currentImages : [imageInput || 'images/hero.jpg'];
+    const image = currentImages.length ? currentImages[mainImageIndex] : images[0];
     const desc = sanitizeInput(document.getElementById('itemDesc').value);
 
     const existingIndex = inventory.findIndex(i => i.id === id);
-    const existingItem = inventory[existingIndex] || {};
-    const images = uploadedImageURLs.length ? uploadedImageURLs : (existingItem.images ? existingItem.images : [image]);
 
     const newItem = { id, name, price, category, subcategory, stock, featured, image, images, desc, status: 'Active' };
 
@@ -353,9 +386,10 @@ if (btnExport) {
 window.editItem = function(id) {
   const item = inventory.find(i => i.id === id);
   if(item) {
-    uploadedImageURLs = [];
     if (itemImageFile) itemImageFile.value = '';
-    if (imagePreview) imagePreview.innerHTML = '';
+    currentImages = item.images && item.images.length ? [...item.images] : (item.image ? [item.image] : []);
+    mainImageIndex = Math.max(0, currentImages.indexOf(item.image));
+    renderImageManager();
 
     document.getElementById('itemId').value = item.id;
     document.getElementById('itemName').value = item.name;
@@ -364,7 +398,7 @@ window.editItem = function(id) {
     document.getElementById('itemSubCategory').value = item.subcategory || '';
     document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;
     document.getElementById('itemFeatured').checked = !!item.featured;
-    document.getElementById('itemImage').value = item.image || '';
+    document.getElementById('itemImage').value = '';
     document.getElementById('itemDesc').value = item.desc || '';
     document.getElementById('modalTitle').textContent = 'Edit Item';
     if (modal) modal.classList.add('active');
