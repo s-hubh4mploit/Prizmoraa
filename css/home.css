@@ -52,7 +52,7 @@
 }
 
 /* ---------- STORY QUOTE ---------- */
-.story { padding: 140px 0 120px; text-align: center; background: var(--espresso); }
+.story { margin-top: 70px; padding: 140px 0 120px; text-align: center; background: var(--espresso); }
 .story .wrap { max-width: 760px; }
 .story blockquote {
   font-size: clamp(26px, 3.4vw, 38px);
