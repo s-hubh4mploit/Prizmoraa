@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 12);
     });
+
+    // Expose the nav's real height so sections below can fill exactly
+    // the remaining viewport (used for the full-screen hero section).
+    const syncNavHeight = () => {
+      document.documentElement.style.setProperty('--nav-h', `${nav.offsetHeight}px`);
+    };
+    syncNavHeight();
+    window.addEventListener('resize', syncNavHeight);
   }
 
   // Mobile nav toggle

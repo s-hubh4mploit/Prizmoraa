@@ -1,6 +1,8 @@
 /* ---------- HERO ---------- */
 .hero {
   display: flex; align-items: center;
+  min-height: calc(100vh - var(--nav-h, 120px));
+  min-height: calc(100dvh - var(--nav-h, 120px));
   padding: 24px 0 48px;
   background: var(--ivory);
   overflow: hidden;
