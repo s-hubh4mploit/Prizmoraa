@@ -46,28 +46,6 @@
 </div>
 </header>
 
-<section class="shop-scroll" id="shopScroll">
-<div class="wrap">
-<div class="shop-scroll-head">
-<div>
-<span class="eyebrow">Scroll To Explore</span>
-<h2>All Jewellery</h2>
-</div>
-<div class="scroll-arrows">
-<button class="scroll-arrow" id="scrollLeftBtn" aria-label="Scroll left">
-<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
-</button>
-<button class="scroll-arrow" id="scrollRightBtn" aria-label="Scroll right">
-<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-<div class="shop-scroll-track" id="shopScrollTrack">
-<!-- Populated dynamically with every product -->
-</div>
-</div>
-</section>
-
 <section class="hero" id="top">
 <div class="hero-inner">
 <div class="hero-copy">
@@ -174,29 +152,6 @@ const { getProducts, getProductsByCategory, getAllCategories } = window.Prizmora
 // Populate Featured Bestsellers Grid
 const allProducts = await getProducts();
 
-// Populate "Scroll To Explore" horizontal scroll strip with every product
-const scrollTrack = document.getElementById('shopScrollTrack');
-if (scrollTrack && allProducts.length > 0) {
-scrollTrack.innerHTML = allProducts.map(p => {
-const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
-return `
-<a href="product.html?id=${p.id}" class="scroll-card">
-<div class="img-wrap">
-<img src="${encodeURI(p.image)}" alt="${p.name}" loading="lazy">
-${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
-</div>
-<h3>${p.name}</h3>
-<span class="price">₹${p.price.toLocaleString('en-IN')}</span>
-</a>
-`;
-}).join('');
-
-const scrollLeftBtn = document.getElementById('scrollLeftBtn');
-const scrollRightBtn = document.getElementById('scrollRightBtn');
-const scrollByAmount = () => Math.min(scrollTrack.clientWidth * 0.8, 600);
-scrollLeftBtn?.addEventListener('click', () => scrollTrack.scrollBy({ left: -scrollByAmount(), behavior: 'smooth' }));
-scrollRightBtn?.addEventListener('click', () => scrollTrack.scrollBy({ left: scrollByAmount(), behavior: 'smooth' }));
-}
 const featuredPicks = allProducts.filter(p => p.featured);
 const featuredItems = (featuredPicks.length > 0 ? featuredPicks : allProducts).slice(0, 4);
 const featuredGrid = document.getElementById('featuredHomeGrid');
