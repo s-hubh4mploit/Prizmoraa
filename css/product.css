@@ -24,7 +24,6 @@
 
 .prod-main-img {
   width: 100%;
-  aspect-ratio: 1/1;
   border-radius: 6px;
   overflow: hidden;
   background: var(--ivory-deep);
@@ -33,10 +32,12 @@
   box-shadow: 0 16px 40px rgba(58, 42, 29, 0.06);
 }
 
+/* Sized to the photo's own proportions — no fixed box — so nothing gets
+   cropped and no letterboxing/background bars show around it. */
 .prod-main-img img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  display: block;
   transition: opacity 0.3s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -78,7 +79,7 @@
 .thumb-btn img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 /* Details Section */

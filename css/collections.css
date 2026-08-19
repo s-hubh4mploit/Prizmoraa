@@ -38,12 +38,15 @@
 .prod-card:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(58,42,29,0.1); }
 
 .prod-card .img-wrap {
-  width: 100%; aspect-ratio: 1/1; overflow: hidden; border-radius: 4px;
+  width: 100%; overflow: hidden; border-radius: 4px;
   margin-bottom: 16px; background: var(--ivory-deep); position: relative;
 }
-.prod-card .img-wrap img { width: 100%; height: 100%; object-fit: contain; transition: transform .6s cubic-bezier(0.16, 1, 0.3, 1), opacity .4s ease; }
+/* Sized to each photo's own proportions (no fixed box) so nothing gets
+   cropped and no letterboxing/background bars show around it — cards in
+   the grid naturally vary in height to match. */
+.prod-card .img-wrap img { width: 100%; height: auto; display: block; transition: transform .6s cubic-bezier(0.16, 1, 0.3, 1), opacity .4s ease; }
 .prod-card .img-wrap img.hover-pic {
-  position: absolute; inset: 0; opacity: 0;
+  position: absolute; inset: 0; height: 100%; object-fit: cover; opacity: 0;
 }
 .prod-card:hover .img-wrap img.main-pic { transform: scale(1.06); }
 .prod-card:hover .img-wrap img.hover-pic { opacity: 1; transform: scale(1.06); }
