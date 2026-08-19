@@ -117,6 +117,26 @@ textarea.priz-input { min-height: 60px; resize: vertical; }
 .priz-auth-tab.active { color: var(--espresso); border-bottom-color: var(--gold); }
 .priz-auth-error { font-size: 13px; color: #b3261e; margin-bottom: 12px; }
 
+.priz-social-auth { margin-top: 18px; }
+.priz-auth-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--espresso-soft); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.priz-auth-divider::before, .priz-auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(58, 42, 29, 0.15); }
+
+.priz-google-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 11px 14px; margin-bottom: 10px;
+  border: 1px solid rgba(58, 42, 29, 0.2); border-radius: 3px;
+  background: var(--ivory); color: var(--espresso);
+  font-family: inherit; font-size: 14px; cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.priz-google-btn:hover { background: var(--ivory-deep); border-color: var(--espresso); }
+.priz-google-btn:disabled { opacity: 0.6; cursor: default; }
+
+.priz-phone-auth { display: flex; flex-direction: column; }
+.priz-phone-step { display: flex; flex-direction: column; }
+.priz-phone-btn { width: 100%; text-align: center; margin-top: 4px; padding-top: 6px; }
+.priz-phone-btn:disabled { opacity: 0.6; cursor: default; }
+
 .priz-account-welcome { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
 .priz-account-welcome strong { font-family: var(--font-serif); font-size: 19px; color: var(--espresso); }
 .priz-account-welcome span { font-size: 13px; color: var(--espresso-soft); }

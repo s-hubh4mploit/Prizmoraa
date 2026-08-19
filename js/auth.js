@@ -43,6 +43,15 @@ async function login({ email, password }) {
   return data.user;
 }
 
+// Used by Google popup sign-in and phone/OTP sign-in — both hand us a
+// Firebase ID token, which the server verifies and exchanges for a
+// PRIZMORAA session, same shape as email/password login.
+async function loginWithIdToken(idToken) {
+  const data = await postJson('/api/auth/firebase', { idToken });
+  saveSession(data.token, data.user);
+  return data.user;
+}
+
 function logout() { clearSession(); }
 
 async function fetchMyOrders() {
@@ -58,4 +67,4 @@ async function fetchMyOrders() {
   }
 }
 
-window.PrizmoraaAuth = { getToken, getUser, isLoggedIn, signup, login, logout, fetchMyOrders };
+window.PrizmoraaAuth = { getToken, getUser, isLoggedIn, signup, login, loginWithIdToken, logout, fetchMyOrders };

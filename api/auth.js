@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { neon } from '@neondatabase/serverless';
+import { verifyFirebaseIdToken } from './_lib/verify-firebase-token.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,7 +25,7 @@ function setJsonHeaders(res) {
 }
 
 function publicUser(row) {
-  return { id: row.id, name: row.name, email: row.email, phone: row.phone || '' };
+  return { id: row.id, name: row.name, email: row.email, phone: row.phone || '', picture: row.picture || '' };
 }
 
 function isValidEmail(email) {
@@ -37,14 +38,23 @@ function isValidEmail(email) {
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
-    schemaReady = sql`CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      phone TEXT,
-      password_hash TEXT NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT now()
-    )`;
+    schemaReady = (async () => {
+      await sql`CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        phone TEXT,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT now()
+      )`;
+      // Relaxed for Google/phone sign-in, where there's no password and
+      // sometimes no email (phone-only accounts) — safe to re-run every
+      // cold start since dropping an already-nullable constraint is a no-op.
+      await sql`ALTER TABLE users ALTER COLUMN email DROP NOT NULL`;
+      await sql`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_uid TEXT UNIQUE`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS picture TEXT`;
+    })();
   }
   await schemaReady;
 }
@@ -60,10 +70,29 @@ const pgStore = {
     const rows = await sql`SELECT * FROM users WHERE id = ${id} LIMIT 1`;
     return rows[0] || null;
   },
+  async findByFirebaseUid(uid) {
+    await ensureSchema();
+    const rows = await sql`SELECT * FROM users WHERE firebase_uid = ${uid} LIMIT 1`;
+    return rows[0] || null;
+  },
+  async findByPhone(phone) {
+    await ensureSchema();
+    const rows = await sql`SELECT * FROM users WHERE phone = ${phone} LIMIT 1`;
+    return rows[0] || null;
+  },
   async create({ id, name, email, phone, passwordHash }) {
     await ensureSchema();
     await sql`INSERT INTO users (id, name, email, phone, password_hash)
       VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash})`;
+  },
+  async createFromFirebase({ id, name, email, phone, firebaseUid, picture }) {
+    await ensureSchema();
+    await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture)
+      VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null})`;
+  },
+  async linkFirebaseUid(id, firebaseUid) {
+    await ensureSchema();
+    await sql`UPDATE users SET firebase_uid = ${firebaseUid} WHERE id = ${id}`;
   },
 };
 
@@ -110,10 +139,32 @@ const fileStore = {
     const users = readUsersFile();
     return users.find(u => u.id === id) || null;
   },
+  async findByFirebaseUid(uid) {
+    const users = readUsersFile();
+    return users.find(u => u.firebase_uid === uid) || null;
+  },
+  async findByPhone(phone) {
+    const users = readUsersFile();
+    return users.find(u => u.phone && u.phone === phone) || null;
+  },
   async create({ id, name, email, phone, passwordHash }) {
     const users = readUsersFile();
     users.push({ id, name, email: email.toLowerCase(), phone: phone || '', password_hash: passwordHash, created_at: new Date().toISOString() });
     writeUsersFile(users);
+  },
+  async createFromFirebase({ id, name, email, phone, firebaseUid, picture }) {
+    const users = readUsersFile();
+    users.push({
+      id, name, email: email ? email.toLowerCase() : null, phone: phone || '',
+      password_hash: null, firebase_uid: firebaseUid, picture: picture || null,
+      created_at: new Date().toISOString(),
+    });
+    writeUsersFile(users);
+  },
+  async linkFirebaseUid(id, firebaseUid) {
+    const users = readUsersFile();
+    const user = users.find(u => u.id === id);
+    if (user) { user.firebase_uid = firebaseUid; writeUsersFile(users); }
   },
 };
 
@@ -188,11 +239,50 @@ export default async (req, res) => {
         res.statusCode = 401;
         return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
       }
+      if (!row.password_hash) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'This account signs in with Google or phone OTP — please use that instead.' }));
+      }
       const valid = await bcrypt.compare(password, row.password_hash);
       if (!valid) {
         res.statusCode = 401;
         return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
       }
+      return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
+    }
+
+    if (pathname === '/api/auth/firebase' && method === 'POST') {
+      const { idToken } = await readBody(req);
+      let payload;
+      try {
+        payload = await verifyFirebaseIdToken(idToken);
+      } catch (err) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Could not verify sign-in. Please try again.' }));
+      }
+
+      const firebaseUid = payload.sub;
+      const email = payload.email ? payload.email.toLowerCase() : null;
+      const phone = payload.phone_number || '';
+
+      let row = await store.findByFirebaseUid(firebaseUid);
+
+      if (!row && email) {
+        row = await store.findByEmail(email);
+        if (row) await store.linkFirebaseUid(row.id, firebaseUid);
+      }
+      if (!row && phone) {
+        row = await store.findByPhone(phone);
+        if (row) await store.linkFirebaseUid(row.id, firebaseUid);
+      }
+
+      if (!row) {
+        const id = 'user-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const name = payload.name || (email ? email.split('@')[0] : 'Customer');
+        await store.createFromFirebase({ id, name, email, phone, firebaseUid, picture: payload.picture });
+        row = await store.findById(id);
+      }
+
       return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
     }
 

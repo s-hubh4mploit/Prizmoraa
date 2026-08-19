@@ -1,4 +1,5 @@
 // js/cart.js — cart, wishlist, search, account, checkout (Razorpay + WhatsApp)
+import { signInWithGoogle, setupRecaptcha, sendPhoneOtp, confirmPhoneOtp, firebaseConfigured } from './firebase-auth.js';
 
 const CART_KEY = 'prizmoraa_cart_v1';
 const WISHLIST_KEY = 'prizmoraa_wishlist_v1';
@@ -215,6 +216,95 @@ function renderAccountPanel() {
   }
 }
 
+/**
+ * Google popup + phone/OTP sign-in, appended after an email/password
+ * auth form. Shared by both the account panel and the checkout gate so
+ * there's one implementation of the Firebase wiring.
+ */
+let socialAuthCounter = 0;
+function renderSocialAuthExtras(container, onAuthed, showError) {
+  socialAuthCounter += 1;
+  const uid = `sa${socialAuthCounter}`;
+  const wrap = document.createElement('div');
+  wrap.className = 'priz-social-auth';
+  wrap.innerHTML = `
+    <div class="priz-auth-divider"><span>or</span></div>
+    <button type="button" class="priz-google-btn" id="${uid}-google">
+      <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.8 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3c-7.7 0-14.3 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-1.8 14.1-5l-6.5-5.5C29.6 36 26.9 37 24 37c-5.3 0-9.7-3.1-11.3-7.5l-6.6 5.1C9.6 40.5 16.3 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.9 2.6-2.6 4.7-4.9 6.1l6.5 5.5C39.9 37.4 43 31.5 43 24c0-1.4-.1-2.7-.4-3.5z"/></svg>
+      Continue with Google
+    </button>
+    <div class="priz-phone-auth">
+      <div class="priz-phone-step" id="${uid}-step-number">
+        <input type="tel" class="priz-input" placeholder="Phone number (e.g. +91 98765 43210)" id="${uid}-phone">
+        <button type="button" class="btn-ghost priz-phone-btn" id="${uid}-send-otp">Continue with Phone OTP</button>
+      </div>
+      <div class="priz-phone-step" id="${uid}-step-otp" style="display:none;">
+        <input type="text" inputmode="numeric" class="priz-input" placeholder="Enter the OTP" id="${uid}-otp">
+        <button type="button" class="btn-ghost priz-phone-btn" id="${uid}-verify-otp">Verify OTP</button>
+      </div>
+    </div>
+    <div id="${uid}-recaptcha"></div>
+  `;
+  container.appendChild(wrap);
+
+  if (!firebaseConfigured) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  const googleBtn = wrap.querySelector(`#${uid}-google`);
+  googleBtn.addEventListener('click', async () => {
+    googleBtn.disabled = true;
+    try {
+      const idToken = await signInWithGoogle();
+      await window.PrizmoraaAuth.loginWithIdToken(idToken);
+      renderBadges();
+      onAuthed();
+    } catch (err) {
+      showError(err.message || 'Google sign-in failed. Please try again.');
+      googleBtn.disabled = false;
+    }
+  });
+
+  let confirmationResult = null;
+  let recaptchaVerifier = null;
+
+  const sendBtn = wrap.querySelector(`#${uid}-send-otp`);
+  sendBtn.addEventListener('click', async () => {
+    const phone = wrap.querySelector(`#${uid}-phone`).value.trim();
+    if (!phone) { showError('Please enter your phone number, including country code (e.g. +91).'); return; }
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending OTP...';
+    try {
+      if (!recaptchaVerifier) recaptchaVerifier = setupRecaptcha(`${uid}-recaptcha`);
+      confirmationResult = await sendPhoneOtp(phone, recaptchaVerifier);
+      wrap.querySelector(`#${uid}-step-number`).style.display = 'none';
+      wrap.querySelector(`#${uid}-step-otp`).style.display = '';
+    } catch (err) {
+      showError(err.message || 'Could not send OTP. Please check the number and try again.');
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Continue with Phone OTP';
+    }
+  });
+
+  const verifyBtn = wrap.querySelector(`#${uid}-verify-otp`);
+  verifyBtn.addEventListener('click', async () => {
+    const code = wrap.querySelector(`#${uid}-otp`).value.trim();
+    if (!code) { showError('Please enter the OTP.'); return; }
+    verifyBtn.disabled = true;
+    try {
+      const idToken = await confirmPhoneOtp(confirmationResult, code);
+      await window.PrizmoraaAuth.loginWithIdToken(idToken);
+      renderBadges();
+      onAuthed();
+    } catch (err) {
+      showError(err.message || 'Incorrect OTP. Please try again.');
+      verifyBtn.disabled = false;
+    }
+  });
+}
+
 function renderAuthForms(body) {
   const isLogin = authMode === 'login';
   body.innerHTML = `
@@ -275,6 +365,8 @@ function renderAuthForms(body) {
       btn.disabled = false;
     }
   });
+
+  renderSocialAuthExtras(body, () => { renderAccountPanel(); renderBadges(); }, showError);
 }
 
 /**
@@ -347,6 +439,8 @@ function renderAuthGate(container, onAuthed) {
         btn.disabled = false;
       }
     });
+
+    renderSocialAuthExtras(container, onAuthed, showError);
   }
   render();
 }
