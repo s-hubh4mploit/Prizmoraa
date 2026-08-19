@@ -66,9 +66,35 @@ function getProfile() { return readJSON(PROFILE_KEY, { name: '', email: '', phon
 function saveProfile(p) { writeJSON(PROFILE_KEY, p); }
 
 /* ---------------- BADGES ---------------- */
+const ACCOUNT_ICON_SVG = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+// Swaps the nav's account icon for a circle showing the customer's
+// initial once they're logged in — a quick, unmistakable confirmation
+// that sign-in actually worked, instead of the icon looking identical
+// whether or not anyone is signed in.
+function renderAccountIcon() {
+  const auth = window.PrizmoraaAuth;
+  const loggedIn = !!(auth && auth.isLoggedIn());
+  const user = loggedIn ? auth.getUser() : null;
+  $$('#accountToggleBtn').forEach(btn => {
+    if (loggedIn && user) {
+      const label = (user.name || user.email || '?').trim();
+      const initial = label.charAt(0).toUpperCase() || '?';
+      btn.innerHTML = `<span class="account-avatar">${initial}</span>`;
+      btn.setAttribute('aria-label', `Account — logged in as ${label}`);
+      btn.title = `Logged in as ${label}`;
+    } else {
+      btn.innerHTML = ACCOUNT_ICON_SVG;
+      btn.setAttribute('aria-label', 'Account');
+      btn.removeAttribute('title');
+    }
+  });
+}
+
 function renderBadges() {
   $$('#cartCount').forEach(el => el.textContent = cartCount());
   $$('#wishlistCount').forEach(el => el.textContent = getWishlist().length);
+  renderAccountIcon();
 }
 
 /* ---------------- PANEL / DRAWER SHELL ---------------- */
