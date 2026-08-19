@@ -36,6 +36,9 @@
 }
 .checkout-total-row strong { font-family: var(--font-serif); font-size: 22px; }
 
+.checkout-auth-gate .priz-hint { margin-bottom: 24px; }
+.checkout-auth-gate form { display: flex; flex-direction: column; gap: 14px; }
+
 .checkout-empty { grid-column: 1 / -1; text-align: center; padding: 60px 0; }
 .checkout-empty p { color: var(--espresso-soft); margin-bottom: 24px; font-size: 17px; }
 

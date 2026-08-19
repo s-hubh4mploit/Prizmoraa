@@ -277,6 +277,80 @@ function renderAuthForms(body) {
   });
 }
 
+/**
+ * Standalone login/signup form for gating checkout — separate from the
+ * account panel's renderAuthForms() because it renders into an arbitrary
+ * page container (not the slide-out panel) and calls back on success
+ * instead of re-rendering the panel.
+ */
+function renderAuthGate(container, onAuthed) {
+  let mode = 'login';
+  function render() {
+    const isLogin = mode === 'login';
+    container.innerHTML = `
+      <div class="checkout-auth-gate">
+        <h2 class="checkout-subhead">Sign in to continue</h2>
+        <p class="priz-hint">Please log in or create a free account to place your order — this keeps your order history and makes checkout faster next time.</p>
+        <div class="priz-auth-tabs">
+          <button type="button" class="priz-auth-tab ${isLogin ? 'active' : ''}" data-gate-tab="login">Log In</button>
+          <button type="button" class="priz-auth-tab ${!isLogin ? 'active' : ''}" data-gate-tab="signup">Sign Up</button>
+        </div>
+        <p class="priz-auth-error" id="gateAuthError" style="display:none;"></p>
+        ${isLogin ? `
+          <form id="gateLoginForm">
+            <input required type="email" id="gateLoginEmail" class="priz-input" placeholder="Email" autocomplete="email">
+            <input required type="password" id="gateLoginPassword" class="priz-input" placeholder="Password" autocomplete="current-password">
+            <button type="submit" class="btn" style="width:100%">Log In</button>
+          </form>
+        ` : `
+          <form id="gateSignupForm">
+            <input required type="text" id="gateSignupName" class="priz-input" placeholder="Full name" autocomplete="name">
+            <input required type="email" id="gateSignupEmail" class="priz-input" placeholder="Email" autocomplete="email">
+            <input type="tel" id="gateSignupPhone" class="priz-input" placeholder="WhatsApp number" autocomplete="tel">
+            <input required type="password" id="gateSignupPassword" class="priz-input" placeholder="Password (min 6 characters)" autocomplete="new-password">
+            <button type="submit" class="btn" style="width:100%">Create Account</button>
+          </form>
+        `}
+      </div>
+    `;
+
+    $$('[data-gate-tab]', container).forEach(b => b.addEventListener('click', () => {
+      mode = b.dataset.gateTab;
+      render();
+    }));
+
+    const errEl = $('#gateAuthError', container);
+    const showError = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; };
+    const form = isLogin ? $('#gateLoginForm', container) : $('#gateSignupForm', container);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button');
+      btn.disabled = true;
+      try {
+        if (isLogin) {
+          await window.PrizmoraaAuth.login({
+            email: $('#gateLoginEmail', container).value.trim(),
+            password: $('#gateLoginPassword', container).value,
+          });
+        } else {
+          await window.PrizmoraaAuth.signup({
+            name: $('#gateSignupName', container).value.trim(),
+            email: $('#gateSignupEmail', container).value.trim(),
+            phone: $('#gateSignupPhone', container).value.trim(),
+            password: $('#gateSignupPassword', container).value,
+          });
+        }
+        renderBadges();
+        onAuthed();
+      } catch (err) {
+        showError(err.message || 'Something went wrong. Please try again.');
+        btn.disabled = false;
+      }
+    });
+  }
+  render();
+}
+
 function renderLoggedInAccount(body, user) {
   const p = getProfile();
   body.innerHTML = `
@@ -497,5 +571,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.PrizmoraaCart = {
   addToCart, addFromBtn, wishlistFromBtn, toggleWishlistItem, openPanel,
   getCart, cartCount, cartTotal, removeFromCart, setQty, clearCart,
-  getProfile, runCheckout,
+  getProfile, runCheckout, renderAuthGate,
 };

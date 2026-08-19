@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { neon } from '@neondatabase/serverless';
 import { getUserIdFromRequest } from './auth.js';
 import { sendOrderConfirmationEmail } from './_lib/send-order-email.js';
+import { decrementStock } from './_lib/inventory.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -174,13 +175,18 @@ export default async (req, res) => {
         return res.end(JSON.stringify({ error: 'Payment could not be verified. This order was not recorded.' }));
       }
       const userId = getUserIdFromRequest(req);
+      if (!userId) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Please sign in to place an order.' }));
+      }
       const order = {
         id: 'order-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
-        userId: userId || null,
+        userId,
         name, email: email || null, phone, address, pincode,
         items, total, paymentId: razorpay_payment_id, status: 'paid',
       };
       await store.create(order);
+      await decrementStock(items);
       const emailResult = await sendOrderConfirmationEmail(order);
       return res.end(JSON.stringify({ order, emailSent: emailResult.sent }));
     }

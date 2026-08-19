@@ -56,9 +56,7 @@ function showSuccess(paymentId) {
     : `We'll reach out on WhatsApp shortly with delivery updates.`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const hasItems = renderSummary();
-  if (!hasItems) return;
+function initCheckoutForm() {
   prefillForm();
 
   const form = $('#checkoutPageForm');
@@ -84,4 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
       payBtn.textContent = `Pay ₹${window.PrizmoraaCart.cartTotal().toLocaleString('en-IN')} & Place Order`;
     }
   });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const hasItems = renderSummary();
+  if (!hasItems) return;
+
+  if (window.PrizmoraaAuth && window.PrizmoraaAuth.isLoggedIn()) {
+    initCheckoutForm();
+  } else {
+    const formCol = $('.checkout-form-col');
+    window.PrizmoraaCart.renderAuthGate(formCol, initCheckoutForm);
+  }
 });
