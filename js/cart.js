@@ -756,9 +756,13 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
             if (!recorded) {
               onError && onError('Payment succeeded but the order could not be saved. Please contact us on WhatsApp with your payment ID.');
             }
-            sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId });
+            sendOrderToWhatsApp({
+              name, phone, address, pincode, cart, paymentId,
+              subtotal: order.subtotal, shippingCharge: order.shippingCharge,
+              discountAmount: order.discountAmount, total: order.total,
+            });
             clearCart();
-            resolve({ success: true, paymentId });
+            resolve({ success: true, paymentId, orderDetails: { name, phone, address, pincode, cart, paymentId, ...order } });
           } else {
             onError && onError('Payment could not be verified. If money was deducted, please contact us on WhatsApp with your payment ID.');
             resolve({ success: false });
@@ -799,15 +803,27 @@ async function recordOrder({ name, email, phone, address, pincode, razorpayRespo
   }
 }
 
-function sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId }) {
+// Shared by both the admin-facing (logistics) and customer-facing (order
+// record) WhatsApp messages, so the two never drift out of sync on what
+// figures they show.
+function buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total }) {
   const lines = cart.map(i => `• ${i.name} x${i.qty} — ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
-  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const fallbackSubtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const totalsLines = [`Subtotal: ₹${Number(subtotal ?? fallbackSubtotal).toLocaleString('en-IN')}`];
+  if (discountAmount > 0) totalsLines.push(`Discount: −₹${Number(discountAmount).toLocaleString('en-IN')}`);
+  if (shippingCharge > 0) totalsLines.push(`Shipping: ₹${Number(shippingCharge).toLocaleString('en-IN')}`);
+  totalsLines.push(`Total: ₹${Number(total ?? fallbackSubtotal).toLocaleString('en-IN')}`);
+  return { lines, totalsText: totalsLines.join('\n') };
+}
+
+function sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId, subtotal, shippingCharge, discountAmount, total }) {
+  const { lines, totalsText } = buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total });
   const text = encodeURIComponent(
 `New PAID order — PRIZMORAA
 
 ${lines}
 
-Total: ₹${total.toLocaleString('en-IN')}
+${totalsText}
 Payment ID: ${paymentId}
 
 Customer: ${name}
@@ -815,6 +831,27 @@ Phone: ${phone}
 Address: ${address}, ${pincode}`
   );
   window.open(`${WHATSAPP_LINK}?text=${text}`, '_blank');
+}
+
+// Lets the customer share/save their own order details on WhatsApp —
+// opens the share sheet with no fixed recipient, so they pick who to
+// send it to (themselves via "Message Yourself", a family member, etc.).
+// No business WhatsApp API needed, just a plain wa.me deep link.
+function buildCustomerOrderShareUrl({ name, cart, paymentId, subtotal, shippingCharge, discountAmount, total, address, pincode }) {
+  const { lines, totalsText } = buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total });
+  const text = encodeURIComponent(
+`My PRIZMORAA order
+
+${lines}
+
+${totalsText}
+Payment ID: ${paymentId}
+
+Delivering to:
+${name}
+${address}, ${pincode}`
+  );
+  return `https://wa.me/?text=${text}`;
 }
 
 /* ---------------- NAV WIRING ---------------- */
@@ -838,5 +875,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.PrizmoraaCart = {
   addToCart, addFromBtn, wishlistFromBtn, toggleWishlistItem, openPanel,
   getCart, cartCount, cartTotal, removeFromCart, setQty, clearCart,
-  getProfile, runCheckout, renderAuthGate,
+  getProfile, runCheckout, renderAuthGate, buildCustomerOrderShareUrl,
 };

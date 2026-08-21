@@ -88,13 +88,19 @@ function prefillForm() {
   $('#cpPincode').value = p.pincode || '';
 }
 
-function showSuccess(paymentId) {
+function showSuccess(paymentId, orderDetails) {
   $('#checkoutLayout').style.display = 'none';
   const success = $('#checkoutSuccess');
   success.style.display = 'block';
   $('#checkoutSuccessDetail').textContent = paymentId
     ? `Payment ID: ${paymentId}. A confirmation email is on its way — we'll also reach out on WhatsApp with delivery updates.`
     : `We'll reach out on WhatsApp shortly with delivery updates.`;
+
+  const shareBtn = $('#checkoutWhatsappShare');
+  if (shareBtn && orderDetails) {
+    shareBtn.href = window.PrizmoraaCart.buildCustomerOrderShareUrl(orderDetails);
+    shareBtn.style.display = '';
+  }
 }
 
 function initCheckoutForm() {
@@ -118,7 +124,7 @@ function initCheckoutForm() {
     });
     payBtn.disabled = false;
     if (result.success) {
-      showSuccess(result.paymentId);
+      showSuccess(result.paymentId, result.orderDetails);
     } else {
       const { total } = computeTotals();
       payBtn.textContent = `Pay ₹${total.toLocaleString('en-IN')} & Place Order`;
