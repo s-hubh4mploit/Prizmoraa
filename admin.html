@@ -54,6 +54,9 @@
       <a href="#" class="nav-item" data-view="customers">
         <span class="icon">👤</span> Customers
       </a>
+      <a href="#" class="nav-item" data-view="settings">
+        <span class="icon">⚙️</span> Settings
+      </a>
     </nav>
     
     <div class="sidebar-shortcuts">
@@ -202,6 +205,30 @@
               <!-- JS Populated -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="view-settings" class="view">
+        <div class="settings-card">
+          <h3>Checkout Pricing</h3>
+          <p class="field-note">These apply to every order, added on top of the cart subtotal at checkout.</p>
+          <form id="settingsForm">
+            <div class="form-grid">
+              <div class="input-group">
+                <label>Shipping Charge (INR)</label>
+                <input type="number" id="settingsShipping" min="0" step="1" required>
+                <small class="field-note">Set to 0 for free shipping.</small>
+              </div>
+              <div class="input-group">
+                <label>Discount (%)</label>
+                <input type="number" id="settingsDiscount" min="0" max="100" step="1" required>
+                <small class="field-note">Applied to the subtotal before shipping. Set to 0 for no discount.</small>
+              </div>
+            </div>
+            <p id="settingsSavedMsg" class="settings-saved-msg" style="display:none;">Saved!</p>
+            <button type="submit" class="btn">Save Pricing</button>
+          </form>
         </div>
       </div>
 

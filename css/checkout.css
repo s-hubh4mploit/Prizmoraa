@@ -29,9 +29,15 @@
 .checkout-line-qty { font-size: 12px; color: var(--espresso-soft); }
 .checkout-line-price { font-size: 14px; color: var(--espresso); font-family: var(--font-serif); font-weight: 500; white-space: nowrap; }
 
+.checkout-totals { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(58, 42, 29, 0.15); }
+.checkout-total-line {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 14px; color: var(--espresso-soft); margin-bottom: 8px;
+}
+.checkout-total-line.discount { color: #2e7d32; }
 .checkout-total-row {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(58, 42, 29, 0.15);
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(58, 42, 29, 0.15);
   font-size: 16px; color: var(--espresso);
 }
 .checkout-total-row strong { font-family: var(--font-serif); font-size: 22px; }

@@ -7,6 +7,7 @@ import { neon } from '@neondatabase/serverless';
 import { getUserIdFromRequest } from './auth.js';
 import { sendOrderConfirmationEmail } from './_lib/send-order-email.js';
 import { decrementStock } from './_lib/inventory.js';
+import pendingOrderStore from './_lib/pending-order-store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -46,20 +47,26 @@ function isAdmin(req) {
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
-    schemaReady = sql`CREATE TABLE IF NOT EXISTS orders (
-      id TEXT PRIMARY KEY,
-      user_id TEXT,
-      name TEXT NOT NULL,
-      email TEXT,
-      phone TEXT NOT NULL,
-      address TEXT NOT NULL,
-      pincode TEXT NOT NULL,
-      items JSONB NOT NULL,
-      total NUMERIC NOT NULL,
-      payment_id TEXT,
-      status TEXT DEFAULT 'paid',
-      created_at TIMESTAMPTZ DEFAULT now()
-    )`;
+    schemaReady = (async () => {
+      await sql`CREATE TABLE IF NOT EXISTS orders (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        name TEXT NOT NULL,
+        email TEXT,
+        phone TEXT NOT NULL,
+        address TEXT NOT NULL,
+        pincode TEXT NOT NULL,
+        items JSONB NOT NULL,
+        total NUMERIC NOT NULL,
+        payment_id TEXT,
+        status TEXT DEFAULT 'paid',
+        created_at TIMESTAMPTZ DEFAULT now()
+      )`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal NUMERIC`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_charge NUMERIC`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_percent NUMERIC`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount NUMERIC`;
+    })();
   }
   await schemaReady;
 }
@@ -68,6 +75,10 @@ function rowToOrder(r) {
   return {
     id: r.id, userId: r.user_id, name: r.name, email: r.email, phone: r.phone,
     address: r.address, pincode: r.pincode, items: r.items, total: Number(r.total),
+    subtotal: r.subtotal != null ? Number(r.subtotal) : null,
+    shippingCharge: r.shipping_charge != null ? Number(r.shipping_charge) : null,
+    discountPercent: r.discount_percent != null ? Number(r.discount_percent) : null,
+    discountAmount: r.discount_amount != null ? Number(r.discount_amount) : null,
     paymentId: r.payment_id, status: r.status, createdAt: r.created_at,
   };
 }
@@ -75,9 +86,10 @@ function rowToOrder(r) {
 const pgStore = {
   async create(order) {
     await ensureSchema();
-    await sql`INSERT INTO orders (id, user_id, name, email, phone, address, pincode, items, total, payment_id, status)
+    await sql`INSERT INTO orders (id, user_id, name, email, phone, address, pincode, items, total, payment_id, status, subtotal, shipping_charge, discount_percent, discount_amount)
       VALUES (${order.id}, ${order.userId}, ${order.name}, ${order.email}, ${order.phone}, ${order.address}, ${order.pincode},
-              ${JSON.stringify(order.items)}, ${order.total}, ${order.paymentId}, ${order.status})`;
+              ${JSON.stringify(order.items)}, ${order.total}, ${order.paymentId}, ${order.status},
+              ${order.subtotal}, ${order.shippingCharge}, ${order.discountPercent}, ${order.discountAmount})`;
     return order;
   },
   async listAll() {
@@ -164,9 +176,9 @@ export default async (req, res) => {
   try {
     if (pathname === '/api/orders' && method === 'POST') {
       const body = await readBody(req);
-      const { items, total, name, phone, address, pincode, email,
+      const { name, phone, address, pincode, email,
         razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
-      if (!Array.isArray(items) || items.length === 0 || !total || !name || !phone || !address || !pincode) {
+      if (!name || !phone || !address || !pincode) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing required order fields.' }));
       }
@@ -179,14 +191,26 @@ export default async (req, res) => {
         res.statusCode = 401;
         return res.end(JSON.stringify({ error: 'Please sign in to place an order.' }));
       }
+      // Items and pricing come from what /api/create-order computed and
+      // stashed server-side for this exact Razorpay order — never from
+      // the client — so what gets recorded always matches what was paid.
+      const pending = await pendingOrderStore.get(razorpay_order_id);
+      if (!pending) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'This order could not be found or has already been recorded.' }));
+      }
       const order = {
         id: 'order-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
         userId,
         name, email: email || null, phone, address, pincode,
-        items, total, paymentId: razorpay_payment_id, status: 'paid',
+        items: pending.items, total: pending.total,
+        subtotal: pending.subtotal, shippingCharge: pending.shippingCharge,
+        discountPercent: pending.discountPercent, discountAmount: pending.discountAmount,
+        paymentId: razorpay_payment_id, status: 'paid',
       };
       await store.create(order);
-      await decrementStock(items);
+      await decrementStock(pending.items);
+      await pendingOrderStore.remove(razorpay_order_id);
       const emailResult = await sendOrderConfirmationEmail(order);
       return res.end(JSON.stringify({ order, emailSent: emailResult.sent }));
     }

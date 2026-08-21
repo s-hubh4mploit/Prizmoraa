@@ -656,16 +656,27 @@ async function loadMyOrders() {
   if (!wrap) return;
   const orders = await window.PrizmoraaAuth.fetchMyOrders();
   if (!orders.length) { wrap.innerHTML = '<p class="priz-empty">No orders yet.</p>'; return; }
-  wrap.innerHTML = orders.map(o => `
+  wrap.innerHTML = orders.map(o => {
+    const hasBreakdown = o.subtotal != null;
+    const breakdownHtml = hasBreakdown ? `
+      <div class="priz-order-breakdown">
+        <span>Subtotal ₹${Number(o.subtotal).toLocaleString('en-IN')}</span>
+        ${o.discountAmount > 0 ? `<span>· Discount −₹${Number(o.discountAmount).toLocaleString('en-IN')}</span>` : ''}
+        ${o.shippingCharge > 0 ? `<span>· Shipping ₹${Number(o.shippingCharge).toLocaleString('en-IN')}</span>` : ''}
+      </div>
+    ` : '';
+    return `
     <div class="priz-order-card">
       <div class="priz-order-head">
         <span>${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
         <span class="priz-order-status">${o.status}</span>
       </div>
       <div class="priz-order-items">${o.items.map(i => `${i.name} × ${i.qty}`).join(', ')}</div>
+      ${breakdownHtml}
       <div class="priz-order-total">₹${Number(o.total).toLocaleString('en-IN')}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 /* ---------------- SEARCH ---------------- */
@@ -711,11 +722,10 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
   onStatus && onStatus('Preparing payment...');
 
   try {
-    const amountPaise = Math.round(cartTotal() * 100);
     const orderRes = await fetch('/api/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: amountPaise, receipt: `priz_${Date.now()}` }),
+      body: JSON.stringify({ items: cart.map(i => ({ id: i.id, qty: i.qty })) }),
     });
     if (!orderRes.ok) throw new Error('order-failed');
     const order = await orderRes.json();
@@ -742,7 +752,7 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
           const verifyData = await verifyRes.json();
           if (verifyData.verified) {
             const paymentId = response.razorpay_payment_id;
-            const recorded = await recordOrder({ name, email, phone, address, pincode, cart, razorpayResponse: response });
+            const recorded = await recordOrder({ name, email, phone, address, pincode, razorpayResponse: response });
             if (!recorded) {
               onError && onError('Payment succeeded but the order could not be saved. Please contact us on WhatsApp with your payment ID.');
             }
@@ -767,7 +777,7 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
   }
 }
 
-async function recordOrder({ name, email, phone, address, pincode, cart, razorpayResponse }) {
+async function recordOrder({ name, email, phone, address, pincode, razorpayResponse }) {
   try {
     const headers = { 'Content-Type': 'application/json' };
     const token = window.PrizmoraaAuth && window.PrizmoraaAuth.getToken();
@@ -776,8 +786,6 @@ async function recordOrder({ name, email, phone, address, pincode, cart, razorpa
       method: 'POST',
       headers,
       body: JSON.stringify({
-        items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
-        total: cartTotal(),
         name, email, phone, address, pincode,
         razorpay_order_id: razorpayResponse.razorpay_order_id,
         razorpay_payment_id: razorpayResponse.razorpay_payment_id,

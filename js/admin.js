@@ -121,8 +121,54 @@ navItems.forEach(item => {
 
     if (viewId === 'orders') fetchOrders();
     if (viewId === 'customers') fetchCustomers();
+    if (viewId === 'settings') loadSettings();
   });
 });
+
+// --- Settings (shipping charge + discount) ---
+async function loadSettings() {
+  const shippingInput = document.getElementById('settingsShipping');
+  const discountInput = document.getElementById('settingsDiscount');
+  if (!shippingInput || !discountInput) return;
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    shippingInput.value = data.shippingCharge ?? 0;
+    discountInput.value = data.discountPercent ?? 0;
+  } catch (err) {
+    shippingInput.value = 0;
+    discountInput.value = 0;
+  }
+}
+
+const settingsForm = document.getElementById('settingsForm');
+if (settingsForm) {
+  settingsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = settingsForm.querySelector('button[type="submit"]');
+    const savedMsg = document.getElementById('settingsSavedMsg');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+        body: JSON.stringify({
+          shippingCharge: parseFloat(document.getElementById('settingsShipping').value) || 0,
+          discountPercent: parseFloat(document.getElementById('settingsDiscount').value) || 0,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      if (savedMsg) {
+        savedMsg.style.display = 'block';
+        setTimeout(() => { savedMsg.style.display = 'none'; }, 2000);
+      }
+    } catch (err) {
+      alert('Could not save pricing settings. Please try again.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
 
 // --- Customers ---
 async function fetchCustomers() {
