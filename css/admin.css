@@ -200,11 +200,24 @@ body {
 }
 .data-table td { padding: 14px 20px; border-bottom: 1px solid rgba(58, 42, 29, 0.05); color: var(--espresso-soft); }
 .data-table tbody tr:hover { background: rgba(233, 220, 199, 0.2); }
+
+.order-items-cell { display: flex; flex-wrap: wrap; gap: 10px; max-width: 260px; }
+.order-item-chip { display: flex; flex-direction: column; align-items: center; width: 52px; }
+.order-item-chip img {
+  width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
+  border: 1px solid rgba(58, 42, 29, 0.1); background: var(--ivory-deep);
+}
+.order-item-chip-qty { font-size: 10px; color: var(--gold); font-weight: 600; margin-top: 2px; }
+.order-item-chip-name {
+  font-size: 9.5px; color: var(--espresso-soft); text-align: center; line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52px;
+}
 .status-badge {
   display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;
   background: #e8f5e9; color: #2e7d32;
 }
 .status-badge.out-of-stock { background: #fdecea; color: #b3261e; }
+.discount-badge { display: inline-block; margin-top: 4px; font-size: 10.5px; font-weight: 600; color: #b3261e; }
 .star-btn {
   background: none; border: none; cursor: pointer; font-size: 20px; line-height: 1;
   color: rgba(58, 42, 29, 0.3); padding: 2px;

@@ -149,7 +149,7 @@ PRIZMORAA was born for the moments that don't need permission to shine — where
 <script type="module" src="./js/cart.js"></script>
 <script type="module">
 document.addEventListener('DOMContentLoaded', async () => {
-const { getProducts, getProductsByCategory, getAllCategories } = window.PrizmoraaProducts;
+const { getProducts, getProductsByCategory, getAllCategories, getEffectivePrice } = window.PrizmoraaProducts;
 
 // Populate Featured Bestsellers Grid
 const allProducts = await getProducts();
@@ -162,13 +162,16 @@ featuredGrid.innerHTML = featuredItems.map(p => {
 const hasSecondary = p.images && p.images.length > 1;
 const secondaryImg = hasSecondary ? p.images[1] : p.image;
 const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
+const effPrice = getEffectivePrice(p);
+const hasDiscount = effPrice < p.price;
 return `
 <a href="product.html?id=${p.id}" class="prod-card">
 <div class="img-wrap">
 <img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}">
 ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
 ${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
-<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+${hasDiscount ? `<span class="discount-tag">${p.discountPercent}% OFF</span>` : ''}
+<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(p.image)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
 <div class="hover-overlay">
 <p class="hover-desc">${p.desc}</p>
@@ -178,9 +181,9 @@ ${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
 <span class="sub-badge">${p.subcategory || p.category}</span>
 <h3>${p.name}</h3>
 <div class="card-bottom-row">
-<span class="price">₹${p.price.toLocaleString('en-IN')}</span>
+<span class="price">₹${effPrice.toLocaleString('en-IN')}${hasDiscount ? ` <s class="price-was">₹${p.price.toLocaleString('en-IN')}</s>` : ''}</span>
 ${inStock
-  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(p.image)}"
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(p.image)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
   : `<span class="quick-add-btn disabled">Out of Stock</span>`}
 </div>

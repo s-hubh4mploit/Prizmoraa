@@ -139,6 +139,17 @@
   letter-spacing: 0.03em;
 }
 
+.price-row .price-was {
+  font-size: 17px;
+  color: #9C8A78;
+  font-family: var(--font-serif);
+}
+.price-row .discount-tag {
+  background: #b3261e; color: var(--ivory);
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+  padding: 4px 9px; border-radius: 2px;
+}
+
 .stock-status {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 13px; letter-spacing: 0.04em; font-weight: 500;

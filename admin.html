@@ -257,6 +257,11 @@
           <input type="number" id="itemPrice" min="0" required>
         </div>
         <div class="input-group">
+          <label>Discount (%)</label>
+          <input type="number" id="itemDiscount" min="0" max="100" step="1" value="0">
+          <small class="field-note">Sale price shown to customers on this piece. Set to 0 for no discount.</small>
+        </div>
+        <div class="input-group">
           <label>Category</label>
           <select id="itemCategory" required>
             <option value="earrings">Earrings</option>

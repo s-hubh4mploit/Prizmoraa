@@ -709,6 +709,14 @@
     return Array.from(categories);
   }
 
+  // A per-piece sale price set by the admin (product.discountPercent),
+  // independent of the site-wide checkout discount in Settings.
+  function getEffectivePrice(product) {
+    const discountPercent = Number(product.discountPercent) || 0;
+    if (discountPercent <= 0) return product.price;
+    return Math.round(product.price * (1 - discountPercent / 100));
+  }
+
   window.PrizmoraaProducts = {
     getProducts,
     saveProduct,
@@ -716,6 +724,7 @@
     resetInventoryToDefault,
     getProductById,
     getProductsByCategory,
-    getAllCategories
+    getAllCategories,
+    getEffectivePrice
   };
 })();

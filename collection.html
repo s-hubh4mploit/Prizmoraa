@@ -90,7 +90,7 @@
 <script type="module" src="./js/cart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-const { getProductsByCategory, getProducts } = window.PrizmoraaProducts;
+const { getProductsByCategory, getProducts, getEffectivePrice } = window.PrizmoraaProducts;
 const params = new URLSearchParams(window.location.search);
 const cat = params.get('cat') || 'earrings';
 const formattedCat = cat.charAt(0).toUpperCase() + cat.slice(1);
@@ -114,13 +114,16 @@ const secondaryImg = hasSecondary ? p.images[1] : p.image;
 let cleanDesc = (p.desc || '').replace(/^product description[:\s]*/i, '').trim();
 const imgSrc = p.image || 'images/hero.jpg';
 const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
+const effPrice = getEffectivePrice(p);
+const hasDiscount = effPrice < p.price;
 return `
 <a href="product.html?id=${p.id}" class="prod-card">
 <div class="img-wrap">
 <img class="main-pic" src="${encodeURI(imgSrc)}" alt="${p.name}" loading="lazy">
 ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name} detail view" loading="lazy">` : ''}
 ${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
-<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(imgSrc)}"
+${hasDiscount ? `<span class="discount-tag">${p.discountPercent}% OFF</span>` : ''}
+<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(imgSrc)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
 ${cleanDesc ? `<div class="hover-overlay">
 <p class="hover-desc">${cleanDesc}</p>
@@ -130,9 +133,9 @@ ${cleanDesc ? `<div class="hover-overlay">
 <span class="sub-badge">${p.subcategory || p.category}</span>
 <h3>${p.name}</h3>
 <div class="card-bottom-row">
-<span class="price">₹${p.price.toLocaleString('en-IN')}</span>
+<span class="price">₹${effPrice.toLocaleString('en-IN')}${hasDiscount ? ` <s class="price-was">₹${p.price.toLocaleString('en-IN')}</s>` : ''}</span>
 ${inStock
-  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${encodeURI(imgSrc)}"
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(imgSrc)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
   : `<span class="quick-add-btn disabled">Out of Stock</span>`}
 </div>

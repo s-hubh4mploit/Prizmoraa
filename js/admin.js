@@ -224,7 +224,16 @@ async function fetchOrders() {
       return;
     }
     tbody.innerHTML = orders.map(o => {
-      const itemsText = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
+      const itemsHtml = (o.items || []).map(i => {
+        const imgSrc = i.image ? encodeURI(i.image) : 'images/hero.jpg';
+        return `
+          <div class="order-item-chip" title="${sanitizeInput(i.name)} × ${i.qty}">
+            <img src="${imgSrc}" alt="${sanitizeInput(i.name)}">
+            <span class="order-item-chip-qty">×${i.qty}</span>
+            <span class="order-item-chip-name">${sanitizeInput(i.name)}</span>
+          </div>
+        `;
+      }).join('');
       const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
       const addressText = [o.address, o.pincode].filter(Boolean).join(', ');
       return `
@@ -234,7 +243,7 @@ async function fetchOrders() {
           <td>${sanitizeInput(o.name)}</td>
           <td>${sanitizeInput(o.phone)}${o.email ? '<br>' + sanitizeInput(o.email) : ''}</td>
           <td>${sanitizeInput(addressText)}</td>
-          <td>${sanitizeInput(itemsText)}</td>
+          <td><div class="order-items-cell">${itemsHtml}</div></td>
           <td>₹${sanitizeInput(Number(o.total).toLocaleString('en-IN'))}</td>
           <td>${sanitizeInput(o.paymentId || '')}</td>
           <td><span class="status-badge">${sanitizeInput(o.status || 'paid')}</span></td>
@@ -278,7 +287,7 @@ function renderTable(filterText = currentSearchText) {
       <td><strong>${sanitizeInput(item.name)}</strong></td>
       <td style="text-transform: capitalize;">${sanitizeInput(item.category)}</td>
       <td>${sanitizeInput(item.subcategory || '')}</td>
-      <td>₹${sanitizeInput(item.price ? item.price.toLocaleString('en-IN') : '0')}</td>
+      <td>₹${sanitizeInput(item.price ? item.price.toLocaleString('en-IN') : '0')}${item.discountPercent > 0 ? `<br><span class="discount-badge">${item.discountPercent}% off</span>` : ''}</td>
       <td>${stock}</td>
       <td><span class="status-badge ${inStock ? '' : 'out-of-stock'}">${inStock ? 'In Stock' : 'Out of Stock'}</span></td>
       <td>
@@ -461,6 +470,7 @@ if (itemForm) {
     const id = sanitizeInput(document.getElementById('itemId').value) || 'item-' + Date.now().toString();
     const name = sanitizeInput(document.getElementById('itemName').value);
     const price = parseInt(document.getElementById('itemPrice').value) || 0;
+    const discountPercent = Math.min(100, Math.max(0, parseInt(document.getElementById('itemDiscount').value, 10) || 0));
     const category = sanitizeInput(document.getElementById('itemCategory').value);
     const subcategory = sanitizeInput(document.getElementById('itemSubCategory').value);
     const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
@@ -472,7 +482,7 @@ if (itemForm) {
 
     const existingIndex = inventory.findIndex(i => i.id === id);
 
-    const newItem = { id, name, price, category, subcategory, stock, featured, image, images, desc, status: 'Active' };
+    const newItem = { id, name, price, discountPercent, category, subcategory, stock, featured, image, images, desc, status: 'Active' };
 
     if (existingIndex > -1) {
       inventory[existingIndex] = newItem;
@@ -512,6 +522,7 @@ window.editItem = function(id) {
     document.getElementById('itemId').value = item.id;
     document.getElementById('itemName').value = item.name;
     document.getElementById('itemPrice').value = item.price;
+    document.getElementById('itemDiscount').value = Number.isFinite(item.discountPercent) ? item.discountPercent : 0;
     document.getElementById('itemCategory').value = item.category;
     document.getElementById('itemSubCategory').value = item.subcategory || '';
     document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;

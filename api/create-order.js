@@ -25,7 +25,12 @@ export default async function handler(req, res) {
     for (const { id, qty } of cleanItems) {
       const product = productMap.get(id);
       if (!product) return res.status(400).json({ error: `One of the items in your cart is no longer available.` });
-      const price = Number(product.price) || 0;
+      const listPrice = Number(product.price) || 0;
+      const itemDiscountPercent = Math.min(100, Math.max(0, Number(product.discountPercent) || 0));
+      // The per-piece sale price the customer actually saw on the product
+      // page/card — folded into the subtotal here rather than shown as a
+      // separate breakdown line, since it was already visible before checkout.
+      const price = itemDiscountPercent > 0 ? Math.round(listPrice * (1 - itemDiscountPercent / 100)) : listPrice;
       subtotal += price * qty;
       lineItems.push({ id, name: product.name, price, qty, image: product.image });
     }

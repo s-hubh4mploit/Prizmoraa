@@ -684,12 +684,12 @@ async function onSearchInput(e) {
   const q = e.target.value.trim().toLowerCase();
   const results = $('#prizSearchResults');
   if (!q) { results.innerHTML = ''; return; }
-  const { getProducts } = window.PrizmoraaProducts;
+  const { getProducts, getEffectivePrice } = window.PrizmoraaProducts;
   const all = await getProducts();
   const matches = all.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8);
   results.innerHTML = matches.length
     ? matches.map(p => `<a class="priz-search-result" href="product.html?id=${p.id}">
-        <img src="${p.image}" alt="${p.name}"><span>${p.name} — ₹${p.price.toLocaleString('en-IN')}</span>
+        <img src="${p.image}" alt="${p.name}"><span>${p.name} — ₹${getEffectivePrice(p).toLocaleString('en-IN')}</span>
       </a>`).join('')
     : '<p class="priz-empty">No matches found.</p>';
 }

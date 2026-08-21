@@ -109,11 +109,18 @@
 }
 .prod-card h3 { font-size: 20px; font-family: var(--font-serif); margin-bottom: 6px; font-weight: 500; color: var(--espresso); }
 .prod-card .price { color: var(--espresso-soft); font-size: 16px; font-weight: 500; font-family: var(--font-serif); }
+.prod-card .price .price-was { font-size: 12.5px; color: #9C8A78; font-weight: 400; margin-left: 6px; }
 
 .oos-badge {
   position: absolute; top: 10px; left: 10px; z-index: 2;
   background: var(--espresso); color: var(--ivory);
   font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+  padding: 5px 10px; border-radius: 2px;
+}
+.discount-tag {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  background: #b3261e; color: var(--ivory);
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
   padding: 5px 10px; border-radius: 2px;
 }
 .quick-add-btn.disabled {

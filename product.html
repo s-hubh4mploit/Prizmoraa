@@ -85,7 +85,7 @@
 <script type="module" src="./js/cart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-const { getProductById } = window.PrizmoraaProducts;
+const { getProductById, getEffectivePrice } = window.PrizmoraaProducts;
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 const product = await getProductById(id);
@@ -109,6 +109,8 @@ ${productImages.map((img, idx) => `
 
 const waText = encodeURIComponent(`Hi Sayali! I would like to order/enquire about the ${product.name} (Item Code: ${product.id}). Could you please share availability and ordering details?`);
 const inStock = Number.isFinite(product.stock) ? product.stock > 0 : true;
+const effPrice = getEffectivePrice(product);
+const hasDiscount = effPrice < product.price;
 
 container.innerHTML = `
 <div class="prod-gallery">
@@ -121,7 +123,8 @@ ${thumbsHtml}
 <span class="eyebrow"><span class="dot"></span> PRIZMORAA SIGNATURE • ${product.category.toUpperCase()} • ${product.subcategory.toUpperCase()}</span>
 <h1>${product.name}</h1>
 <div class="price-row">
-<span class="prod-price">₹${product.price.toLocaleString('en-IN')}</span>
+<span class="prod-price">₹${effPrice.toLocaleString('en-IN')}</span>
+${hasDiscount ? `<s class="price-was">₹${product.price.toLocaleString('en-IN')}</s><span class="discount-tag">${product.discountPercent}% OFF</span>` : ''}
 <span class="tax-tag">(Taxes Included · Delivered in 5-7 Days)</span>
 </div>
 <span class="stock-status ${inStock ? 'in-stock' : 'out-of-stock'}">${inStock ? '● Available in Stock' : '● Out of Stock'}</span>
@@ -144,7 +147,7 @@ ${thumbsHtml}
 </div>
 <div class="prod-actions">
 <button class="btn" id="addToBagBtn" ${inStock ? '' : 'disabled'}
-  data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-image="${encodeURI(mainImgSrc)}"
+  data-id="${product.id}" data-name="${product.name}" data-price="${effPrice}" data-image="${encodeURI(mainImgSrc)}"
   onclick="window.PrizmoraaCart.addFromBtn(this)">
   ${inStock ? 'Add to Bag' : 'Out of Stock'}
 </button>
