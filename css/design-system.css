@@ -27,7 +27,10 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge/IE */
 }
+html::-webkit-scrollbar { display: none; } /* Chrome/Safari/Edge */
 
 body {
   background: var(--ivory);
