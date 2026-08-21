@@ -10,6 +10,7 @@ import { verifyFirebaseIdToken } from './_lib/verify-firebase-token.js';
 import { sendPasswordResetEmail } from './_lib/send-password-reset-email.js';
 import { sendEmailOtp } from './_lib/send-email-otp.js';
 import emailOtpStore from './_lib/email-otp-store.js';
+import { getLatestAddressesByUserId } from './_lib/latest-order-address.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -427,17 +428,24 @@ export default async (req, res) => {
         return res.end(JSON.stringify({ error: 'Admin access required.' }));
       }
       const rows = await store.listAll();
-      const users = rows.map(r => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        phone: r.phone || '',
-        signInMethod: r.signin_provider === 'google.com' ? 'Google'
-          : r.signin_provider === 'phone' ? 'Phone OTP'
-          : r.signin_provider === 'password' ? 'Email & Password'
-          : r.password_hash ? 'Email & Password' : 'Unknown',
-        createdAt: r.created_at,
-      }));
+      const addresses = await getLatestAddressesByUserId();
+      const users = rows.map(r => {
+        const latest = addresses.get(r.id);
+        return {
+          id: r.id,
+          name: r.name,
+          email: r.email,
+          phone: r.phone || '',
+          address: latest ? latest.address : '',
+          pincode: latest ? latest.pincode : '',
+          signInMethod: r.signin_provider === 'google.com' ? 'Google'
+            : r.signin_provider === 'phone' ? 'Phone OTP'
+            : r.signin_provider === 'email_otp' ? 'Email OTP'
+            : r.signin_provider === 'password' ? 'Email & Password'
+            : r.password_hash ? 'Email & Password' : 'Unknown',
+          createdAt: r.created_at,
+        };
+      });
       return res.end(JSON.stringify(users));
     }
 

@@ -174,33 +174,35 @@ if (settingsForm) {
 async function fetchCustomers() {
   const tbody = document.getElementById('customersTableBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="5">Loading customers...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6">Loading customers...</td></tr>';
   try {
     const res = await fetch('/api/auth/users', { headers: { 'x-admin-key': ADMIN_API_KEY } });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      tbody.innerHTML = `<tr><td colspan="5">${sanitizeInput(data.error || 'Could not load customers.')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6">${sanitizeInput(data.error || 'Could not load customers.')}</td></tr>`;
       return;
     }
     const customers = await res.json();
     if (!Array.isArray(customers) || customers.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5">No customers have signed up yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6">No customers have signed up yet.</td></tr>';
       return;
     }
     tbody.innerHTML = customers.map(c => {
       const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const addressText = [c.address, c.pincode].filter(Boolean).join(', ');
       return `
         <tr>
           <td><strong>${sanitizeInput(c.name || '')}</strong></td>
           <td>${sanitizeInput(c.email || '—')}</td>
           <td>${sanitizeInput(c.phone || '—')}</td>
+          <td>${sanitizeInput(addressText || '—')}</td>
           <td><span class="status-badge">${sanitizeInput(c.signInMethod)}</span></td>
           <td>${sanitizeInput(date)}</td>
         </tr>
       `;
     }).join('');
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="5">Could not load customers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">Could not load customers.</td></tr>';
   }
 }
 
@@ -208,28 +210,30 @@ async function fetchCustomers() {
 async function fetchOrders() {
   const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="8">Loading orders...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9">Loading orders...</td></tr>';
   try {
     const res = await fetch('/api/orders', { headers: { 'x-admin-key': ADMIN_API_KEY } });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      tbody.innerHTML = `<tr><td colspan="8">${sanitizeInput(data.error || 'Could not load orders.')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9">${sanitizeInput(data.error || 'Could not load orders.')}</td></tr>`;
       return;
     }
     const orders = await res.json();
     if (!Array.isArray(orders) || orders.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8">No orders yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9">No orders yet.</td></tr>';
       return;
     }
     tbody.innerHTML = orders.map(o => {
       const itemsText = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
       const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const addressText = [o.address, o.pincode].filter(Boolean).join(', ');
       return `
         <tr>
           <td>#${sanitizeInput(o.id)}</td>
           <td>${sanitizeInput(date)}</td>
           <td>${sanitizeInput(o.name)}</td>
           <td>${sanitizeInput(o.phone)}${o.email ? '<br>' + sanitizeInput(o.email) : ''}</td>
+          <td>${sanitizeInput(addressText)}</td>
           <td>${sanitizeInput(itemsText)}</td>
           <td>₹${sanitizeInput(Number(o.total).toLocaleString('en-IN'))}</td>
           <td>${sanitizeInput(o.paymentId || '')}</td>
