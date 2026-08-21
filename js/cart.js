@@ -253,10 +253,16 @@ function normalizePhoneNumber(raw) {
   return '+91' + digitsAndPlus.replace(/^0+/, '');
 }
 
+// Phone OTP requires Firebase's paid Blaze plan to actually send SMS —
+// the code stays intact and working (see below) for whenever that's
+// turned back on, it's just not rendered or wired up for now. Flip this
+// back to true to bring the "Continue with Phone OTP" UI back.
+const PHONE_OTP_ENABLED = false;
+
 /**
- * Google popup + phone/OTP sign-in, appended after an email/password
- * auth form. Shared by both the account panel and the checkout gate so
- * there's one implementation of the Firebase wiring.
+ * Google popup + phone/OTP + email/OTP sign-in, appended after an
+ * email/password auth form. Shared by both the account panel and the
+ * checkout gate so there's one implementation of this wiring.
  */
 let socialAuthCounter = 0;
 function renderSocialAuthExtras(container, onAuthed, showError) {
@@ -270,6 +276,7 @@ function renderSocialAuthExtras(container, onAuthed, showError) {
       <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.8 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3c-7.7 0-14.3 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-1.8 14.1-5l-6.5-5.5C29.6 36 26.9 37 24 37c-5.3 0-9.7-3.1-11.3-7.5l-6.6 5.1C9.6 40.5 16.3 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.9 2.6-2.6 4.7-4.9 6.1l6.5 5.5C39.9 37.4 43 31.5 43 24c0-1.4-.1-2.7-.4-3.5z"/></svg>
       Continue with Google
     </button>
+    ${PHONE_OTP_ENABLED ? `
     <div class="priz-phone-auth">
       <div class="priz-phone-step" id="${uid}-step-number">
         <input type="tel" class="priz-input" placeholder="Phone number (e.g. 98765 43210)" id="${uid}-phone">
@@ -281,68 +288,117 @@ function renderSocialAuthExtras(container, onAuthed, showError) {
       </div>
     </div>
     <div id="${uid}-recaptcha"></div>
+    ` : ''}
+    <div class="priz-phone-auth">
+      <div class="priz-phone-step" id="${uid}-estep-email">
+        <input type="email" class="priz-input" placeholder="Email for a one-time code" id="${uid}-eemail">
+        <button type="button" class="btn-ghost priz-phone-btn" id="${uid}-esend-otp">Continue with Email OTP</button>
+      </div>
+      <div class="priz-phone-step" id="${uid}-estep-otp" style="display:none;">
+        <input type="text" inputmode="numeric" class="priz-input" placeholder="Enter the code" id="${uid}-ecode">
+        <button type="button" class="btn-ghost priz-phone-btn" id="${uid}-everify-otp">Verify Code</button>
+      </div>
+    </div>
   `;
   container.appendChild(wrap);
 
   if (!firebaseConfigured) {
-    wrap.style.display = 'none';
-    return;
+    wrap.querySelector(`#${uid}-google`).style.display = 'none';
   }
 
   const googleBtn = wrap.querySelector(`#${uid}-google`);
-  googleBtn.addEventListener('click', async () => {
-    googleBtn.disabled = true;
-    try {
-      const idToken = await signInWithGoogle();
-      await window.PrizmoraaAuth.loginWithIdToken(idToken);
-      renderBadges();
-      onAuthed();
-    } catch (err) {
-      showError(err.message || 'Google sign-in failed. Please try again.');
-      googleBtn.disabled = false;
-    }
-  });
+  if (firebaseConfigured) {
+    googleBtn.addEventListener('click', async () => {
+      googleBtn.disabled = true;
+      try {
+        const idToken = await signInWithGoogle();
+        await window.PrizmoraaAuth.loginWithIdToken(idToken);
+        renderBadges();
+        onAuthed();
+      } catch (err) {
+        showError(err.message || 'Google sign-in failed. Please try again.');
+        googleBtn.disabled = false;
+      }
+    });
+  }
 
-  let confirmationResult = null;
-  let recaptchaVerifier = null;
+  if (PHONE_OTP_ENABLED) {
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
 
-  const sendBtn = wrap.querySelector(`#${uid}-send-otp`);
-  sendBtn.addEventListener('click', async () => {
-    const raw = wrap.querySelector(`#${uid}-phone`).value.trim();
-    if (!raw) { showError('Please enter your phone number.'); return; }
-    const phone = normalizePhoneNumber(raw);
-    if (!/^\+\d{8,15}$/.test(phone)) {
-      showError('Please enter a valid phone number (10 digits, or include a country code like +1 for non-Indian numbers).');
-      return;
-    }
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'Sending OTP...';
+    const sendBtn = wrap.querySelector(`#${uid}-send-otp`);
+    sendBtn.addEventListener('click', async () => {
+      const raw = wrap.querySelector(`#${uid}-phone`).value.trim();
+      if (!raw) { showError('Please enter your phone number.'); return; }
+      const phone = normalizePhoneNumber(raw);
+      if (!/^\+\d{8,15}$/.test(phone)) {
+        showError('Please enter a valid phone number (10 digits, or include a country code like +1 for non-Indian numbers).');
+        return;
+      }
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending OTP...';
+      try {
+        if (!recaptchaVerifier) recaptchaVerifier = setupRecaptcha(`${uid}-recaptcha`);
+        confirmationResult = await sendPhoneOtp(phone, recaptchaVerifier);
+        wrap.querySelector(`#${uid}-step-number`).style.display = 'none';
+        wrap.querySelector(`#${uid}-step-otp`).style.display = '';
+      } catch (err) {
+        showError(err.message || 'Could not send OTP. Please check the number and try again.');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Continue with Phone OTP';
+      }
+    });
+
+    const verifyBtn = wrap.querySelector(`#${uid}-verify-otp`);
+    verifyBtn.addEventListener('click', async () => {
+      const code = wrap.querySelector(`#${uid}-otp`).value.trim();
+      if (!code) { showError('Please enter the OTP.'); return; }
+      verifyBtn.disabled = true;
+      try {
+        const idToken = await confirmPhoneOtp(confirmationResult, code);
+        await window.PrizmoraaAuth.loginWithIdToken(idToken);
+        renderBadges();
+        onAuthed();
+      } catch (err) {
+        showError(err.message || 'Incorrect OTP. Please try again.');
+        verifyBtn.disabled = false;
+      }
+    });
+  }
+
+  let otpEmail = '';
+  const eSendBtn = wrap.querySelector(`#${uid}-esend-otp`);
+  eSendBtn.addEventListener('click', async () => {
+    const email = wrap.querySelector(`#${uid}-eemail`).value.trim();
+    if (!email) { showError('Please enter your email.'); return; }
+    eSendBtn.disabled = true;
+    eSendBtn.textContent = 'Sending code...';
     try {
-      if (!recaptchaVerifier) recaptchaVerifier = setupRecaptcha(`${uid}-recaptcha`);
-      confirmationResult = await sendPhoneOtp(phone, recaptchaVerifier);
-      wrap.querySelector(`#${uid}-step-number`).style.display = 'none';
-      wrap.querySelector(`#${uid}-step-otp`).style.display = '';
+      await window.PrizmoraaAuth.sendEmailOtp(email);
+      otpEmail = email;
+      wrap.querySelector(`#${uid}-estep-email`).style.display = 'none';
+      wrap.querySelector(`#${uid}-estep-otp`).style.display = '';
     } catch (err) {
-      showError(err.message || 'Could not send OTP. Please check the number and try again.');
+      showError(err.message || 'Could not send the code. Please try again.');
     } finally {
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'Continue with Phone OTP';
+      eSendBtn.disabled = false;
+      eSendBtn.textContent = 'Continue with Email OTP';
     }
   });
 
-  const verifyBtn = wrap.querySelector(`#${uid}-verify-otp`);
-  verifyBtn.addEventListener('click', async () => {
-    const code = wrap.querySelector(`#${uid}-otp`).value.trim();
-    if (!code) { showError('Please enter the OTP.'); return; }
-    verifyBtn.disabled = true;
+  const eVerifyBtn = wrap.querySelector(`#${uid}-everify-otp`);
+  eVerifyBtn.addEventListener('click', async () => {
+    const code = wrap.querySelector(`#${uid}-ecode`).value.trim();
+    if (!code) { showError('Please enter the code.'); return; }
+    eVerifyBtn.disabled = true;
     try {
-      const idToken = await confirmPhoneOtp(confirmationResult, code);
-      await window.PrizmoraaAuth.loginWithIdToken(idToken);
+      await window.PrizmoraaAuth.verifyEmailOtp(otpEmail, code);
       renderBadges();
       onAuthed();
     } catch (err) {
-      showError(err.message || 'Incorrect OTP. Please try again.');
-      verifyBtn.disabled = false;
+      showError(err.message || 'Incorrect code. Please try again.');
+      eVerifyBtn.disabled = false;
     }
   });
 }

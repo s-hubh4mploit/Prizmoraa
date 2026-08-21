@@ -8,6 +8,8 @@ import { neon } from '@neondatabase/serverless';
 import crypto from 'crypto';
 import { verifyFirebaseIdToken } from './_lib/verify-firebase-token.js';
 import { sendPasswordResetEmail } from './_lib/send-password-reset-email.js';
+import { sendEmailOtp } from './_lib/send-email-otp.js';
+import emailOtpStore from './_lib/email-otp-store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -96,7 +98,7 @@ const pgStore = {
     await sql`INSERT INTO users (id, name, email, phone, password_hash, signin_provider)
       VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash}, 'password')`;
   },
-  async createFromFirebase({ id, name, email, phone, firebaseUid, picture, provider }) {
+  async createPasswordlessUser({ id, name, email, phone, firebaseUid, picture, provider }) {
     await ensureSchema();
     await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture, signin_provider)
       VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null}, ${provider || null})`;
@@ -183,7 +185,7 @@ const fileStore = {
     });
     writeUsersFile(users);
   },
-  async createFromFirebase({ id, name, email, phone, firebaseUid, picture, provider }) {
+  async createPasswordlessUser({ id, name, email, phone, firebaseUid, picture, provider }) {
     const users = readUsersFile();
     users.push({
       id, name, email: email ? email.toLowerCase() : null, phone: phone || '',
@@ -341,6 +343,48 @@ export default async (req, res) => {
       return res.end(JSON.stringify({ success: true }));
     }
 
+    if (pathname === '/api/auth/email-otp/send' && method === 'POST') {
+      const { email } = await readBody(req);
+      if (!isValidEmail(email)) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Please provide a valid email.' }));
+      }
+      const normalizedEmail = email.toLowerCase();
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      await emailOtpStore.save(normalizedEmail, code, expiresAt);
+      const emailResult = await sendEmailOtp({ to: normalizedEmail, code });
+      if (!emailResult.sent) {
+        res.statusCode = 500;
+        return res.end(JSON.stringify({ error: 'Could not send the code right now. Please try again shortly.' }));
+      }
+      return res.end(JSON.stringify({ message: 'A one-time code has been sent to your email.' }));
+    }
+
+    if (pathname === '/api/auth/email-otp/verify' && method === 'POST') {
+      const { email, code } = await readBody(req);
+      if (!isValidEmail(email) || !code) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Please provide your email and the code.' }));
+      }
+      const normalizedEmail = email.toLowerCase();
+      const record = await emailOtpStore.get(normalizedEmail);
+      if (!record || record.code !== String(code).trim() || new Date(record.expires_at) < new Date()) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'That code is incorrect or has expired. Please request a new one.' }));
+      }
+      await emailOtpStore.remove(normalizedEmail);
+
+      let row = await store.findByEmail(normalizedEmail);
+      if (!row) {
+        const id = 'user-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const name = normalizedEmail.split('@')[0];
+        await store.createPasswordlessUser({ id, name, email: normalizedEmail, phone: '', firebaseUid: null, picture: null, provider: 'email_otp' });
+        row = await store.findById(id);
+      }
+      return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
+    }
+
     if (pathname === '/api/auth/firebase' && method === 'POST') {
       const { idToken } = await readBody(req);
       let payload;
@@ -370,7 +414,7 @@ export default async (req, res) => {
       if (!row) {
         const id = 'user-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         const name = payload.name || (email ? email.split('@')[0] : 'Customer');
-        await store.createFromFirebase({ id, name, email, phone, firebaseUid, picture: payload.picture, provider });
+        await store.createPasswordlessUser({ id, name, email, phone, firebaseUid, picture: payload.picture, provider });
         row = await store.findById(id);
       }
 

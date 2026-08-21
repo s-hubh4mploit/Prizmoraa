@@ -52,6 +52,17 @@ async function loginWithIdToken(idToken) {
   return data.user;
 }
 
+async function sendEmailOtp(email) {
+  const data = await postJson('/api/auth/email-otp/send', { email });
+  return data.message;
+}
+
+async function verifyEmailOtp(email, code) {
+  const data = await postJson('/api/auth/email-otp/verify', { email, code });
+  saveSession(data.token, data.user);
+  return data.user;
+}
+
 async function forgotPassword(email) {
   const data = await postJson('/api/auth/forgot-password', { email });
   return data.message;
@@ -76,4 +87,7 @@ async function fetchMyOrders() {
   }
 }
 
-window.PrizmoraaAuth = { getToken, getUser, isLoggedIn, signup, login, loginWithIdToken, forgotPassword, resetPassword, logout, fetchMyOrders };
+window.PrizmoraaAuth = {
+  getToken, getUser, isLoggedIn, signup, login, loginWithIdToken,
+  sendEmailOtp, verifyEmailOtp, forgotPassword, resetPassword, logout, fetchMyOrders,
+};
