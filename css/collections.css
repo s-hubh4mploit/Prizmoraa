@@ -118,7 +118,9 @@
   padding: 5px 10px; border-radius: 2px;
 }
 .discount-tag {
-  position: absolute; top: 10px; right: 10px; z-index: 2;
+  /* Stacked below the wishlist heart (top:10px, 30px tall) rather than
+     top:10px on the same corner, which collided with it. */
+  position: absolute; top: 48px; right: 10px; z-index: 2;
   background: #b3261e; color: var(--ivory);
   font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
   padding: 5px 10px; border-radius: 2px;
