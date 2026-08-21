@@ -237,7 +237,7 @@ function renderAccountPanel() {
     if (title) title.textContent = 'My Account';
     renderLoggedInAccount(body, auth.getUser());
   } else {
-    if (title) title.textContent = authMode === 'login' ? 'Log In' : 'Create Account';
+    if (title) title.textContent = authMode === 'signup' ? 'Create Account' : authMode === 'forgot' ? 'Reset Password' : 'Log In';
     renderAuthForms(body);
   }
 }
@@ -347,7 +347,54 @@ function renderSocialAuthExtras(container, onAuthed, showError) {
   });
 }
 
+/**
+ * Standalone "enter your email, get a reset link" form — shared by both
+ * the account panel and the checkout gate. Always shows the same generic
+ * confirmation message regardless of whether the email is registered
+ * (matches the server's anti-enumeration behavior).
+ */
+function renderForgotPasswordForm(container, onBack) {
+  container.innerHTML = `
+    <h2 class="checkout-subhead" style="margin-bottom:6px;">Reset your password</h2>
+    <p class="priz-hint">Enter your account email and we'll send you a link to set a new password.</p>
+    <p class="priz-auth-error" id="forgotError" style="display:none;"></p>
+    <p class="priz-auth-success" id="forgotSuccess" style="display:none;"></p>
+    <form id="forgotForm">
+      <input required type="email" id="forgotEmail" class="priz-input" placeholder="Email" autocomplete="email">
+      <button type="submit" class="btn" style="width:100%">Send Reset Link</button>
+    </form>
+    <button type="button" class="priz-forgot-link" id="backToLoginLink">Back to log in</button>
+  `;
+
+  $('#backToLoginLink', container).addEventListener('click', onBack);
+
+  const errEl = $('#forgotError', container);
+  const successEl = $('#forgotSuccess', container);
+  const showError = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; successEl.style.display = 'none'; };
+
+  const form = $('#forgotForm', container);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    try {
+      const message = await window.PrizmoraaAuth.forgotPassword($('#forgotEmail', container).value.trim());
+      errEl.style.display = 'none';
+      form.style.display = 'none';
+      successEl.textContent = message;
+      successEl.style.display = 'block';
+    } catch (err) {
+      showError(err.message || 'Something went wrong. Please try again.');
+      btn.disabled = false;
+    }
+  });
+}
+
 function renderAuthForms(body) {
+  if (authMode === 'forgot') {
+    renderForgotPasswordForm(body, () => { authMode = 'login'; renderAccountPanel(); });
+    return;
+  }
   const isLogin = authMode === 'login';
   body.innerHTML = `
     <div class="priz-auth-tabs">
@@ -361,6 +408,7 @@ function renderAuthForms(body) {
         <input required type="password" id="loginPassword" class="priz-input" placeholder="Password" autocomplete="current-password">
         <button type="submit" class="btn" style="width:100%">Log In</button>
       </form>
+      <button type="button" class="priz-forgot-link" id="forgotPasswordLink">Forgot password?</button>
     ` : `
       <form id="signupForm">
         <input required type="text" id="signupName" class="priz-input" placeholder="Full name" autocomplete="name">
@@ -377,6 +425,13 @@ function renderAuthForms(body) {
     authMode = b.dataset.authTab;
     renderAccountPanel();
   }));
+
+  if (isLogin) {
+    $('#forgotPasswordLink', body).addEventListener('click', () => {
+      authMode = 'forgot';
+      renderAccountPanel();
+    });
+  }
 
   const errEl = $('#authError');
   const showError = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; };
@@ -420,6 +475,10 @@ function renderAuthForms(body) {
 function renderAuthGate(container, onAuthed) {
   let mode = 'login';
   function render() {
+    if (mode === 'forgot') {
+      renderForgotPasswordForm(container, () => { mode = 'login'; render(); });
+      return;
+    }
     const isLogin = mode === 'login';
     container.innerHTML = `
       <div class="checkout-auth-gate">
@@ -436,6 +495,7 @@ function renderAuthGate(container, onAuthed) {
             <input required type="password" id="gateLoginPassword" class="priz-input" placeholder="Password" autocomplete="current-password">
             <button type="submit" class="btn" style="width:100%">Log In</button>
           </form>
+          <button type="button" class="priz-forgot-link" id="gateForgotPasswordLink">Forgot password?</button>
         ` : `
           <form id="gateSignupForm">
             <input required type="text" id="gateSignupName" class="priz-input" placeholder="Full name" autocomplete="name">
@@ -452,6 +512,13 @@ function renderAuthGate(container, onAuthed) {
       mode = b.dataset.gateTab;
       render();
     }));
+
+    if (isLogin) {
+      $('#gateForgotPasswordLink', container).addEventListener('click', () => {
+        mode = 'forgot';
+        render();
+      });
+    }
 
     const errEl = $('#gateAuthError', container);
     const showError = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; };

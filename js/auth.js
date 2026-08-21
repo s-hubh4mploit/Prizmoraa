@@ -52,6 +52,15 @@ async function loginWithIdToken(idToken) {
   return data.user;
 }
 
+async function forgotPassword(email) {
+  const data = await postJson('/api/auth/forgot-password', { email });
+  return data.message;
+}
+
+async function resetPassword(token, newPassword) {
+  return postJson('/api/auth/reset-password', { token, newPassword });
+}
+
 function logout() { clearSession(); }
 
 async function fetchMyOrders() {
@@ -67,4 +76,4 @@ async function fetchMyOrders() {
   }
 }
 
-window.PrizmoraaAuth = { getToken, getUser, isLoggedIn, signup, login, loginWithIdToken, logout, fetchMyOrders };
+window.PrizmoraaAuth = { getToken, getUser, isLoggedIn, signup, login, loginWithIdToken, forgotPassword, resetPassword, logout, fetchMyOrders };

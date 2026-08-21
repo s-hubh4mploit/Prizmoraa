@@ -5,7 +5,9 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { neon } from '@neondatabase/serverless';
+import crypto from 'crypto';
 import { verifyFirebaseIdToken } from './_lib/verify-firebase-token.js';
+import { sendPasswordResetEmail } from './_lib/send-password-reset-email.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -61,6 +63,8 @@ async function ensureSchema() {
       await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_uid TEXT UNIQUE`;
       await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS picture TEXT`;
       await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS signin_provider TEXT`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ`;
     })();
   }
   await schemaReady;
@@ -104,6 +108,19 @@ const pgStore = {
   async listAll() {
     await ensureSchema();
     return sql`SELECT * FROM users ORDER BY created_at DESC`;
+  },
+  async setResetToken(id, token, expiresAt) {
+    await ensureSchema();
+    await sql`UPDATE users SET reset_token = ${token}, reset_token_expires = ${expiresAt.toISOString()} WHERE id = ${id}`;
+  },
+  async findByResetToken(token) {
+    await ensureSchema();
+    const rows = await sql`SELECT * FROM users WHERE reset_token = ${token} LIMIT 1`;
+    return rows[0] || null;
+  },
+  async updatePassword(id, passwordHash) {
+    await ensureSchema();
+    await sql`UPDATE users SET password_hash = ${passwordHash}, reset_token = NULL, reset_token_expires = NULL WHERE id = ${id}`;
   },
 };
 
@@ -182,6 +199,25 @@ const fileStore = {
   },
   async listAll() {
     return [...readUsersFile()].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  },
+  async setResetToken(id, token, expiresAt) {
+    const users = readUsersFile();
+    const user = users.find(u => u.id === id);
+    if (user) { user.reset_token = token; user.reset_token_expires = expiresAt.toISOString(); writeUsersFile(users); }
+  },
+  async findByResetToken(token) {
+    const users = readUsersFile();
+    return users.find(u => u.reset_token === token) || null;
+  },
+  async updatePassword(id, passwordHash) {
+    const users = readUsersFile();
+    const user = users.find(u => u.id === id);
+    if (user) {
+      user.password_hash = passwordHash;
+      user.reset_token = null;
+      user.reset_token_expires = null;
+      writeUsersFile(users);
+    }
   },
 };
 
@@ -266,6 +302,43 @@ export default async (req, res) => {
         return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
       }
       return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
+    }
+
+    if (pathname === '/api/auth/forgot-password' && method === 'POST') {
+      const { email } = await readBody(req);
+      const genericMessage = "If an account exists for that email, we've sent a password reset link.";
+      if (!isValidEmail(email)) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Please provide a valid email.' }));
+      }
+      const row = await store.findByEmail(email);
+      // Always respond the same way whether or not the account exists,
+      // so this endpoint can't be used to enumerate registered emails.
+      if (row) {
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+        await store.setResetToken(row.id, token, expiresAt);
+        const host = req.headers.host || 'localhost';
+        const resetUrl = `https://${host}/reset-password.html?token=${token}`;
+        await sendPasswordResetEmail({ to: row.email, name: row.name, resetUrl });
+      }
+      return res.end(JSON.stringify({ message: genericMessage }));
+    }
+
+    if (pathname === '/api/auth/reset-password' && method === 'POST') {
+      const { token, newPassword } = await readBody(req);
+      if (!token || !newPassword || newPassword.length < 6) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Please provide the reset token and a password of at least 6 characters.' }));
+      }
+      const row = await store.findByResetToken(token);
+      if (!row || !row.reset_token_expires || new Date(row.reset_token_expires) < new Date()) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'This reset link is invalid or has expired. Please request a new one.' }));
+      }
+      const passwordHash = await bcrypt.hash(newPassword, 10);
+      await store.updatePassword(row.id, passwordHash);
+      return res.end(JSON.stringify({ success: true }));
     }
 
     if (pathname === '/api/auth/firebase' && method === 'POST') {

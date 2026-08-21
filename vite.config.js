@@ -11,6 +11,7 @@ export default defineConfig({
         product: resolve(__dirname, 'product.html'),
         contact: resolve(__dirname, 'contact.html'),
         checkout: resolve(__dirname, 'checkout.html'),
+        resetPassword: resolve(__dirname, 'reset-password.html'),
         admin: resolve(__dirname, 'admin.html')
       }
     }
