@@ -242,6 +242,17 @@ function renderAccountPanel() {
   }
 }
 
+// Firebase requires E.164 format (a leading "+" and country code) and
+// rejects anything else with a raw "invalid-phone-number" error — but
+// customers naturally type a bare 10-digit Indian mobile number. Default
+// a number with no "+" to +91 (stripping a leading 0, if any) rather than
+// making everyone remember to type the country code themselves.
+function normalizePhoneNumber(raw) {
+  const digitsAndPlus = raw.replace(/[^\d+]/g, '');
+  if (digitsAndPlus.startsWith('+')) return digitsAndPlus;
+  return '+91' + digitsAndPlus.replace(/^0+/, '');
+}
+
 /**
  * Google popup + phone/OTP sign-in, appended after an email/password
  * auth form. Shared by both the account panel and the checkout gate so
@@ -261,7 +272,7 @@ function renderSocialAuthExtras(container, onAuthed, showError) {
     </button>
     <div class="priz-phone-auth">
       <div class="priz-phone-step" id="${uid}-step-number">
-        <input type="tel" class="priz-input" placeholder="Phone number (e.g. +91 98765 43210)" id="${uid}-phone">
+        <input type="tel" class="priz-input" placeholder="Phone number (e.g. 98765 43210)" id="${uid}-phone">
         <button type="button" class="btn-ghost priz-phone-btn" id="${uid}-send-otp">Continue with Phone OTP</button>
       </div>
       <div class="priz-phone-step" id="${uid}-step-otp" style="display:none;">
@@ -297,8 +308,13 @@ function renderSocialAuthExtras(container, onAuthed, showError) {
 
   const sendBtn = wrap.querySelector(`#${uid}-send-otp`);
   sendBtn.addEventListener('click', async () => {
-    const phone = wrap.querySelector(`#${uid}-phone`).value.trim();
-    if (!phone) { showError('Please enter your phone number, including country code (e.g. +91).'); return; }
+    const raw = wrap.querySelector(`#${uid}-phone`).value.trim();
+    if (!raw) { showError('Please enter your phone number.'); return; }
+    const phone = normalizePhoneNumber(raw);
+    if (!/^\+\d{8,15}$/.test(phone)) {
+      showError('Please enter a valid phone number (10 digits, or include a country code like +1 for non-Indian numbers).');
+      return;
+    }
     sendBtn.disabled = true;
     sendBtn.textContent = 'Sending OTP...';
     try {
