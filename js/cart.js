@@ -762,7 +762,7 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
               discountAmount: order.discountAmount, total: order.total,
             });
             clearCart();
-            resolve({ success: true, paymentId, orderDetails: { name, phone, address, pincode, cart, paymentId, ...order } });
+            resolve({ success: true, paymentId });
           } else {
             onError && onError('Payment could not be verified. If money was deducted, please contact us on WhatsApp with your payment ID.');
             resolve({ success: false });
@@ -833,27 +833,6 @@ Address: ${address}, ${pincode}`
   window.open(`${WHATSAPP_LINK}?text=${text}`, '_blank');
 }
 
-// Lets the customer share/save their own order details on WhatsApp —
-// opens the share sheet with no fixed recipient, so they pick who to
-// send it to (themselves via "Message Yourself", a family member, etc.).
-// No business WhatsApp API needed, just a plain wa.me deep link.
-function buildCustomerOrderShareUrl({ name, cart, paymentId, subtotal, shippingCharge, discountAmount, total, address, pincode }) {
-  const { lines, totalsText } = buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total });
-  const text = encodeURIComponent(
-`My PRIZMORAA order
-
-${lines}
-
-${totalsText}
-Payment ID: ${paymentId}
-
-Delivering to:
-${name}
-${address}, ${pincode}`
-  );
-  return `https://wa.me/?text=${text}`;
-}
-
 /* ---------------- NAV WIRING ---------------- */
 function wireNavIcons() {
   $$('#cartToggleBtn').forEach(b => b.addEventListener('click', () => openPanel('cart')));
@@ -875,5 +854,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.PrizmoraaCart = {
   addToCart, addFromBtn, wishlistFromBtn, toggleWishlistItem, openPanel,
   getCart, cartCount, cartTotal, removeFromCart, setQty, clearCart,
-  getProfile, runCheckout, renderAuthGate, buildCustomerOrderShareUrl,
+  getProfile, runCheckout, renderAuthGate,
 };
