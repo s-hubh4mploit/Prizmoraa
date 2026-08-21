@@ -206,6 +206,42 @@ async function fetchCustomers() {
   }
 }
 
+// --- Order item preview (zoomed image + which collection it's from) ---
+window.showOrderItemPreview = function (imgEl) {
+  const modal = document.getElementById('orderItemPreviewModal');
+  if (!modal) return;
+  const id = imgEl.dataset.itemId;
+  const name = imgEl.dataset.itemName;
+  const image = imgEl.dataset.itemImage;
+  const price = Number(imgEl.dataset.itemPrice) || 0;
+
+  // Category/sub-category aren't stored on the order line item itself —
+  // look the product up in the inventory already loaded for this session.
+  const product = inventory.find(p => p.id === id);
+
+  document.getElementById('orderItemPreviewTitle').textContent = name;
+  document.getElementById('orderItemPreviewImg').src = image;
+  document.getElementById('orderItemPreviewImg').alt = name;
+  document.getElementById('orderItemPreviewCollection').textContent = product
+    ? [product.category, product.subcategory].filter(Boolean).map(sanitizeInput).join(' • ')
+    : 'This item is no longer in the catalog.';
+  document.getElementById('orderItemPreviewPrice').textContent = `₹${price.toLocaleString('en-IN')}`;
+  modal.classList.add('active');
+};
+
+const closeOrderItemPreviewBtn = document.getElementById('closeOrderItemPreview');
+if (closeOrderItemPreviewBtn) {
+  closeOrderItemPreviewBtn.addEventListener('click', () => {
+    document.getElementById('orderItemPreviewModal').classList.remove('active');
+  });
+}
+const orderItemPreviewModal = document.getElementById('orderItemPreviewModal');
+if (orderItemPreviewModal) {
+  orderItemPreviewModal.addEventListener('click', (e) => {
+    if (e.target === orderItemPreviewModal) orderItemPreviewModal.classList.remove('active');
+  });
+}
+
 // --- Orders ---
 async function fetchOrders() {
   const tbody = document.getElementById('ordersTableBody');
@@ -228,7 +264,10 @@ async function fetchOrders() {
         const imgSrc = i.image ? encodeURI(i.image) : 'images/hero.jpg';
         return `
           <div class="order-item-chip" title="${sanitizeInput(i.name)} × ${i.qty}">
-            <img src="${imgSrc}" alt="${sanitizeInput(i.name)}">
+            <img src="${imgSrc}" alt="${sanitizeInput(i.name)}"
+              data-item-id="${sanitizeInput(i.id || '')}" data-item-name="${sanitizeInput(i.name)}"
+              data-item-image="${imgSrc}" data-item-price="${Number(i.price) || 0}"
+              onclick="showOrderItemPreview(this)">
             <span class="order-item-chip-qty">×${i.qty}</span>
             <span class="order-item-chip-name">${sanitizeInput(i.name)}</span>
           </div>
