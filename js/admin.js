@@ -120,8 +120,43 @@ navItems.forEach(item => {
     if (currentViewTitle) currentViewTitle.textContent = item.textContent.trim();
 
     if (viewId === 'orders') fetchOrders();
+    if (viewId === 'customers') fetchCustomers();
   });
 });
+
+// --- Customers ---
+async function fetchCustomers() {
+  const tbody = document.getElementById('customersTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5">Loading customers...</td></tr>';
+  try {
+    const res = await fetch('/api/auth/users', { headers: { 'x-admin-key': ADMIN_API_KEY } });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      tbody.innerHTML = `<tr><td colspan="5">${sanitizeInput(data.error || 'Could not load customers.')}</td></tr>`;
+      return;
+    }
+    const customers = await res.json();
+    if (!Array.isArray(customers) || customers.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No customers have signed up yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = customers.map(c => {
+      const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      return `
+        <tr>
+          <td><strong>${sanitizeInput(c.name || '')}</strong></td>
+          <td>${sanitizeInput(c.email || '—')}</td>
+          <td>${sanitizeInput(c.phone || '—')}</td>
+          <td><span class="status-badge">${sanitizeInput(c.signInMethod)}</span></td>
+          <td>${sanitizeInput(date)}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="5">Could not load customers.</td></tr>';
+  }
+}
 
 // --- Orders ---
 async function fetchOrders() {

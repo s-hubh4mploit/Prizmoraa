@@ -51,6 +51,9 @@
       <a href="#" class="nav-item" data-view="orders">
         <span class="icon">🧾</span> Orders
       </a>
+      <a href="#" class="nav-item" data-view="customers">
+        <span class="icon">👤</span> Customers
+      </a>
     </nav>
     
     <div class="sidebar-shortcuts">
@@ -176,6 +179,26 @@
               </tr>
             </thead>
             <tbody id="ordersTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Customers View -->
+      <div id="view-customers" class="view">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Signed Up Via</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody">
               <!-- JS Populated -->
             </tbody>
           </table>

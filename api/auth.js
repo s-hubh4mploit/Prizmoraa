@@ -19,6 +19,12 @@ const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_TTL = '30d';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
+
+function isAdmin(req) {
+  if (!ADMIN_API_KEY) return false;
+  return req.headers['x-admin-key'] === ADMIN_API_KEY;
+}
 
 function setJsonHeaders(res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -54,6 +60,7 @@ async function ensureSchema() {
       await sql`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`;
       await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_uid TEXT UNIQUE`;
       await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS picture TEXT`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS signin_provider TEXT`;
     })();
   }
   await schemaReady;
@@ -82,17 +89,21 @@ const pgStore = {
   },
   async create({ id, name, email, phone, passwordHash }) {
     await ensureSchema();
-    await sql`INSERT INTO users (id, name, email, phone, password_hash)
-      VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash})`;
+    await sql`INSERT INTO users (id, name, email, phone, password_hash, signin_provider)
+      VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash}, 'password')`;
   },
-  async createFromFirebase({ id, name, email, phone, firebaseUid, picture }) {
+  async createFromFirebase({ id, name, email, phone, firebaseUid, picture, provider }) {
     await ensureSchema();
-    await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture)
-      VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null})`;
+    await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture, signin_provider)
+      VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null}, ${provider || null})`;
   },
-  async linkFirebaseUid(id, firebaseUid) {
+  async linkFirebaseUid(id, firebaseUid, provider) {
     await ensureSchema();
-    await sql`UPDATE users SET firebase_uid = ${firebaseUid} WHERE id = ${id}`;
+    await sql`UPDATE users SET firebase_uid = ${firebaseUid}, signin_provider = ${provider || null} WHERE id = ${id}`;
+  },
+  async listAll() {
+    await ensureSchema();
+    return sql`SELECT * FROM users ORDER BY created_at DESC`;
   },
 };
 
@@ -149,22 +160,28 @@ const fileStore = {
   },
   async create({ id, name, email, phone, passwordHash }) {
     const users = readUsersFile();
-    users.push({ id, name, email: email.toLowerCase(), phone: phone || '', password_hash: passwordHash, created_at: new Date().toISOString() });
+    users.push({
+      id, name, email: email.toLowerCase(), phone: phone || '', password_hash: passwordHash,
+      signin_provider: 'password', created_at: new Date().toISOString(),
+    });
     writeUsersFile(users);
   },
-  async createFromFirebase({ id, name, email, phone, firebaseUid, picture }) {
+  async createFromFirebase({ id, name, email, phone, firebaseUid, picture, provider }) {
     const users = readUsersFile();
     users.push({
       id, name, email: email ? email.toLowerCase() : null, phone: phone || '',
       password_hash: null, firebase_uid: firebaseUid, picture: picture || null,
-      created_at: new Date().toISOString(),
+      signin_provider: provider || null, created_at: new Date().toISOString(),
     });
     writeUsersFile(users);
   },
-  async linkFirebaseUid(id, firebaseUid) {
+  async linkFirebaseUid(id, firebaseUid, provider) {
     const users = readUsersFile();
     const user = users.find(u => u.id === id);
-    if (user) { user.firebase_uid = firebaseUid; writeUsersFile(users); }
+    if (user) { user.firebase_uid = firebaseUid; user.signin_provider = provider || null; writeUsersFile(users); }
+  },
+  async listAll() {
+    return [...readUsersFile()].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   },
 };
 
@@ -264,26 +281,47 @@ export default async (req, res) => {
       const firebaseUid = payload.sub;
       const email = payload.email ? payload.email.toLowerCase() : null;
       const phone = payload.phone_number || '';
+      const provider = (payload.firebase && payload.firebase.sign_in_provider) || null;
 
       let row = await store.findByFirebaseUid(firebaseUid);
 
       if (!row && email) {
         row = await store.findByEmail(email);
-        if (row) await store.linkFirebaseUid(row.id, firebaseUid);
+        if (row) await store.linkFirebaseUid(row.id, firebaseUid, provider);
       }
       if (!row && phone) {
         row = await store.findByPhone(phone);
-        if (row) await store.linkFirebaseUid(row.id, firebaseUid);
+        if (row) await store.linkFirebaseUid(row.id, firebaseUid, provider);
       }
 
       if (!row) {
         const id = 'user-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         const name = payload.name || (email ? email.split('@')[0] : 'Customer');
-        await store.createFromFirebase({ id, name, email, phone, firebaseUid, picture: payload.picture });
+        await store.createFromFirebase({ id, name, email, phone, firebaseUid, picture: payload.picture, provider });
         row = await store.findById(id);
       }
 
       return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
+    }
+
+    if (pathname === '/api/auth/users' && method === 'GET') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
+      const rows = await store.listAll();
+      const users = rows.map(r => ({
+        id: r.id,
+        name: r.name,
+        email: r.email,
+        phone: r.phone || '',
+        signInMethod: r.signin_provider === 'google.com' ? 'Google'
+          : r.signin_provider === 'phone' ? 'Phone OTP'
+          : r.signin_provider === 'password' ? 'Email & Password'
+          : r.password_hash ? 'Email & Password' : 'Unknown',
+        createdAt: r.created_at,
+      }));
+      return res.end(JSON.stringify(users));
     }
 
     if (pathname === '/api/auth/me' && method === 'GET') {
