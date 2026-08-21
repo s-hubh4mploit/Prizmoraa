@@ -135,6 +135,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCheckoutForm();
   } else {
     const formCol = $('.checkout-form-col');
-    window.PrizmoraaCart.renderAuthGate(formCol, initCheckoutForm);
+    // renderAuthGate replaces this whole column's markup with the login
+    // UI, wiping out the delivery form underneath it — so once sign-in
+    // succeeds (including Google/email-OTP, which resolve asynchronously
+    // via their own buttons, not the form submit), the original form
+    // has to be put back before it can be wired up again.
+    const originalFormHtml = formCol.innerHTML;
+    window.PrizmoraaCart.renderAuthGate(formCol, () => {
+      formCol.innerHTML = originalFormHtml;
+      initCheckoutForm();
+    });
   }
 });
