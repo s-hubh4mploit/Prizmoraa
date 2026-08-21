@@ -173,6 +173,17 @@ body {
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
+/* Category filter tabs */
+.category-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.category-filter-btn {
+  padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(58, 42, 29, 0.15);
+  background: var(--ivory); color: var(--espresso-soft);
+  font-family: var(--font-sans); font-size: 13px; cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.category-filter-btn:hover { border-color: var(--espresso); color: var(--espresso); }
+.category-filter-btn.active { background: var(--espresso); border-color: var(--espresso); color: var(--ivory); }
+
 /* Data Table */
 .table-container {
   background: var(--ivory);

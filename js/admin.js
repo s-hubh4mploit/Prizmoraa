@@ -162,15 +162,22 @@ async function fetchOrders() {
 }
 
 // Table Rendering
-function renderTable(filterText = '') {
+let currentCategoryFilter = 'all';
+let currentSearchText = '';
+
+function renderTable(filterText = currentSearchText) {
+  currentSearchText = filterText;
   const tbody = document.getElementById('inventoryTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  
-  const filtered = inventory.filter(item => 
-    (item.name && item.name.toLowerCase().includes(filterText.toLowerCase())) ||
-    (item.category && item.category.toLowerCase().includes(filterText.toLowerCase()))
-  );
+
+  const filtered = inventory.filter(item => {
+    const matchesCategory = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
+    const matchesSearch =
+      (item.name && item.name.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.category && item.category.toLowerCase().includes(filterText.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   const featuredCount = inventory.filter(i => i.featured).length;
 
@@ -205,6 +212,19 @@ function renderTable(filterText = '') {
     featuredWarning.style.display = featuredCount > 4 ? 'block' : 'none';
     featuredWarning.textContent = `${featuredCount} items are marked as Featured — only the first 4 will show on the homepage.`;
   }
+
+  updateCategoryFilterCounts();
+}
+
+function updateCategoryFilterCounts() {
+  const categoryFilterBar = document.getElementById('categoryFilterBar');
+  if (!categoryFilterBar) return;
+  const labels = { all: 'All', necklaces: 'Necklaces', bracelets: 'Bracelets', earrings: 'Earrings' };
+  categoryFilterBar.querySelectorAll('.category-filter-btn').forEach(btn => {
+    const cat = btn.dataset.cat;
+    const count = cat === 'all' ? inventory.length : inventory.filter(i => i.category === cat).length;
+    btn.textContent = `${labels[cat]} (${count})`;
+  });
 }
 
 // Global search
@@ -212,6 +232,19 @@ const globalSearch = document.getElementById('globalSearch');
 if (globalSearch) {
   globalSearch.addEventListener('input', (e) => {
     renderTable(e.target.value);
+  });
+}
+
+// Category filter tabs — segregate the inventory table by category while
+// keeping edit/delete/featured actions live on each visible row.
+const categoryFilterBar = document.getElementById('categoryFilterBar');
+if (categoryFilterBar) {
+  categoryFilterBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.category-filter-btn');
+    if (!btn) return;
+    currentCategoryFilter = btn.dataset.cat;
+    categoryFilterBar.querySelectorAll('.category-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderTable();
   });
 }
 
