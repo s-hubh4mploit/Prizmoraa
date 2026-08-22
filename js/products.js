@@ -610,6 +610,33 @@
     }
   }
 
+  // Like fetchJson, but for admin write operations: a 401/403 means the request
+  // was rejected by the server (bad/missing admin key) and must surface as a
+  // real error rather than silently falling back to local-only storage, which
+  // would look like a successful save while nothing actually persisted. Only a
+  // genuine network failure (offline, unreachable) falls back locally.
+  async function fetchJsonAdmin(endpoint, options = {}) {
+    let response;
+    try {
+      response = await fetch(endpoint, options);
+    } catch (err) {
+      return { networkError: true };
+    }
+    if (response.status === 401 || response.status === 403) {
+      const err = new Error('Admin session expired or invalid. Please log in again.');
+      err.authError = true;
+      throw err;
+    }
+    if (!response.ok) {
+      return { networkError: true };
+    }
+    try {
+      return { data: await response.json() };
+    } catch (err) {
+      return { networkError: true };
+    }
+  }
+
   function getLocalProducts() {
     try {
       const data = localStorage.getItem(INVENTORY_KEY);
@@ -649,14 +676,17 @@
     return getLocalProducts();
   }
 
-  async function saveProduct(item) {
+  async function saveProduct(item, adminKey) {
     const payload = JSON.stringify(item);
-    const response = await fetchJson('/api/products', {
+    const result = await fetchJsonAdmin('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(adminKey ? { 'x-admin-key': adminKey } : {})
+      },
       body: payload
     });
-    if (response) return response;
+    if (result.data) return result.data;
     const products = getLocalProducts();
     const existingIndex = products.findIndex(p => p.id === item.id);
     if (existingIndex > -1) {
@@ -668,21 +698,23 @@
     return item;
   }
 
-  async function deleteProduct(id) {
-    const response = await fetchJson(`/api/products/${encodeURIComponent(id)}`, {
-      method: 'DELETE'
+  async function deleteProduct(id, adminKey) {
+    const result = await fetchJsonAdmin(`/api/products/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: adminKey ? { 'x-admin-key': adminKey } : {}
     });
-    if (response) return response;
+    if (result.data) return result.data;
     const products = getLocalProducts().filter(p => p.id !== id);
     saveLocalProducts(products);
     return { success: true };
   }
 
-  async function resetInventoryToDefault() {
-    const response = await fetchJson('/api/products/reset', {
-      method: 'POST'
+  async function resetInventoryToDefault(adminKey) {
+    const result = await fetchJsonAdmin('/api/products/reset', {
+      method: 'POST',
+      headers: adminKey ? { 'x-admin-key': adminKey } : {}
     });
-    if (response && response.success) {
+    if (result.data && result.data.success) {
       const refreshed = await getProducts();
       return Array.isArray(refreshed) ? refreshed : [];
     }

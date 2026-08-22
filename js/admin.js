@@ -1,10 +1,12 @@
 // Admin Dashboard Logic - Universal file:// and http:// compatibility
 
 const SESSION_KEY = 'prizmoraa_admin_token';
-// NOTE: this key gates the /api/orders admin listing endpoint. Like the hardcoded
-// admin/Prizmoraa2026 login below, it lives in a public JS file and is only a
-// soft deterrent, not real security — anyone who views source can read it.
-const ADMIN_API_KEY = 'd0d858249913b45cbf92194158abaf5fb0d764885058422e';
+// The admin API key is no longer shipped in this file. It's issued by
+// /api/admin-login only after the server verifies the username/password
+// (which also never leave the server), and kept only in memory for this
+// page session — never persisted, so a reload always requires logging in
+// again, same as before.
+let ADMIN_API_KEY = null;
 
 // Basic XSS Sanitizer
 function sanitizeInput(str) {
@@ -23,6 +25,21 @@ function getProductManager() {
   };
 }
 
+// A save/delete/reset call that the server rejected (bad or missing admin key)
+// throws rather than silently falling back to local-only storage. Surface it
+// and force a fresh login instead of letting the admin believe it saved.
+function handleAdminAuthError(err) {
+  if (err && err.authError) {
+    alert('Your admin session is invalid or has expired. Please log in again.');
+    ADMIN_API_KEY = null;
+    sessionStorage.removeItem(SESSION_KEY);
+    window.location.reload();
+    return;
+  }
+  console.error(err);
+  alert('Something went wrong saving that change. Please try again.');
+}
+
 // Always land on the login screen when the admin URL is opened or reloaded —
 // no session is persisted across navigations, so a stale/leftover token
 // can never skip straight to the dashboard.
@@ -33,57 +50,63 @@ async function checkAuth() {
 }
 
 // --- Security & Login ---
-// Change the admin login by editing these two values.
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'Prizmoraa2026';
-
+// The username/password are verified server-side in /api/admin-login (see
+// that file to change them); brute-force lockout is also enforced there,
+// since a client-side-only counter is trivially bypassed by reloading.
 const loginOverlay = document.getElementById('loginOverlay');
 const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 const logoutBtn = document.getElementById('logoutBtn');
 
-// Rate limiting variables
-let loginAttempts = 0;
-let lockTime = null;
-
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (lockTime && Date.now() < lockTime) {
-      if (loginError) {
-        loginError.textContent = 'Too many attempts. Try again later.';
-        loginError.style.display = 'block';
-      }
-      return;
-    }
-    
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
     const rawUser = document.getElementById('adminUsername').value || '';
     const rawPass = document.getElementById('adminPassword').value || '';
-    const user = rawUser.trim().toLowerCase();
-    const pass = rawPass.trim();
-    
-    if (user === ADMIN_USERNAME.toLowerCase() && pass === ADMIN_PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY, 'secure-token-abc-123');
-      if (loginError) loginError.style.display = 'none';
-      if (loginOverlay) loginOverlay.style.display = 'none';
-      await initDashboard();
-    } else {
-      loginAttempts++;
+
+    if (submitBtn) submitBtn.disabled = true;
+    if (loginError) loginError.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: rawUser.trim(), password: rawPass.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.apiKey) {
+        ADMIN_API_KEY = data.apiKey;
+        sessionStorage.setItem(SESSION_KEY, 'secure-token-abc-123');
+        if (loginOverlay) loginOverlay.style.display = 'none';
+        await initDashboard();
+        return;
+      }
+
       if (loginError) {
-        if (loginAttempts >= 5) {
-          lockTime = Date.now() + 30000;
-          loginError.textContent = 'Account locked for 30s for security.';
+        if (res.status === 429) {
+          const seconds = Math.max(1, Math.ceil((data.retryAfterMs || 0) / 1000));
+          loginError.textContent = `Too many attempts. Try again in ${seconds}s.`;
         } else {
-          loginError.textContent = 'Invalid username or password.';
+          loginError.textContent = data.error || 'Invalid username or password.';
         }
         loginError.style.display = 'block';
       }
+    } catch (err) {
+      if (loginError) {
+        loginError.textContent = 'Could not reach the server. Please try again.';
+        loginError.style.display = 'block';
+      }
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
 
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
+    ADMIN_API_KEY = null;
     sessionStorage.removeItem(SESSION_KEY);
     window.location.reload();
   });
@@ -468,13 +491,17 @@ if (btnResetCatalog) {
   btnResetCatalog.addEventListener('click', async () => {
     if (confirm('Reset inventory to default product items with real images?')) {
       const pm = getProductManager();
-      inventory = await pm.resetInventoryToDefault();
-      if (!Array.isArray(inventory)) {
-        inventory = await pm.getProducts();
+      try {
+        inventory = await pm.resetInventoryToDefault(ADMIN_API_KEY);
+        if (!Array.isArray(inventory)) {
+          inventory = await pm.getProducts();
+        }
+        renderTable();
+        updateStats();
+        alert('Inventory reset successfully!');
+      } catch (err) {
+        handleAdminAuthError(err);
       }
-      renderTable();
-      updateStats();
-      alert('Inventory reset successfully!');
     }
   });
 }
@@ -530,10 +557,14 @@ if (itemForm) {
     }
 
     const pm = getProductManager();
-    await pm.saveProduct(newItem);
-    renderTable();
-    updateStats();
-    closeAndReset();
+    try {
+      await pm.saveProduct(newItem, ADMIN_API_KEY);
+      renderTable();
+      updateStats();
+      closeAndReset();
+    } catch (err) {
+      handleAdminAuthError(err);
+    }
   });
 }
 
@@ -578,16 +609,25 @@ window.toggleFeatured = async function(id) {
   if (!item) return;
   item.featured = !item.featured;
   const pm = getProductManager();
-  await pm.saveProduct(item);
-  renderTable();
+  try {
+    await pm.saveProduct(item, ADMIN_API_KEY);
+    renderTable();
+  } catch (err) {
+    item.featured = !item.featured;
+    handleAdminAuthError(err);
+  }
 };
 
 window.deleteItem = async function(id) {
   if (confirm('Are you sure you want to delete this item?')) {
-    inventory = inventory.filter(i => i.id !== id);
     const pm = getProductManager();
-    await pm.deleteProduct(id);
-    renderTable();
-    updateStats();
+    try {
+      await pm.deleteProduct(id, ADMIN_API_KEY);
+      inventory = inventory.filter(i => i.id !== id);
+      renderTable();
+      updateStats();
+    } catch (err) {
+      handleAdminAuthError(err);
+    }
   }
 };

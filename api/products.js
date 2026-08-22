@@ -21,6 +21,12 @@ const CONNECTION_STRING =
 
 const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
+function isAdmin(req) {
+  if (!ADMIN_API_KEY) return false;
+  return req.headers['x-admin-key'] === ADMIN_API_KEY;
+}
+
 function readJsonFile(filePath) {
   try {
     const text = fs.readFileSync(filePath, 'utf8');
@@ -190,6 +196,11 @@ export default async (req, res) => {
     }
 
     if (pathname === '/api/products' && method === 'POST') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        setJsonHeaders(res);
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
       let body = '';
       req.on('data', chunk => { body += chunk; });
       req.on('end', async () => {
@@ -211,6 +222,11 @@ export default async (req, res) => {
     }
 
     if (pathname === '/api/products/reset' && method === 'POST') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        setJsonHeaders(res);
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
       await store.resetToDefaults();
       setJsonHeaders(res);
       return res.end(JSON.stringify({ success: true }));
@@ -232,6 +248,11 @@ export default async (req, res) => {
     }
 
     if (pathname.startsWith('/api/products/') && method === 'DELETE') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        setJsonHeaders(res);
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
       const id = decodeURIComponent(matchRoute(/^\/api\/products\/(.+)$/, pathname));
       if (!id) {
         res.statusCode = 400;
