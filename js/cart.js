@@ -742,6 +742,28 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
         order_id: order.orderId,
         prefill: { name, email, contact: phone },
         theme: { color: '#1e2327' },
+        // Puts a scannable UPI QR code front-and-center as its own block
+        // instead of leaving it one tab-click deep inside "UPI" — everything
+        // else (cards, netbanking, wallets, UPI intent/collect) still shows
+        // in the "Other Payment Methods" block below it.
+        config: {
+          display: {
+            blocks: {
+              upiQr: { name: 'Pay via UPI QR Code', instruments: [{ method: 'upi', flows: ['qr'] }] },
+              other: {
+                name: 'Other Payment Methods',
+                instruments: [
+                  { method: 'upi', flows: ['collect', 'intent'] },
+                  { method: 'card' },
+                  { method: 'netbanking' },
+                  { method: 'wallet' },
+                ],
+              },
+            },
+            sequence: ['block.upiQr', 'block.other'],
+            preferences: { show_default_blocks: false },
+          },
+        },
         handler: async function (response) {
           onStatus && onStatus('Verifying payment...');
           const verifyRes = await fetch('/api/verify-payment', {
