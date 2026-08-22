@@ -147,7 +147,7 @@ ${hasDiscount ? `<s class="price-was">₹${product.price.toLocaleString('en-IN')
 </div>
 <div class="prod-actions">
 <button class="btn" id="addToBagBtn" ${inStock ? '' : 'disabled'}
-  data-id="${product.id}" data-name="${product.name}" data-price="${effPrice}" data-image="${encodeURI(mainImgSrc)}"
+  data-id="${product.id}" data-name="${product.name}" data-price="${effPrice}" data-image="${encodeURI(mainImgSrc)}" data-stock="${Number.isFinite(product.stock) ? product.stock : ''}"
   onclick="window.PrizmoraaCart.addFromBtn(this)">
   ${inStock ? 'Add to Bag' : 'Out of Stock'}
 </button>

@@ -25,6 +25,10 @@ export default async function handler(req, res) {
     for (const { id, qty } of cleanItems) {
       const product = productMap.get(id);
       if (!product) return res.status(400).json({ error: `One of the items in your cart is no longer available.` });
+      const availableStock = Number.isFinite(product.stock) ? product.stock : Infinity;
+      if (qty > availableStock) {
+        return res.status(400).json({ error: `Only ${availableStock} of "${product.name}" left in stock — please update your cart.` });
+      }
       const listPrice = Number(product.price) || 0;
       const itemDiscountPercent = Math.min(100, Math.max(0, Number(product.discountPercent) || 0));
       // The per-piece sale price the customer actually saw on the product

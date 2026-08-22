@@ -135,7 +135,7 @@ ${cleanDesc ? `<div class="hover-overlay">
 <div class="card-bottom-row">
 <span class="price">₹${effPrice.toLocaleString('en-IN')}${hasDiscount ? ` <s class="price-was">₹${p.price.toLocaleString('en-IN')}</s>` : ''}</span>
 ${inStock
-  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(imgSrc)}"
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(imgSrc)}" data-stock="${Number.isFinite(p.stock) ? p.stock : ''}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
   : `<span class="quick-add-btn disabled">Out of Stock</span>`}
 </div>

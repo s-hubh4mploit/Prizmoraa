@@ -64,6 +64,8 @@ body.priz-lock { overflow: hidden; }
 .priz-line-price { font-size: 13px; color: var(--espresso-soft); font-family: var(--font-serif); font-weight: 500; }
 .priz-qty { display: flex; align-items: center; gap: 10px; }
 .priz-qty button { border: 1px solid rgba(58, 42, 29, 0.2); background: var(--ivory); color: var(--espresso); width: 24px; height: 24px; cursor: pointer; }
+.priz-qty button:disabled { opacity: 0.35; cursor: not-allowed; }
+.priz-stock-notice { display: block; font-size: 11.5px; color: #b3261e; margin-top: 4px; }
 .priz-remove { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--espresso-soft); }
 .priz-remove:hover { color: var(--gold); }
 

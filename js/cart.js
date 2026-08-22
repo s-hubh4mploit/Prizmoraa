@@ -20,11 +20,37 @@ function writeJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 function getCart() { return readJSON(CART_KEY, []); }
 function saveCart(cart) { writeJSON(CART_KEY, cart); renderBadges(); renderCartDrawer(); }
 
+// stock is null/undefined when unknown (e.g. items added via wishlist, which
+// doesn't track stock) — treated as unlimited so existing flows keep working.
+let stockLimitNotice = null;
+
 function addToCart(item, qty = 1) {
   const cart = getCart();
+  const stock = item.stock === undefined || item.stock === null || item.stock === '' ? null : Math.max(0, Number(item.stock) || 0);
   const existing = cart.find(i => i.id === item.id);
-  if (existing) existing.qty += qty;
-  else cart.push({ id: item.id, name: item.name, price: Number(item.price), image: item.image, qty });
+
+  if (existing) {
+    if (stock !== null) existing.stock = stock;
+    const currentQty = existing.qty;
+    const room = stock === null ? qty : Math.max(0, stock - currentQty);
+    const toAdd = Math.min(qty, room);
+    existing.qty = currentQty + toAdd;
+    if (toAdd < qty) {
+      stockLimitNotice = { id: item.id, message: stock > 0 ? `Only ${stock} in stock — that's the most you can add.` : 'This piece is out of stock.' };
+    }
+  } else {
+    const toAdd = stock === null ? qty : Math.min(qty, stock);
+    if (toAdd <= 0) {
+      stockLimitNotice = { id: item.id, message: 'This piece is out of stock.' };
+      openPanel('cart');
+      return;
+    }
+    cart.push({ id: item.id, name: item.name, price: Number(item.price), image: item.image, qty: toAdd, stock });
+    if (toAdd < qty) {
+      stockLimitNotice = { id: item.id, message: `Only ${stock} in stock — that's the most you can add.` };
+    }
+  }
+
   saveCart(cart);
   openPanel('cart');
 }
@@ -33,6 +59,11 @@ function setQty(id, qty) {
   const cart = getCart();
   const item = cart.find(i => i.id === id);
   if (!item) return;
+  const max = item.stock === undefined || item.stock === null ? Infinity : item.stock;
+  if (qty > max) {
+    stockLimitNotice = { id, message: `Only ${max} in stock — that's the most you can add.` };
+    qty = max;
+  }
   item.qty = Math.max(1, qty);
   saveCart(cart);
 }
@@ -55,7 +86,7 @@ function toggleWishlistItem(item) {
 
 /* Called from product-card buttons via data-* attributes */
 function addFromBtn(btn) {
-  addToCart({ id: btn.dataset.id, name: btn.dataset.name, price: btn.dataset.price, image: btn.dataset.image });
+  addToCart({ id: btn.dataset.id, name: btn.dataset.name, price: btn.dataset.price, image: btn.dataset.image, stock: btn.dataset.stock });
 }
 function wishlistFromBtn(btn) {
   toggleWishlistItem({ id: btn.dataset.id, name: btn.dataset.name, price: btn.dataset.price, image: btn.dataset.image });
@@ -174,7 +205,10 @@ function renderCartDrawer() {
     foot.innerHTML = '';
     return;
   }
-  wrap.innerHTML = cart.map(i => `
+  wrap.innerHTML = cart.map(i => {
+    const atMax = i.stock !== undefined && i.stock !== null && i.qty >= i.stock;
+    const notice = stockLimitNotice && stockLimitNotice.id === i.id ? stockLimitNotice.message : null;
+    return `
     <div class="priz-line">
       <img src="${i.image}" alt="${i.name}">
       <div class="priz-line-info">
@@ -183,12 +217,15 @@ function renderCartDrawer() {
         <div class="priz-qty">
           <button data-qty-down="${i.id}">−</button>
           <span>${i.qty}</span>
-          <button data-qty-up="${i.id}">+</button>
+          <button data-qty-up="${i.id}" ${atMax ? 'disabled' : ''}>+</button>
         </div>
+        ${notice ? `<span class="priz-stock-notice">${notice}</span>` : (atMax ? `<span class="priz-stock-notice">Max stock reached.</span>` : '')}
       </div>
       <button class="priz-remove" data-remove="${i.id}">&times;</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
+  stockLimitNotice = null;
 
   $$('[data-qty-up]').forEach(b => b.onclick = () => setQty(b.dataset.qtyUp, (cart.find(i => i.id === b.dataset.qtyUp).qty) + 1));
   $$('[data-qty-down]').forEach(b => b.onclick = () => setQty(b.dataset.qtyDown, (cart.find(i => i.id === b.dataset.qtyDown).qty) - 1));
@@ -727,8 +764,11 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cart.map(i => ({ id: i.id, qty: i.qty })) }),
     });
-    if (!orderRes.ok) throw new Error('order-failed');
-    const order = await orderRes.json();
+    const order = await orderRes.json().catch(() => ({}));
+    if (!orderRes.ok) {
+      onError && onError(order.error || 'Something went wrong starting payment. Please try again.');
+      return { success: false };
+    }
 
     await loadRazorpayScript();
 
