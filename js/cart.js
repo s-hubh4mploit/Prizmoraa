@@ -219,7 +219,7 @@ function renderCartDrawer() {
           <span>${i.qty}</span>
           <button data-qty-up="${i.id}" ${atMax ? 'disabled' : ''}>+</button>
         </div>
-        ${notice ? `<span class="priz-stock-notice">${notice}</span>` : (atMax ? `<span class="priz-stock-notice">Max stock reached.</span>` : '')}
+        ${notice ? `<span class="priz-stock-notice">${notice}</span>` : (atMax ? `<span class="priz-stock-notice">Our Limit Has Been Reached.</span>` : '')}
       </div>
       <button class="priz-remove" data-remove="${i.id}">&times;</button>
     </div>
