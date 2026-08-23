@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="./css/components.css">
 <link rel="stylesheet" href="./css/cart.css">
 <link rel="stylesheet" href="./css/checkout.css">
+<link rel="stylesheet" href="./css/policy-modal.css">
 </head>
 <body>
 
@@ -64,6 +65,7 @@
   </div>
   <textarea required id="cpAddress" class="priz-input" placeholder="Delivery address"></textarea>
   <p class="priz-hint">Prepaid orders only — we don't offer Cash on Delivery. Payment is handled securely by Razorpay; we never see or store your card details.</p>
+  <button type="button" id="policyModalBtn" class="policy-modal-trigger">Refund, Return &amp; Exchange Policy</button>
   <button type="submit" class="btn" id="checkoutPagePayBtn" style="width:100%">Pay & Place Order</button>
   <p class="checkout-badges">
     <span>🔒 Secured by Razorpay</span>
@@ -126,5 +128,6 @@
 <script type="module" src="./js/auth.js"></script>
 <script type="module" src="./js/cart.js"></script>
 <script type="module" src="./js/checkout.js"></script>
+<script src="./js/policy-modal.js"></script>
 </body>
 </html>
