@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { neon } from '@neondatabase/serverless';
 import { getUserIdFromRequest } from './auth.js';
-import { sendOrderConfirmationEmail } from './_lib/send-order-email.js';
+import { sendOrderConfirmationEmail, sendAdminOrderNotificationEmail } from './_lib/send-order-email.js';
 import { decrementStock } from './_lib/inventory.js';
 import pendingOrderStore from './_lib/pending-order-store.js';
 
@@ -211,7 +211,10 @@ export default async (req, res) => {
       await store.create(order);
       await decrementStock(pending.items);
       await pendingOrderStore.remove(razorpay_order_id);
-      const emailResult = await sendOrderConfirmationEmail(order);
+      const [emailResult] = await Promise.all([
+        sendOrderConfirmationEmail(order),
+        sendAdminOrderNotificationEmail(order),
+      ]);
       return res.end(JSON.stringify({ order, emailSent: emailResult.sent }));
     }
 
