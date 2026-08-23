@@ -126,24 +126,28 @@ function initCheckoutForm() {
   });
 }
 
+// Snapshotted once, before the gate ever overwrites the form column, so it
+// can be restored no matter which sign-in path actually completed (the
+// gate's own embedded form, or the separate account panel — see below).
+let savedFormHtml = null;
+
+function restoreCheckoutForm() {
+  const formCol = $('.checkout-form-col');
+  if (savedFormHtml !== null) formCol.innerHTML = savedFormHtml;
+  initCheckoutForm();
+}
+
 function showAuthGate() {
   const formCol = $('.checkout-form-col');
-  // renderAuthGate replaces this whole column's markup with the login
-  // UI, wiping out the delivery form underneath it — so once sign-in
-  // succeeds (including Google/email-OTP, which resolve asynchronously
-  // via their own buttons, not the form submit), the original form
-  // has to be put back before it can be wired up again.
-  const originalFormHtml = formCol.innerHTML;
-  window.PrizmoraaCart.renderAuthGate(formCol, () => {
-    formCol.innerHTML = originalFormHtml;
-    initCheckoutForm();
-  });
+  window.PrizmoraaCart.renderAuthGate(formCol, restoreCheckoutForm);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   await fetchSiteSettings();
   const hasItems = renderSummary();
   if (!hasItems) return;
+
+  savedFormHtml = $('.checkout-form-col').innerHTML;
 
   if (window.PrizmoraaAuth && window.PrizmoraaAuth.isLoggedIn()) {
     initCheckoutForm();
@@ -157,5 +161,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // address) would sit there until the page is reloaded.
   window.addEventListener('prizmoraa:auth-logout', () => {
     if ($('#checkoutPageForm')) showAuthGate();
+  });
+
+  // Mirror of the above: if the customer logs in via the account panel
+  // (rather than the gate's own embedded login form) while the checkout
+  // page is still locked, unlock it immediately instead of leaving the
+  // login gate on screen despite now being signed in.
+  window.addEventListener('prizmoraa:auth-login', () => {
+    if (!$('#checkoutPageForm') && window.PrizmoraaAuth.isLoggedIn()) {
+      restoreCheckoutForm();
+    }
   });
 });

@@ -674,10 +674,6 @@ function renderLoggedInAccount(body, user) {
     authMode = 'login';
     renderAccountPanel();
     renderBadges();
-    // Lets any page-specific controller (e.g. checkout.js) react immediately
-    // — e.g. re-locking an already-rendered delivery form — instead of only
-    // fixing itself on the next page load.
-    window.dispatchEvent(new CustomEvent('prizmoraa:auth-logout'));
   });
 
   $('#saveProfileBtn').addEventListener('click', (e) => {

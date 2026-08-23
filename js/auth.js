@@ -10,13 +10,21 @@ function getUser() {
 }
 function isLoggedIn() { return !!getToken() && !!getUser(); }
 
+// Every login path (email/password, signup, Google, phone OTP, email OTP)
+// funnels through here, and every logout through clearSession — so this is
+// the one place to broadcast session changes for any page-specific
+// controller (e.g. checkout.js re-locking/unlocking its delivery form) to
+// react to, regardless of which UI (account panel vs. an inline auth gate)
+// the customer actually used.
 function saveSession(token, user) {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  window.dispatchEvent(new CustomEvent('prizmoraa:auth-login'));
 }
 function clearSession() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  window.dispatchEvent(new CustomEvent('prizmoraa:auth-logout'));
 }
 
 async function postJson(url, payload) {
