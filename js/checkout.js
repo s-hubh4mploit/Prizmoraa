@@ -37,7 +37,7 @@ function renderTotals() {
     <div class="checkout-totals">
       <div class="checkout-total-line"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
       ${discountAmount > 0 ? `<div class="checkout-total-line discount"><span>Discount</span><span>−₹${discountAmount.toLocaleString('en-IN')}</span></div>` : ''}
-      <div class="checkout-total-line"><span>Shipping</span><span>${shippingCharge > 0 ? '₹' + shippingCharge.toLocaleString('en-IN') : 'Free'}</span></div>
+      <div class="checkout-total-line"><span>Shipping Charges</span><span>${shippingCharge > 0 ? '₹' + shippingCharge.toLocaleString('en-IN') : 'Free'}</span></div>
     </div>
     <div class="checkout-total-row">
       <span>Total</span>
