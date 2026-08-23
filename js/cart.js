@@ -95,6 +95,10 @@ function wishlistFromBtn(btn) {
 /* ---------------- PROFILE (delivery details, saved on device) ---------------- */
 function getProfile() { return readJSON(PROFILE_KEY, { name: '', email: '', phone: '', address: '', pincode: '' }); }
 function saveProfile(p) { writeJSON(PROFILE_KEY, p); }
+// Saved delivery details are personal (name, phone, address) and must not
+// survive a logout — otherwise the next person to sign in on this device
+// (e.g. a shared computer) would see the previous account's address.
+function clearProfile() { localStorage.removeItem(PROFILE_KEY); }
 
 /* ---------------- BADGES ---------------- */
 const ACCOUNT_ICON_SVG = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
@@ -666,9 +670,14 @@ function renderLoggedInAccount(body, user) {
 
   $('#logoutBtn').addEventListener('click', () => {
     window.PrizmoraaAuth.logout();
+    clearProfile();
     authMode = 'login';
     renderAccountPanel();
     renderBadges();
+    // Lets any page-specific controller (e.g. checkout.js) react immediately
+    // — e.g. re-locking an already-rendered delivery form — instead of only
+    // fixing itself on the next page load.
+    window.dispatchEvent(new CustomEvent('prizmoraa:auth-logout'));
   });
 
   $('#saveProfileBtn').addEventListener('click', (e) => {

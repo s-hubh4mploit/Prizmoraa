@@ -126,6 +126,20 @@ function initCheckoutForm() {
   });
 }
 
+function showAuthGate() {
+  const formCol = $('.checkout-form-col');
+  // renderAuthGate replaces this whole column's markup with the login
+  // UI, wiping out the delivery form underneath it — so once sign-in
+  // succeeds (including Google/email-OTP, which resolve asynchronously
+  // via their own buttons, not the form submit), the original form
+  // has to be put back before it can be wired up again.
+  const originalFormHtml = formCol.innerHTML;
+  window.PrizmoraaCart.renderAuthGate(formCol, () => {
+    formCol.innerHTML = originalFormHtml;
+    initCheckoutForm();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await fetchSiteSettings();
   const hasItems = renderSummary();
@@ -134,16 +148,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (window.PrizmoraaAuth && window.PrizmoraaAuth.isLoggedIn()) {
     initCheckoutForm();
   } else {
-    const formCol = $('.checkout-form-col');
-    // renderAuthGate replaces this whole column's markup with the login
-    // UI, wiping out the delivery form underneath it — so once sign-in
-    // succeeds (including Google/email-OTP, which resolve asynchronously
-    // via their own buttons, not the form submit), the original form
-    // has to be put back before it can be wired up again.
-    const originalFormHtml = formCol.innerHTML;
-    window.PrizmoraaCart.renderAuthGate(formCol, () => {
-      formCol.innerHTML = originalFormHtml;
-      initCheckoutForm();
-    });
+    showAuthGate();
   }
+
+  // If the customer logs out from the account panel while the real delivery
+  // form is on screen, lock it back behind the login gate immediately —
+  // otherwise a stale, still-submittable form (with the previous account's
+  // address) would sit there until the page is reloaded.
+  window.addEventListener('prizmoraa:auth-logout', () => {
+    if ($('#checkoutPageForm')) showAuthGate();
+  });
 });
