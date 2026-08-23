@@ -30,7 +30,7 @@ export async function sendOrderConfirmationEmail(order) {
       <p style="font-weight:bold;">Total: ₹${Number(order.total).toLocaleString('en-IN')}</p>
       <p>Order ID: ${escapeHtml(order.id)}<br>Payment ID: ${escapeHtml(order.paymentId || 'N/A')}</p>
       <p>Shipping to:<br>${escapeHtml(order.address)}, ${escapeHtml(order.pincode)}</p>
-      <p style="margin-top:24px; font-size:13px; color:#5C483A;">We'll be in touch on WhatsApp with delivery updates. Thank you for shopping with PRIZMORAA.</p>
+      <p style="margin-top:24px; font-size:13px; color:#5C483A;">We'll email you with delivery updates. Thank you for shopping with PRIZMORAA.</p>
     </div>
   `;
 

@@ -1,11 +1,9 @@
-// js/cart.js — cart, wishlist, search, account, checkout (Razorpay + WhatsApp)
+// js/cart.js — cart, wishlist, search, account, checkout (Razorpay)
 import { signInWithGoogle, setupRecaptcha, sendPhoneOtp, confirmPhoneOtp, firebaseConfigured } from './firebase-auth.js';
 
 const CART_KEY = 'prizmoraa_cart_v1';
 const WISHLIST_KEY = 'prizmoraa_wishlist_v1';
 const PROFILE_KEY = 'prizmoraa_profile_v1';
-
-const WHATSAPP_LINK = 'https://wa.me/message/JSHTXWJK5W6UK1';
 
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -510,7 +508,7 @@ function renderAuthForms(body) {
       <form id="signupForm">
         <input required type="text" id="signupName" class="priz-input" placeholder="Full name" autocomplete="name">
         <input required type="email" id="signupEmail" class="priz-input" placeholder="Email" autocomplete="email">
-        <input type="tel" id="signupPhone" class="priz-input" placeholder="WhatsApp number" autocomplete="tel">
+        <input type="tel" id="signupPhone" class="priz-input" placeholder="Phone number" autocomplete="tel">
         <input required type="password" id="signupPassword" class="priz-input" placeholder="Password (min 6 characters)" autocomplete="new-password">
         <button type="submit" class="btn" style="width:100%">Create Account</button>
       </form>
@@ -597,7 +595,7 @@ function renderAuthGate(container, onAuthed) {
           <form id="gateSignupForm">
             <input required type="text" id="gateSignupName" class="priz-input" placeholder="Full name" autocomplete="name">
             <input required type="email" id="gateSignupEmail" class="priz-input" placeholder="Email" autocomplete="email">
-            <input type="tel" id="gateSignupPhone" class="priz-input" placeholder="WhatsApp number" autocomplete="tel">
+            <input type="tel" id="gateSignupPhone" class="priz-input" placeholder="Phone number" autocomplete="tel">
             <input required type="password" id="gateSignupPassword" class="priz-input" placeholder="Password (min 6 characters)" autocomplete="new-password">
             <button type="submit" class="btn" style="width:100%">Create Account</button>
           </form>
@@ -660,7 +658,7 @@ function renderLoggedInAccount(body, user) {
     </div>
     <button type="button" class="priz-logout-btn" id="logoutBtn">Log Out</button>
     <h4 class="priz-panel-subhead">Delivery Details</h4>
-    <input type="tel" id="profPhone" class="priz-input" placeholder="WhatsApp number" value="${p.phone || user.phone || ''}">
+    <input type="tel" id="profPhone" class="priz-input" placeholder="Phone number" value="${p.phone || user.phone || ''}">
     <textarea id="profAddress" class="priz-input" placeholder="Delivery address">${p.address || ''}</textarea>
     <input type="text" id="profPincode" class="priz-input" placeholder="Pincode" value="${p.pincode || ''}">
     <button class="btn" id="saveProfileBtn" style="width:100%">Save Details</button>
@@ -799,17 +797,12 @@ async function runCheckout({ name, email, phone, address, pincode }, { onStatus,
             const paymentId = response.razorpay_payment_id;
             const recorded = await recordOrder({ name, email, phone, address, pincode, razorpayResponse: response });
             if (!recorded) {
-              onError && onError('Payment succeeded but the order could not be saved. Please contact us on WhatsApp with your payment ID.');
+              onError && onError('Payment succeeded but the order could not be saved. Please contact us at helloprizmoraa@gmail.com with your payment ID.');
             }
-            sendOrderToWhatsApp({
-              name, phone, address, pincode, cart, paymentId,
-              subtotal: order.subtotal, shippingCharge: order.shippingCharge,
-              discountAmount: order.discountAmount, total: order.total,
-            });
             clearCart();
             resolve({ success: true, paymentId });
           } else {
-            onError && onError('Payment could not be verified. If money was deducted, please contact us on WhatsApp with your payment ID.');
+            onError && onError('Payment could not be verified. If money was deducted, please contact us at helloprizmoraa@gmail.com with your payment ID.');
             resolve({ success: false });
           }
         },
@@ -846,36 +839,6 @@ async function recordOrder({ name, email, phone, address, pincode, razorpayRespo
     console.error('Failed to record order (payment already succeeded):', err);
     return false;
   }
-}
-
-// Shared by both the admin-facing (logistics) and customer-facing (order
-// record) WhatsApp messages, so the two never drift out of sync on what
-// figures they show.
-function buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total }) {
-  const lines = cart.map(i => `• ${i.name} x${i.qty} — ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
-  const fallbackSubtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const totalsLines = [`Subtotal: ₹${Number(subtotal ?? fallbackSubtotal).toLocaleString('en-IN')}`];
-  if (discountAmount > 0) totalsLines.push(`Discount: −₹${Number(discountAmount).toLocaleString('en-IN')}`);
-  if (shippingCharge > 0) totalsLines.push(`Shipping: ₹${Number(shippingCharge).toLocaleString('en-IN')}`);
-  totalsLines.push(`Total: ₹${Number(total ?? fallbackSubtotal).toLocaleString('en-IN')}`);
-  return { lines, totalsText: totalsLines.join('\n') };
-}
-
-function sendOrderToWhatsApp({ name, phone, address, pincode, cart, paymentId, subtotal, shippingCharge, discountAmount, total }) {
-  const { lines, totalsText } = buildOrderSummaryLines({ cart, subtotal, shippingCharge, discountAmount, total });
-  const text = encodeURIComponent(
-`New PAID order — PRIZMORAA
-
-${lines}
-
-${totalsText}
-Payment ID: ${paymentId}
-
-Customer: ${name}
-Phone: ${phone}
-Address: ${address}, ${pincode}`
-  );
-  window.open(`${WHATSAPP_LINK}?text=${text}`, '_blank');
 }
 
 /* ---------------- NAV WIRING ---------------- */

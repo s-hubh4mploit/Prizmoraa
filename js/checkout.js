@@ -93,8 +93,8 @@ function showSuccess(paymentId) {
   const success = $('#checkoutSuccess');
   success.style.display = 'block';
   $('#checkoutSuccessDetail').textContent = paymentId
-    ? `Payment ID: ${paymentId}. A confirmation email is on its way — we'll also reach out on WhatsApp with delivery updates.`
-    : `We'll reach out on WhatsApp shortly with delivery updates.`;
+    ? `Payment ID: ${paymentId}. A confirmation email is on its way with your delivery updates.`
+    : `A confirmation email is on its way with your delivery updates.`;
 }
 
 function initCheckoutForm() {
