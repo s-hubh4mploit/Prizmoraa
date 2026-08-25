@@ -307,24 +307,34 @@ export default async (req, res) => {
     }
 
     if (pathname === '/api/auth/login' && method === 'POST') {
-      const loginKey = `login:${getClientIp(req)}`;
-      const loginLimited = await checkRateLimit(loginKey);
-      if (loginLimited) {
-        res.statusCode = 429;
-        return res.end(JSON.stringify(loginLimited));
-      }
       const { email, password } = await readBody(req);
       if (!isValidEmail(email) || !password) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Please provide your email and password.' }));
       }
-      const row = await store.findByEmail(email);
+      const normalizedEmail = email.toLowerCase();
+      const ip = getClientIp(req);
+      // Keyed per (IP, email), not just IP — a plain per-IP lock would let
+      // one person's mistyped password on a shared/NATed connection (common
+      // on Indian mobile carriers) lock every other customer behind that
+      // same IP out of logging in. This still stops repeated brute-forcing
+      // of one specific account from one IP. A separate, much looser
+      // per-IP-only counter below catches a spray across many emails.
+      const loginKey = `login:${ip}:${normalizedEmail}`;
+      const loginIpKey = `login-ip:${ip}`;
+      const loginLimited = (await checkRateLimit(loginKey)) || (await checkRateLimit(loginIpKey));
+      if (loginLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(loginLimited));
+      }
+      const row = await store.findByEmail(normalizedEmail);
       if (!row || !row.password_hash) {
         // Run a dummy hash comparison even when there's no account/password
         // to check against, so the response time doesn't reveal whether the
         // email is registered (a timing side-channel otherwise).
         await bcrypt.compare(password, '$2b$10$d77IhbdJ7aLK.svO5qkBS.u.jCL7r07Rbi2DkSOGZzIFii.X6MsUu');
         await rateLimitStore.recordFailure(loginKey, { maxAttempts: 8, lockMs: 15 * 60 * 1000 });
+        await rateLimitStore.recordFailure(loginIpKey, { maxAttempts: 40, lockMs: 15 * 60 * 1000 });
         res.statusCode = 401;
         return res.end(JSON.stringify(row && !row.password_hash
           ? { error: 'This account signs in with Google or phone OTP — please use that instead.' }
@@ -333,6 +343,7 @@ export default async (req, res) => {
       const valid = await bcrypt.compare(password, row.password_hash);
       if (!valid) {
         await rateLimitStore.recordFailure(loginKey, { maxAttempts: 8, lockMs: 15 * 60 * 1000 });
+        await rateLimitStore.recordFailure(loginIpKey, { maxAttempts: 40, lockMs: 15 * 60 * 1000 });
         res.statusCode = 401;
         return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
       }
