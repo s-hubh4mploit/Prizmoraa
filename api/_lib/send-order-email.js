@@ -5,11 +5,9 @@
 // (log a warning) when RESEND_API_KEY isn't configured, so checkout never
 // fails just because email isn't set up yet.
 
-const ADMIN_NOTIFICATION_EMAIL = 'helloprizmoraa@gmail.com';
+import { renderEmailShell, escapeHtml } from './email-template.js';
 
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
+const ADMIN_NOTIFICATION_EMAIL = 'helloprizmoraa@gmail.com';
 
 async function sendEmail({ apiKey, fromAddress, to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -40,21 +38,19 @@ export async function sendOrderConfirmationEmail(order) {
 
   const fromAddress = process.env.RESEND_FROM || 'PRIZMORAA <onboarding@resend.dev>';
   const lines = order.items.map(i =>
-    `<tr><td style="padding:8px 0;">${escapeHtml(i.name)} × ${i.qty}</td><td style="padding:8px 0; text-align:right;">₹${(i.price * i.qty).toLocaleString('en-IN')}</td></tr>`
+    `<tr><td style="padding:10px 0; border-bottom:1px solid #F4EDE2;">${escapeHtml(i.name)} × ${i.qty}</td><td style="padding:10px 0; border-bottom:1px solid #F4EDE2; text-align:right;">₹${(i.price * i.qty).toLocaleString('en-IN')}</td></tr>`
   ).join('');
 
-  const html = `
-    <div style="font-family:Georgia,serif; max-width:520px; margin:0 auto; color:#3A2A1D;">
-      <h1 style="font-size:22px; letter-spacing:0.1em;">PRIZMORAA</h1>
-      <p>Hi ${escapeHtml(order.name)},</p>
-      <p>Thank you for your order! Here's your confirmation:</p>
-      <table style="width:100%; border-collapse:collapse; margin:16px 0;">${lines}</table>
-      <p style="font-weight:bold;">Total: ₹${Number(order.total).toLocaleString('en-IN')}</p>
-      <p>Order ID: ${escapeHtml(order.id)}<br>Payment ID: ${escapeHtml(order.paymentId || 'N/A')}</p>
-      <p>Shipping to:<br>${escapeHtml(order.address)}, ${escapeHtml(order.pincode)}</p>
-      <p style="margin-top:24px; font-size:13px; color:#5C483A;">We'll email you with delivery updates. Thank you for shopping with PRIZMORAA.</p>
-    </div>
-  `;
+  const html = renderEmailShell(`
+    <p style="font-family:'Cormorant Garamond',Georgia,serif; font-size:20px; color:#B08A4E; margin:0 0 4px;">Order Confirmed</p>
+    <p>Hi ${escapeHtml(order.name)},</p>
+    <p>Thank you for your order — here's your confirmation.</p>
+    <table style="width:100%; border-collapse:collapse; margin:20px 0;">${lines}</table>
+    <p style="font-family:'Cormorant Garamond',Georgia,serif; font-size:19px; font-weight:600; text-align:right; margin:0 0 20px;">Total: ₹${Number(order.total).toLocaleString('en-IN')}</p>
+    <p style="font-size:13px; color:#5C483A;">Order ID: ${escapeHtml(order.id)}<br>Payment ID: ${escapeHtml(order.paymentId || 'N/A')}</p>
+    <p style="font-size:13px; color:#5C483A;">Shipping to:<br>${escapeHtml(order.address)}, ${escapeHtml(order.pincode)}</p>
+    <p style="margin-top:24px; font-size:13px; color:#5C483A;">We'll email you with delivery updates. Thank you for shopping with PRIZMORAA.</p>
+  `);
 
   try {
     return await sendEmail({

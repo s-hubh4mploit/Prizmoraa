@@ -1,5 +1,6 @@
 // Sends a one-time login code via Resend. Same no-op-when-unconfigured
 // behavior as the other transactional emails on this site.
+import { renderEmailShell } from './email-template.js';
 
 export async function sendEmailOtp({ to, code }) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -10,14 +11,11 @@ export async function sendEmailOtp({ to, code }) {
   if (!to) return { sent: false, reason: 'no_email' };
 
   const fromAddress = process.env.RESEND_FROM || 'PRIZMORAA <onboarding@resend.dev>';
-  const html = `
-    <div style="font-family:Georgia,serif; max-width:520px; margin:0 auto; color:#3A2A1D;">
-      <h1 style="font-size:22px; letter-spacing:0.1em;">PRIZMORAA</h1>
-      <p>Your one-time sign-in code is:</p>
-      <p style="font-size:36px; font-weight:bold; letter-spacing:0.15em; margin:20px 0;">${code}</p>
-      <p style="font-size:13px; color:#5C483A;">This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
-    </div>
-  `;
+  const html = renderEmailShell(`
+    <p>Your one-time sign-in code is:</p>
+    <p style="font-family:'Cormorant Garamond',Georgia,serif; font-size:38px; font-weight:600; letter-spacing:0.18em; color:#B08A4E; margin:20px 0; text-align:center;">${code}</p>
+    <p style="font-size:13px; color:#5C483A;">This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
+  `);
 
   try {
     const res = await fetch('https://api.resend.com/emails', {

@@ -1,9 +1,7 @@
 // Sends a "back in stock" email via Resend when a subscribed product's
 // stock goes from 0 to available again. No-ops (logs a warning) when
 // RESEND_API_KEY isn't configured.
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
+import { renderEmailShell, escapeHtml } from './email-template.js';
 
 export async function sendBackInStockEmail({ to, name, productName, productUrl }) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -12,20 +10,19 @@ export async function sendBackInStockEmail({ to, name, productName, productUrl }
     return { sent: false, reason: 'not_configured' };
   }
 
-  // Kept deliberately plain — no colored button, no "Shop Now"/urgency
-  // language, minimal styling. Gmail's Promotions-tab classifier weighs
-  // exactly those signals heavily; a plain, personal-reading email is more
-  // likely (though never guaranteed — Gmail doesn't expose any way for a
-  // sender to force Primary-tab placement) to land in the primary inbox.
+  // The branded header is fine — the body content stays deliberately plain
+  // (no colored button, no "Shop Now"/urgency language). Gmail's Promotions
+  // classifier weighs those content signals heavily, not the header; a
+  // plain, personal-reading body is more likely (though never guaranteed —
+  // Gmail exposes no way for a sender to force Primary-tab placement) to
+  // land in the primary inbox.
   const fromAddress = process.env.RESEND_FROM || 'PRIZMORAA <onboarding@resend.dev>';
-  const html = `
-    <div style="font-family:Georgia,serif; max-width:520px; margin:0 auto; color:#3A2A1D; font-size:15px; line-height:1.6;">
-      <p>Hi ${escapeHtml(name || 'there')},</p>
-      <p>You asked to be notified when ${escapeHtml(productName)} was available again — it's back in stock now.</p>
-      <p><a href="${productUrl}" style="color:#3A2A1D;">${escapeHtml(productUrl)}</a></p>
-      <p>Thanks,<br>PRIZMORAA</p>
-    </div>
-  `;
+  const html = renderEmailShell(`
+    <p>Hi ${escapeHtml(name || 'there')},</p>
+    <p>You asked to be notified when <strong>${escapeHtml(productName)}</strong> was available again — it's back in stock now.</p>
+    <p><a href="${productUrl}" style="color:#B08A4E;">${escapeHtml(productUrl)}</a></p>
+    <p>Thanks,<br>PRIZMORAA</p>
+  `);
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
