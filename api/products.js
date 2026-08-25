@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { neon } from '@neondatabase/serverless';
+import stockNotifyStore from './_lib/stock-notify-store.js';
+import { sendBackInStockEmail } from './_lib/send-stock-notification-email.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_DATA_FILE = path.join(__dirname, '..', 'generated_products_encoded.json');
@@ -183,6 +185,26 @@ function matchRoute(regex, pathname) {
   return match[1];
 }
 
+// Fires when an admin edit brings a product's stock from 0 (or unset) up to
+// something positive — emails everyone who asked to be notified, then
+// clears the subscription list so they aren't notified again until it next
+// sells out and gets resubscribed to.
+async function notifyIfRestocked(host, existingProduct, newItem) {
+  const oldStock = existingProduct && Number.isFinite(existingProduct.stock) ? existingProduct.stock : 0;
+  const newStock = Number(newItem.stock) || 0;
+  if (oldStock > 0 || newStock <= 0) return;
+
+  const subscribers = await stockNotifyStore.listForProduct(newItem.id);
+  if (!subscribers.length) return;
+
+  const productUrl = `https://${host}/product.html?id=${encodeURIComponent(newItem.id)}`;
+  await Promise.all(subscribers.map(sub =>
+    sendBackInStockEmail({ to: sub.email, name: null, productName: newItem.name, productUrl })
+      .catch(err => console.error('Failed to send back-in-stock email to', sub.email, err))
+  ));
+  await stockNotifyStore.clearForProduct(newItem.id);
+}
+
 export default async (req, res) => {
   const { method, url } = req;
   const host = req.headers.host || 'localhost';
@@ -210,7 +232,13 @@ export default async (req, res) => {
             res.statusCode = 400;
             return res.end(JSON.stringify({ error: 'Invalid product payload' }));
           }
+          const existing = await store.findProductById(item.id);
           const saved = await store.saveProduct(item);
+          try {
+            await notifyIfRestocked(host, existing, saved);
+          } catch (err) {
+            console.error('Back-in-stock notification failed for', item.id, err);
+          }
           setJsonHeaders(res);
           return res.end(JSON.stringify(saved));
         } catch (err) {

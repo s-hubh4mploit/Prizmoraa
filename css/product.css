@@ -214,6 +214,24 @@
   margin-bottom: 44px;
 }
 
+.btn-notify {
+  background: transparent;
+  color: var(--espresso);
+  border: 1px solid var(--espresso);
+  justify-content: center;
+}
+.btn-notify:hover {
+  background: var(--espresso);
+  color: var(--ivory);
+}
+.btn-notify:disabled {
+  background: var(--beige);
+  color: var(--espresso-soft);
+  border-color: transparent;
+  cursor: default;
+  transform: none;
+}
+
 /* Accordion Section */
 .accordion {
   border-top: 1px solid rgba(58, 42, 29, 0.1);

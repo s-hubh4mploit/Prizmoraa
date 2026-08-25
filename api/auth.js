@@ -257,6 +257,16 @@ export function getUserIdFromRequest(req) {
   }
 }
 
+// Like getUserIdFromRequest, but resolves the full user row — used by other
+// API modules (e.g. notify-stock.js) that need the customer's email, not
+// just their id.
+export async function getUserFromRequest(req) {
+  const userId = getUserIdFromRequest(req);
+  if (!userId) return null;
+  const row = await store.findById(userId);
+  return row ? publicUser(row) : null;
+}
+
 async function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';

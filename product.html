@@ -149,6 +149,10 @@ ${hasDiscount ? `<s class="price-was">₹${product.price.toLocaleString('en-IN')
   onclick="window.PrizmoraaCart.addFromBtn(this)">
   ${inStock ? 'Add to Bag' : 'Out of Stock'}
 </button>
+${!inStock ? `
+<button class="btn btn-notify" id="notifyMeBtn">Notify Me When Available</button>
+<p class="notify-error" id="notifyMeError" style="display:none; color:#b3261e; font-size:13px; margin:8px 0 0;"></p>
+` : ''}
 </div>
 <div class="accordion">
 <div class="acc-item active">
@@ -195,6 +199,66 @@ btn.addEventListener('click', function() {
 this.parentElement.classList.toggle('active');
 });
 });
+
+// "Notify Me When Available" — requires sign-in; if the customer isn't
+// logged in, prompts login via the account panel and finishes the
+// subscription automatically once sign-in succeeds.
+const notifyBtn = document.getElementById('notifyMeBtn');
+if (notifyBtn) {
+const notifyError = document.getElementById('notifyMeError');
+
+function setNotifySubscribed() {
+notifyBtn.textContent = "You're on the list ✓";
+notifyBtn.disabled = true;
+}
+
+async function subscribeToRestock() {
+notifyError.style.display = 'none';
+const originalText = notifyBtn.textContent;
+notifyBtn.disabled = true;
+notifyBtn.textContent = 'Submitting...';
+try {
+const token = window.PrizmoraaAuth.getToken();
+const res = await fetch('/api/notify-stock', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+body: JSON.stringify({ productId: product.id }),
+});
+const data = await res.json().catch(() => ({}));
+if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+setNotifySubscribed();
+} catch (err) {
+notifyBtn.disabled = false;
+notifyBtn.textContent = originalText;
+notifyError.textContent = err.message || 'Something went wrong. Please try again.';
+notifyError.style.display = 'block';
+}
+}
+
+notifyBtn.addEventListener('click', () => {
+if (window.PrizmoraaAuth && window.PrizmoraaAuth.isLoggedIn()) {
+subscribeToRestock();
+return;
+}
+// Not signed in — open the login panel, then finish subscribing
+// automatically once sign-in succeeds (any method: password, Google,
+// phone/email OTP all funnel through this same event).
+window.PrizmoraaCart.openPanel('account');
+window.addEventListener('prizmoraa:auth-login', function onLogin() {
+window.removeEventListener('prizmoraa:auth-login', onLogin);
+subscribeToRestock();
+});
+});
+
+// Reflect existing subscription state on load, if already signed in.
+if (window.PrizmoraaAuth && window.PrizmoraaAuth.isLoggedIn()) {
+fetch(`/api/notify-stock?productId=${encodeURIComponent(product.id)}`, {
+headers: { Authorization: `Bearer ${window.PrizmoraaAuth.getToken()}` },
+}).then(res => res.ok ? res.json() : null).then(data => {
+if (data && data.subscribed) setNotifySubscribed();
+}).catch(() => {});
+}
+}
 });
 </script>
 </body>
