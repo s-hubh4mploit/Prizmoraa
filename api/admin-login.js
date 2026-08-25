@@ -5,11 +5,11 @@
 // client-side counter (which anyone can bypass by reloading the page).
 import rateLimitStore from './_lib/rate-limit-store.js';
 
-// Falls back to the site's current credentials if the env vars aren't set yet,
-// so behavior (and the actual password value) is unchanged unless/until the
-// site owner rotates it via Vercel env vars.
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Prizmoraa2026';
+// Must come from env vars only — this file is in a public GitHub repo, so a
+// hardcoded fallback value here would mean anyone on the internet could read
+// the real admin password directly off GitHub.
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
 
 function setJsonHeaders(res) {
@@ -29,7 +29,7 @@ export default async (req, res) => {
     return res.end(JSON.stringify({ error: 'Method not allowed' }));
   }
 
-  if (!ADMIN_API_KEY) {
+  if (!ADMIN_API_KEY || !ADMIN_USERNAME || !ADMIN_PASSWORD) {
     res.statusCode = 500;
     setJsonHeaders(res);
     return res.end(JSON.stringify({ error: 'Admin login is not configured on the server.' }));
