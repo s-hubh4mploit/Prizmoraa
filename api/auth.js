@@ -11,6 +11,7 @@ import { sendPasswordResetEmail } from './_lib/send-password-reset-email.js';
 import { sendEmailOtp } from './_lib/send-email-otp.js';
 import emailOtpStore from './_lib/email-otp-store.js';
 import { getLatestAddressesByUserId } from './_lib/latest-order-address.js';
+import rateLimitStore from './_lib/rate-limit-store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -41,6 +42,20 @@ function publicUser(row) {
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function getClientIp(req) {
+  const fwd = req.headers['x-forwarded-for'];
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+// Returns null if the request is allowed to proceed, or a JSON-serializable
+// 429 payload if it's currently locked out.
+async function checkRateLimit(key) {
+  const { locked, retryAfterMs } = await rateLimitStore.isLocked(key);
+  if (!locked) return null;
+  return { error: 'Too many attempts. Please try again in a few minutes.', retryAfterMs };
 }
 
 /* ============================================================
@@ -267,6 +282,12 @@ export default async (req, res) => {
 
   try {
     if (pathname === '/api/auth/signup' && method === 'POST') {
+      const signupKey = `signup:${getClientIp(req)}`;
+      const signupLimited = await checkRateLimit(signupKey);
+      if (signupLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(signupLimited));
+      }
       const { name, email, phone, password } = await readBody(req);
       if (!name || !isValidEmail(email) || !password || password.length < 6) {
         res.statusCode = 400;
@@ -274,6 +295,7 @@ export default async (req, res) => {
       }
       const existing = await store.findByEmail(email);
       if (existing) {
+        await rateLimitStore.recordFailure(signupKey, { maxAttempts: 8, lockMs: 15 * 60 * 1000 });
         res.statusCode = 409;
         return res.end(JSON.stringify({ error: 'An account with this email already exists.' }));
       }
@@ -285,35 +307,53 @@ export default async (req, res) => {
     }
 
     if (pathname === '/api/auth/login' && method === 'POST') {
+      const loginKey = `login:${getClientIp(req)}`;
+      const loginLimited = await checkRateLimit(loginKey);
+      if (loginLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(loginLimited));
+      }
       const { email, password } = await readBody(req);
       if (!isValidEmail(email) || !password) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Please provide your email and password.' }));
       }
       const row = await store.findByEmail(email);
-      if (!row) {
+      if (!row || !row.password_hash) {
+        // Run a dummy hash comparison even when there's no account/password
+        // to check against, so the response time doesn't reveal whether the
+        // email is registered (a timing side-channel otherwise).
+        await bcrypt.compare(password, '$2b$10$d77IhbdJ7aLK.svO5qkBS.u.jCL7r07Rbi2DkSOGZzIFii.X6MsUu');
+        await rateLimitStore.recordFailure(loginKey, { maxAttempts: 8, lockMs: 15 * 60 * 1000 });
         res.statusCode = 401;
-        return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
-      }
-      if (!row.password_hash) {
-        res.statusCode = 401;
-        return res.end(JSON.stringify({ error: 'This account signs in with Google or phone OTP — please use that instead.' }));
+        return res.end(JSON.stringify(row && !row.password_hash
+          ? { error: 'This account signs in with Google or phone OTP — please use that instead.' }
+          : { error: 'Invalid email or password.' }));
       }
       const valid = await bcrypt.compare(password, row.password_hash);
       if (!valid) {
+        await rateLimitStore.recordFailure(loginKey, { maxAttempts: 8, lockMs: 15 * 60 * 1000 });
         res.statusCode = 401;
         return res.end(JSON.stringify({ error: 'Invalid email or password.' }));
       }
+      await rateLimitStore.clearAttempts(loginKey);
       return res.end(JSON.stringify({ token: signToken(row), user: publicUser(row) }));
     }
 
     if (pathname === '/api/auth/forgot-password' && method === 'POST') {
+      const forgotKey = `forgot-password:${getClientIp(req)}`;
+      const forgotLimited = await checkRateLimit(forgotKey);
+      if (forgotLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(forgotLimited));
+      }
       const { email } = await readBody(req);
       const genericMessage = "If an account exists for that email, we've sent a password reset link.";
       if (!isValidEmail(email)) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Please provide a valid email.' }));
       }
+      await rateLimitStore.recordFailure(forgotKey, { maxAttempts: 5, lockMs: 15 * 60 * 1000 });
       const row = await store.findByEmail(email);
       // Always respond the same way whether or not the account exists,
       // so this endpoint can't be used to enumerate registered emails.
@@ -351,6 +391,13 @@ export default async (req, res) => {
         return res.end(JSON.stringify({ error: 'Please provide a valid email.' }));
       }
       const normalizedEmail = email.toLowerCase();
+      const sendKey = `email-otp-send:${normalizedEmail}`;
+      const sendLimited = await checkRateLimit(sendKey);
+      if (sendLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(sendLimited));
+      }
+      await rateLimitStore.recordFailure(sendKey, { maxAttempts: 5, lockMs: 15 * 60 * 1000 });
       const code = String(Math.floor(100000 + Math.random() * 900000));
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
       await emailOtpStore.save(normalizedEmail, code, expiresAt);
@@ -369,11 +416,23 @@ export default async (req, res) => {
         return res.end(JSON.stringify({ error: 'Please provide your email and the code.' }));
       }
       const normalizedEmail = email.toLowerCase();
+      // Keyed per-email (not per-IP): the attack this stops is guessing a
+      // specific victim's 6-digit code, which an attacker could spread
+      // across many IPs — only capping attempts against the target email
+      // actually closes that off within the code's 10-minute lifetime.
+      const verifyKey = `email-otp-verify:${normalizedEmail}`;
+      const verifyLimited = await checkRateLimit(verifyKey);
+      if (verifyLimited) {
+        res.statusCode = 429;
+        return res.end(JSON.stringify(verifyLimited));
+      }
       const record = await emailOtpStore.get(normalizedEmail);
       if (!record || record.code !== String(code).trim() || new Date(record.expires_at) < new Date()) {
+        await rateLimitStore.recordFailure(verifyKey, { maxAttempts: 5, lockMs: 15 * 60 * 1000 });
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'That code is incorrect or has expired. Please request a new one.' }));
       }
+      await rateLimitStore.clearAttempts(verifyKey);
       await emailOtpStore.remove(normalizedEmail);
 
       let row = await store.findByEmail(normalizedEmail);
