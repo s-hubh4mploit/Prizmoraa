@@ -154,7 +154,7 @@ const { getProducts, getProductsByCategory, getAllCategories, getEffectivePrice 
 const allProducts = await getProducts();
 
 const featuredPicks = allProducts.filter(p => p.featured);
-const featuredItems = (featuredPicks.length > 0 ? featuredPicks : allProducts).slice(0, 4);
+const featuredItems = (featuredPicks.length > 0 ? featuredPicks : allProducts).slice(0, 8);
 const featuredGrid = document.getElementById('featuredHomeGrid');
 if (featuredGrid && featuredItems.length > 0) {
 featuredGrid.innerHTML = featuredItems.map(p => {
