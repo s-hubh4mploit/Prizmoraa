@@ -138,7 +138,7 @@ body {
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* Dashboard Stats */
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+.stats-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; margin-bottom: 30px; }
 .stat-card {
   background: var(--ivory);
   padding: 24px;
@@ -150,6 +150,39 @@ body {
 .stat-card.highlight { border-top-color: var(--gold); }
 .stat-card h4 { font-size: 13px; color: var(--espresso-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
 .stat-card .value { font-size: 32px; color: var(--espresso); font-family: var(--font-serif); font-weight: 600; }
+
+.notification-panel {
+  background: var(--ivory);
+  border: 1px solid rgba(58, 42, 29, 0.08);
+  border-radius: 4px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+.notify-stock-panel {
+  margin-top: 8px;
+}
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(58, 42, 29, 0.06);
+}
+.panel-header h3 {
+  margin: 0; font-size: 18px; color: var(--espresso);
+}
+.tiny-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; padding: 4px 10px; background: var(--gold);
+  color: var(--espresso); border-radius: 999px; font-size: 12px; font-weight: 600;
+}
+.restock-table { border: none; border-radius: 0; }
+.restock-piece-image {
+  width: 48px; height: 48px; object-fit: cover; border-radius: 6px;
+  border: 1px solid rgba(58, 42, 29, 0.08); background: var(--ivory-deep);
+}
+.restock-product-link {
+  color: var(--espresso); font-weight: 600; text-decoration: none;
+}
+.restock-product-link:hover { text-decoration: underline; }
 
 /* Charts Area */
 .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }

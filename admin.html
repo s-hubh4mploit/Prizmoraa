@@ -48,6 +48,9 @@
       <a href="#" class="nav-item" data-view="inventory">
         <span class="icon">💍</span> Inventory
       </a>
+      <a href="#" class="nav-item" data-view="notify-stock">
+        <span class="icon">🔔</span> Notify Stock
+      </a>
       <a href="#" class="nav-item" data-view="orders">
         <span class="icon">🧾</span> Orders
       </a>
@@ -110,9 +113,36 @@
             <h4>Active Items</h4>
             <div class="value" id="statInStock">35</div>
           </div>
+          <div class="stat-card">
+            <h4>Restock Alerts</h4>
+            <div class="value" id="statRestockAlerts">0</div>
+          </div>
           <div class="stat-card highlight">
             <h4>Top Category</h4>
             <div class="value">Earrings</div>
+          </div>
+        </div>
+
+        <div class="notification-panel">
+          <div class="panel-header">
+            <h3>Restock Requests</h3>
+            <span class="tiny-badge" id="restockRequestCount">0</span>
+          </div>
+          <div class="table-container restock-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Piece</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Requested By</th>
+                  <th>Requested On</th>
+                </tr>
+              </thead>
+              <tbody id="restockRequestsBody">
+                <tr><td colspan="5">Loading restock requests...</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -162,6 +192,32 @@
         <div class="table-footer">
           <button class="btn btn-outline" id="btnExport">Export JSON</button>
           <button class="btn btn-outline" id="btnResetCatalog" style="margin-left:auto; border-color:#d32f2f; color:#d32f2f;">Reset Catalog with Images</button>
+        </div>
+      </div>
+
+      <!-- Notify Stock View -->
+      <div id="view-notify-stock" class="view">
+        <div class="notification-panel notify-stock-panel">
+          <div class="panel-header">
+            <h3>Notify Stock</h3>
+            <span class="tiny-badge" id="notifyStockTotalCount">0</span>
+          </div>
+          <div class="table-container restock-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Piece</th>
+                  <th>Image</th>
+                  <th>Category</th>
+                  <th>Requested On</th>
+                </tr>
+              </thead>
+              <tbody id="notifyStockTableBody">
+                <tr><td colspan="5">Loading notify stock requests...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

@@ -116,12 +116,90 @@ checkAuth();
 
 // --- Dashboard Logic ---
 let inventory = [];
+let stockNotificationCount = 0;
 
 async function initDashboard() {
   const pm = getProductManager();
   inventory = await pm.getProducts();
+  await loadStockNotificationRequests();
   renderTable();
   updateStats();
+}
+
+async function loadStockNotificationRequests() {
+  const dashboardTbody = document.getElementById('restockRequestsBody');
+  const fullTbody = document.getElementById('notifyStockTableBody');
+  const statAlert = document.getElementById('statRestockAlerts');
+  const countBadge = document.getElementById('restockRequestCount');
+  const totalCountBadge = document.getElementById('notifyStockTotalCount');
+  const loaders = [dashboardTbody, fullTbody].filter(Boolean);
+
+  loaders.forEach(tbody => {
+    tbody.innerHTML = '<tr><td colspan="5">Loading restock requests...</td></tr>';
+  });
+
+  try {
+    const res = await fetch('/api/products?includeNotifications=1', { headers: { 'x-admin-key': ADMIN_API_KEY } });
+    if (!res.ok) {
+      throw new Error('Could not load restock requests');
+    }
+
+    const data = await res.json();
+    const notifications = Array.isArray(data.stockNotifications) ? data.stockNotifications : [];
+    stockNotificationCount = notifications.length;
+    const productMap = new Map((Array.isArray(data.inventory) ? data.inventory : inventory).map(item => [item.id, item]));
+
+    if (statAlert) statAlert.textContent = notifications.length;
+    if (countBadge) countBadge.textContent = notifications.length;
+    if (totalCountBadge) totalCountBadge.textContent = notifications.length;
+
+    const renderRows = notifications.map((entry) => {
+      const product = productMap.get(entry.product_id) || null;
+      const productName = product ? product.name : 'Unknown piece';
+      const productImage = product && (product.images && product.images.length ? product.images[0] : product.image) ? (product.images && product.images.length ? product.images[0] : product.image) : 'images/hero.jpg';
+      const category = product ? (product.category || '—') : '—';
+      const requestedOn = entry.created_at ? new Date(entry.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+      return {
+        customer: sanitizeInput(entry.email || '—'),
+        productName,
+        productImage,
+        category: sanitizeInput(category),
+        requestedOn: sanitizeInput(requestedOn),
+        nameLabel: sanitizeInput(productName),
+        productId: entry.product_id || '',
+      };
+    });
+
+    const dashboardHtml = renderRows.length ? renderRows.map((entry) => `
+      <tr>
+        <td><img class="restock-piece-image" src="${encodeURI(entry.productImage)}" alt="${entry.nameLabel}"></td>
+        <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
+        <td>${entry.category}</td>
+        <td>${entry.customer}</td>
+        <td>${entry.requestedOn}</td>
+      </tr>
+    `).join('') : '<tr><td colspan="5">No restock requests yet.</td></tr>';
+
+    const notifyHtml = renderRows.length ? renderRows.map((entry) => `
+      <tr>
+        <td><strong>${entry.customer}</strong></td>
+        <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
+        <td><img class="restock-piece-image" src="${encodeURI(entry.productImage)}" alt="${entry.nameLabel}"></td>
+        <td>${entry.category}</td>
+        <td>${entry.requestedOn}</td>
+      </tr>
+    `).join('') : '<tr><td colspan="5">No notify stock requests yet.</td></tr>';
+
+    if (dashboardTbody) dashboardTbody.innerHTML = dashboardHtml;
+    if (fullTbody) fullTbody.innerHTML = notifyHtml;
+  } catch (err) {
+    stockNotificationCount = 0;
+    if (statAlert) statAlert.textContent = '0';
+    if (countBadge) countBadge.textContent = '0';
+    if (totalCountBadge) totalCountBadge.textContent = '0';
+    if (dashboardTbody) dashboardTbody.innerHTML = '<tr><td colspan="5">Restock requests are unavailable right now.</td></tr>';
+    if (fullTbody) fullTbody.innerHTML = '<tr><td colspan="5">Notify stock requests are unavailable right now.</td></tr>';
+  }
 }
 
 // Navigation
@@ -142,6 +220,7 @@ navItems.forEach(item => {
 
     if (currentViewTitle) currentViewTitle.textContent = item.textContent.trim();
 
+    if (viewId === 'notify-stock') loadStockNotificationRequests();
     if (viewId === 'orders') fetchOrders();
     if (viewId === 'customers') fetchCustomers();
     if (viewId === 'settings') loadSettings();
@@ -409,6 +488,7 @@ function updateStats() {
   const statTotalItems = document.getElementById('statTotalItems');
   const statTotalCats = document.getElementById('statTotalCats');
   const statInStock = document.getElementById('statInStock');
+  const statRestockAlerts = document.getElementById('statRestockAlerts');
 
   if (statTotalItems) statTotalItems.textContent = inventory.length;
   if (statTotalCats) {
@@ -417,6 +497,9 @@ function updateStats() {
   }
   if (statInStock) {
     statInStock.textContent = inventory.filter(i => i.status !== 'Inactive').length;
+  }
+  if (statRestockAlerts) {
+    statRestockAlerts.textContent = stockNotificationCount;
   }
 }
 

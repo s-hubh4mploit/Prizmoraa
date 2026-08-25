@@ -42,6 +42,10 @@ const pgStore = {
     const rows = await sql`SELECT 1 FROM stock_notifications WHERE product_id = ${productId} AND user_id = ${userId} LIMIT 1`;
     return rows.length > 0;
   },
+  async listAll() {
+    await ensureSchema();
+    return sql`SELECT * FROM stock_notifications ORDER BY created_at DESC`;
+  },
   async listForProduct(productId) {
     await ensureSchema();
     return sql`SELECT * FROM stock_notifications WHERE product_id = ${productId}`;
@@ -95,6 +99,9 @@ const fileStore = {
   async isSubscribed(productId, userId) {
     const all = readFile();
     return all.some(r => r.product_id === productId && r.user_id === userId);
+  },
+  async listAll() {
+    return readFile().slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   },
   async listForProduct(productId) {
     return readFile().filter(r => r.product_id === productId);

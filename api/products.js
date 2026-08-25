@@ -220,6 +220,17 @@ export default async (req, res) => {
   try {
     if (pathname === '/api/products' && method === 'GET') {
       const inventory = await store.getInventory();
+      const includeNotifications = new URL(url, `http://${host}`).searchParams.get('includeNotifications') === '1';
+      if (includeNotifications) {
+        if (!isAdmin(req)) {
+          res.statusCode = 401;
+          setJsonHeaders(res);
+          return res.end(JSON.stringify({ error: 'Admin access required.' }));
+        }
+        const stockNotifications = await stockNotifyStore.listAll();
+        setJsonHeaders(res);
+        return res.end(JSON.stringify({ inventory, stockNotifications }));
+      }
       setJsonHeaders(res);
       return res.end(JSON.stringify(inventory));
     }
