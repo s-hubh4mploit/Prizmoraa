@@ -186,9 +186,11 @@ function matchRoute(regex, pathname) {
 }
 
 // Fires when an admin edit brings a product's stock from 0 (or unset) up to
-// something positive — emails everyone who asked to be notified, then
-// clears the subscription list so they aren't notified again until it next
-// sells out and gets resubscribed to.
+// something positive — emails everyone who asked to be notified. Each
+// subscription is only removed once its email actually sends successfully;
+// a subscriber whose send fails (Resend hiccup, etc.) stays subscribed
+// rather than silently losing their notification, and will be retried on
+// the next restock.
 async function notifyIfRestocked(host, existingProduct, newItem) {
   const oldStock = existingProduct && Number.isFinite(existingProduct.stock) ? existingProduct.stock : 0;
   const newStock = Number(newItem.stock) || 0;
@@ -198,11 +200,16 @@ async function notifyIfRestocked(host, existingProduct, newItem) {
   if (!subscribers.length) return;
 
   const productUrl = `https://${host}/product.html?id=${encodeURIComponent(newItem.id)}`;
-  await Promise.all(subscribers.map(sub =>
-    sendBackInStockEmail({ to: sub.email, name: null, productName: newItem.name, productUrl })
-      .catch(err => console.error('Failed to send back-in-stock email to', sub.email, err))
-  ));
-  await stockNotifyStore.clearForProduct(newItem.id);
+  await Promise.all(subscribers.map(async (sub) => {
+    try {
+      const result = await sendBackInStockEmail({ to: sub.email, name: null, productName: newItem.name, productUrl });
+      if (result.sent) {
+        await stockNotifyStore.remove(newItem.id, sub.user_id);
+      }
+    } catch (err) {
+      console.error('Failed to send back-in-stock email to', sub.email, err);
+    }
+  }));
 }
 
 export default async (req, res) => {

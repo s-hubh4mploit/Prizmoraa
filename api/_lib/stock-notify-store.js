@@ -50,6 +50,10 @@ const pgStore = {
     await ensureSchema();
     await sql`DELETE FROM stock_notifications WHERE product_id = ${productId}`;
   },
+  async remove(productId, userId) {
+    await ensureSchema();
+    await sql`DELETE FROM stock_notifications WHERE product_id = ${productId} AND user_id = ${userId}`;
+  },
 };
 
 const DATA_DIR = process.env.VERCEL ? os.tmpdir() : path.join(__dirname, '..', '..', 'data');
@@ -97,6 +101,9 @@ const fileStore = {
   },
   async clearForProduct(productId) {
     writeFileData(readFile().filter(r => r.product_id !== productId));
+  },
+  async remove(productId, userId) {
+    writeFileData(readFile().filter(r => !(r.product_id === productId && r.user_id === userId)));
   },
 };
 
