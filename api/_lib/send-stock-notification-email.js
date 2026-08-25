@@ -12,16 +12,18 @@ export async function sendBackInStockEmail({ to, name, productName, productUrl }
     return { sent: false, reason: 'not_configured' };
   }
 
+  // Kept deliberately plain — no colored button, no "Shop Now"/urgency
+  // language, minimal styling. Gmail's Promotions-tab classifier weighs
+  // exactly those signals heavily; a plain, personal-reading email is more
+  // likely (though never guaranteed — Gmail doesn't expose any way for a
+  // sender to force Primary-tab placement) to land in the primary inbox.
   const fromAddress = process.env.RESEND_FROM || 'PRIZMORAA <onboarding@resend.dev>';
   const html = `
-    <div style="font-family:Georgia,serif; max-width:520px; margin:0 auto; color:#3A2A1D;">
-      <h1 style="font-size:22px; letter-spacing:0.1em;">PRIZMORAA</h1>
+    <div style="font-family:Georgia,serif; max-width:520px; margin:0 auto; color:#3A2A1D; font-size:15px; line-height:1.6;">
       <p>Hi ${escapeHtml(name || 'there')},</p>
-      <p>Good news — <strong>${escapeHtml(productName)}</strong> is back in stock!</p>
-      <p style="margin:24px 0;">
-        <a href="${productUrl}" style="display:inline-block; background:#3A2A1D; color:#F7F1E8; padding:14px 28px; text-decoration:none; letter-spacing:0.08em; text-transform:uppercase; font-size:13px;">Shop Now</a>
-      </p>
-      <p style="font-size:13px; color:#5C483A;">Stock is limited, so grab it before it sells out again.</p>
+      <p>You asked to be notified when ${escapeHtml(productName)} was available again — it's back in stock now.</p>
+      <p><a href="${productUrl}" style="color:#3A2A1D;">${escapeHtml(productUrl)}</a></p>
+      <p>Thanks,<br>PRIZMORAA</p>
     </div>
   `;
 
@@ -35,7 +37,7 @@ export async function sendBackInStockEmail({ to, name, productName, productUrl }
       body: JSON.stringify({
         from: fromAddress,
         to,
-        subject: `${productName} is back in stock — PRIZMORAA`,
+        subject: `${productName} is available again`,
         html,
       }),
     });
