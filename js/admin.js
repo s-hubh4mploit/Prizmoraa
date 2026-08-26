@@ -497,10 +497,8 @@ function renderTable(filterText = currentSearchText) {
       <td>
         <button type="button" class="star-btn ${item.featured ? 'active' : ''}" title="${item.featured ? 'Remove from Featured Pieces' : 'Add to Featured Pieces'}" onclick="toggleFeatured('${item.id}')">${item.featured ? '★' : '☆'}</button>
       </td>
-      <td>
-        <button type="button" class="star-btn ${item.lowStockAlert ? 'active' : ''}" title="${item.lowStockAlert ? 'Hide the low stock alert for this piece' : 'Show \'Only X left in stock\' for this piece'}" onclick="toggleLowStockAlert('${item.id}')">${item.lowStockAlert ? '🔔' : '🔕'}</button>
-      </td>
       <td class="action-links">
+        <button type="button" class="star-btn ${item.lowStockAlert ? 'active' : ''}" title="${item.lowStockAlert ? 'Hide the low stock alert for this piece' : 'Show \'Only X left in stock\' for this piece'}" onclick="toggleLowStockAlert('${item.id}')">${item.lowStockAlert ? '🔔' : '🔕'}</button>
         <button type="button" onclick="editItem('${item.id}')">Edit</button>
         <button type="button" class="delete" onclick="deleteItem('${item.id}')">Delete</button>
       </td>
@@ -755,16 +753,23 @@ window.editItem = function(id) {
   }
 };
 
+// Both toggles below flip the flag and re-render immediately (optimistic
+// UI) rather than waiting on the save round-trip — that round-trip (Vercel
+// function -> Neon over HTTP) can take a second or more, and waiting for it
+// before updating the icon made the buttons feel unresponsive. The save
+// still happens in the background; a failure flips the flag back and
+// re-renders again.
 window.toggleFeatured = async function(id) {
   const item = inventory.find(i => i.id === id);
   if (!item) return;
   item.featured = !item.featured;
+  renderTable();
   const pm = getProductManager();
   try {
     await pm.saveProduct(item, ADMIN_API_KEY);
-    renderTable();
   } catch (err) {
     item.featured = !item.featured;
+    renderTable();
     handleAdminAuthError(err);
   }
 };
@@ -773,12 +778,13 @@ window.toggleLowStockAlert = async function(id) {
   const item = inventory.find(i => i.id === id);
   if (!item) return;
   item.lowStockAlert = !item.lowStockAlert;
+  renderTable();
   const pm = getProductManager();
   try {
     await pm.saveProduct(item, ADMIN_API_KEY);
-    renderTable();
   } catch (err) {
     item.lowStockAlert = !item.lowStockAlert;
+    renderTable();
     handleAdminAuthError(err);
   }
 };
