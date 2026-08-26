@@ -124,6 +124,52 @@ async function initDashboard() {
   await loadStockNotificationRequests();
   renderTable();
   updateStats();
+  loadAnalytics();
+}
+
+async function loadAnalytics() {
+  const trafficChart = document.getElementById('trafficChart');
+  const topPagesBody = document.getElementById('topPagesBody');
+  const topPagesCount = document.getElementById('topPagesCount');
+  const setStat = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = Number(val || 0).toLocaleString('en-IN');
+  };
+
+  try {
+    const res = await fetch('/api/analytics', { headers: { 'x-admin-key': ADMIN_API_KEY } });
+    if (!res.ok) throw new Error('Could not load analytics');
+    const data = await res.json();
+
+    setStat('statVisitorsToday', data.visitorsToday);
+    setStat('statViewsToday', data.viewsToday);
+    setStat('statVisitorsTotal', data.totalVisitors);
+    setStat('statViewsTotal', data.totalViews);
+
+    const days = Array.isArray(data.last7Days) ? data.last7Days : [];
+    const maxViews = Math.max(1, ...days.map(d => d.views));
+    if (trafficChart) {
+      trafficChart.innerHTML = days.length ? days.map(d => {
+        const label = new Date(d.date + 'T00:00:00Z').toLocaleDateString('en-IN', { weekday: 'short' });
+        const heightPct = Math.round((d.views / maxViews) * 100);
+        return `<div class="bar-group"><div class="bar" style="height: ${heightPct}%" title="${d.views} view(s)"></div><span>${label} (${d.views})</span></div>`;
+      }).join('') : '<p class="field-note">No visits recorded yet.</p>';
+    }
+
+    const topPages = Array.isArray(data.topPages) ? data.topPages : [];
+    if (topPagesCount) topPagesCount.textContent = topPages.length;
+    if (topPagesBody) {
+      topPagesBody.innerHTML = topPages.length ? topPages.map(p => `
+        <tr>
+          <td>${sanitizeInput(p.path)}</td>
+          <td>${Number(p.views).toLocaleString('en-IN')}</td>
+        </tr>
+      `).join('') : '<tr><td colspan="2">No page views recorded yet.</td></tr>';
+    }
+  } catch (err) {
+    if (trafficChart) trafficChart.innerHTML = '<p class="field-note">Analytics unavailable right now.</p>';
+    if (topPagesBody) topPagesBody.innerHTML = '<tr><td colspan="2">Analytics unavailable right now.</td></tr>';
+  }
 }
 
 async function loadStockNotificationRequests() {

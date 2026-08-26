@@ -121,6 +121,22 @@
             <h4>Top Category</h4>
             <div class="value">Earrings</div>
           </div>
+          <div class="stat-card">
+            <h4>Visitors Today</h4>
+            <div class="value" id="statVisitorsToday">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Page Views Today</h4>
+            <div class="value" id="statViewsToday">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Visitors (All Time)</h4>
+            <div class="value" id="statVisitorsTotal">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Page Views (All Time)</h4>
+            <div class="value" id="statViewsTotal">0</div>
+          </div>
         </div>
 
         <div class="notification-panel">
@@ -154,6 +170,32 @@
                <div class="bar-group"><div class="bar" style="height: 31%"></div><span>Bracelets (11)</span></div>
                <div class="bar-group"><div class="bar" style="height: 23%"></div><span>Necklaces (8)</span></div>
             </div>
+          </div>
+          <div class="chart-card">
+            <h3>Visitor Traffic (Last 7 Days)</h3>
+            <div class="mock-chart bar-chart" id="trafficChart">
+               <div class="bar-group"><div class="bar" style="height: 0%"></div><span>—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notification-panel">
+          <div class="panel-header">
+            <h3>Top Pages (Last 30 Days)</h3>
+            <span class="tiny-badge" id="topPagesCount">0</span>
+          </div>
+          <div class="table-container restock-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Page</th>
+                  <th>Views</th>
+                </tr>
+              </thead>
+              <tbody id="topPagesBody">
+                <tr><td colspan="2">Loading analytics...</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

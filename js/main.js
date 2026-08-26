@@ -1,3 +1,28 @@
+// First-party page-view beacon for the admin dashboard's analytics panel.
+// Fire-and-forget: never blocks rendering and never throws if it fails.
+// This file is only included on storefront pages, not admin.html, so admin
+// activity never inflates the visitor counts it displays.
+(function trackVisit() {
+  try {
+    const STORAGE_KEY = 'prizmoraa_visitor_id';
+    let visitorId = localStorage.getItem(STORAGE_KEY);
+    if (!visitorId) {
+      visitorId = (crypto.randomUUID ? crypto.randomUUID() : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      localStorage.setItem(STORAGE_KEY, visitorId);
+    }
+    const payload = JSON.stringify({
+      visitorId,
+      path: window.location.pathname,
+      referrer: document.referrer || '',
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/track-visit', new Blob([payload], { type: 'application/json' }));
+    } else {
+      fetch('/api/track-visit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+    }
+  } catch (e) {}
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   // Nav scroll shadow
   const nav = document.getElementById('siteNav');
