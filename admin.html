@@ -268,10 +268,14 @@
 
       <!-- Orders View -->
       <div id="view-orders" class="view">
+        <div class="table-footer" style="margin-bottom:14px; margin-top:0;">
+          <button type="button" class="btn btn-outline" id="btnDeleteSelectedOrders" style="border-color:#d32f2f; color:#d32f2f;" disabled>Delete Selected (<span id="ordersSelectedCount">0</span>)</button>
+        </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
               <tr>
+                <th><input type="checkbox" id="ordersSelectAll"></th>
                 <th>Order ID</th>
                 <th>Date</th>
                 <th>Customer</th>
@@ -281,6 +285,7 @@
                 <th>Total (INR)</th>
                 <th>Payment ID</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="ordersTableBody">
@@ -292,16 +297,21 @@
 
       <!-- Customers View -->
       <div id="view-customers" class="view">
+        <div class="table-footer" style="margin-bottom:14px; margin-top:0;">
+          <button type="button" class="btn btn-outline" id="btnDeleteSelectedCustomers" style="border-color:#d32f2f; color:#d32f2f;" disabled>Delete Selected (<span id="customersSelectedCount">0</span>)</button>
+        </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
               <tr>
+                <th><input type="checkbox" id="customersSelectAll"></th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Address</th>
                 <th>Signed Up Via</th>
                 <th>Joined</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="customersTableBody">

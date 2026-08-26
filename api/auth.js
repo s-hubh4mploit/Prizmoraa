@@ -140,6 +140,14 @@ const pgStore = {
     await ensureSchema();
     await sql`UPDATE users SET password_hash = ${passwordHash}, reset_token = NULL, reset_token_expires = NULL WHERE id = ${id}`;
   },
+  async remove(id) {
+    await ensureSchema();
+    await sql`DELETE FROM users WHERE id = ${id}`;
+  },
+  async removeMany(ids) {
+    await ensureSchema();
+    await sql`DELETE FROM users WHERE id = ANY(${ids})`;
+  },
 };
 
 /* ============================================================
@@ -237,9 +245,21 @@ const fileStore = {
       writeUsersFile(users);
     }
   },
+  async remove(id) {
+    writeUsersFile(readUsersFile().filter(u => u.id !== id));
+  },
+  async removeMany(ids) {
+    const idSet = new Set(ids);
+    writeUsersFile(readUsersFile().filter(u => !idSet.has(u.id)));
+  },
 };
 
 const store = sql ? pgStore : fileStore;
+
+function matchRoute(regex, pathname) {
+  const match = pathname.match(regex);
+  return match ? match[1] : null;
+}
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: TOKEN_TTL });
@@ -527,6 +547,35 @@ export default async (req, res) => {
         };
       });
       return res.end(JSON.stringify(users));
+    }
+
+    if (pathname === '/api/auth/users' && method === 'DELETE') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.filter(id => typeof id === 'string' && id) : [];
+      if (!ids.length) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'No customer ids provided.' }));
+      }
+      await store.removeMany(ids);
+      return res.end(JSON.stringify({ success: true, deleted: ids.length }));
+    }
+
+    if (pathname.startsWith('/api/auth/users/') && method === 'DELETE') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
+      const id = decodeURIComponent(matchRoute(/^\/api\/auth\/users\/(.+)$/, pathname));
+      if (!id) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Missing customer id' }));
+      }
+      await store.remove(id);
+      return res.end(JSON.stringify({ success: true }));
     }
 
     if (pathname === '/api/auth/me' && method === 'GET') {

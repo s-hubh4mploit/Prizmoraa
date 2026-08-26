@@ -339,17 +339,18 @@ if (settingsForm) {
 async function fetchCustomers() {
   const tbody = document.getElementById('customersTableBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="6">Loading customers...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8">Loading customers...</td></tr>';
+  updateDeleteSelectedState('customers');
   try {
     const res = await fetch('/api/auth/users', { headers: { 'x-admin-key': ADMIN_API_KEY } });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      tbody.innerHTML = `<tr><td colspan="6">${sanitizeInput(data.error || 'Could not load customers.')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8">${sanitizeInput(data.error || 'Could not load customers.')}</td></tr>`;
       return;
     }
     const customers = await res.json();
     if (!Array.isArray(customers) || customers.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6">No customers have signed up yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8">No customers have signed up yet.</td></tr>';
       return;
     }
     tbody.innerHTML = customers.map(c => {
@@ -357,17 +358,59 @@ async function fetchCustomers() {
       const addressText = [c.address, c.pincode].filter(Boolean).join(', ');
       return `
         <tr>
+          <td><input type="checkbox" class="row-check customer-check" value="${sanitizeInput(c.id)}"></td>
           <td><strong>${sanitizeInput(c.name || '')}</strong></td>
           <td>${sanitizeInput(c.email || '—')}</td>
           <td>${sanitizeInput(c.phone || '—')}</td>
           <td>${sanitizeInput(addressText || '—')}</td>
           <td><span class="status-badge">${sanitizeInput(c.signInMethod)}</span></td>
           <td>${sanitizeInput(date)}</td>
+          <td class="action-links"><button type="button" class="delete" onclick="deleteCustomer('${c.id}')">Delete</button></td>
         </tr>
       `;
     }).join('');
+    wireRowCheckboxes('customer-check', 'customers');
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="6">Could not load customers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8">Could not load customers.</td></tr>';
+  }
+}
+
+window.deleteCustomer = async function(id) {
+  if (!confirm('Delete this customer permanently? Their order history will stay, but they will no longer be able to sign in.')) return;
+  try {
+    const res = await fetch(`/api/auth/users/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': ADMIN_API_KEY },
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Could not delete this customer.');
+      return;
+    }
+    fetchCustomers();
+  } catch (err) {
+    alert('Could not reach the server. Please try again.');
+  }
+};
+
+async function deleteSelectedCustomers() {
+  const ids = Array.from(document.querySelectorAll('.customer-check:checked')).map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm(`Delete ${ids.length} customer(s) permanently? Their order history will stay, but they will no longer be able to sign in.`)) return;
+  try {
+    const res = await fetch('/api/auth/users', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+      body: JSON.stringify({ ids }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Could not delete the selected customers.');
+      return;
+    }
+    fetchCustomers();
+  } catch (err) {
+    alert('Could not reach the server. Please try again.');
   }
 }
 
@@ -411,17 +454,18 @@ if (orderItemPreviewModal) {
 async function fetchOrders() {
   const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="9">Loading orders...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="11">Loading orders...</td></tr>';
+  updateDeleteSelectedState('orders');
   try {
     const res = await fetch('/api/orders', { headers: { 'x-admin-key': ADMIN_API_KEY } });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      tbody.innerHTML = `<tr><td colspan="9">${sanitizeInput(data.error || 'Could not load orders.')}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="11">${sanitizeInput(data.error || 'Could not load orders.')}</td></tr>`;
       return;
     }
     const orders = await res.json();
     if (!Array.isArray(orders) || orders.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9">No orders yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11">No orders yet.</td></tr>';
       return;
     }
     tbody.innerHTML = orders.map(o => {
@@ -442,6 +486,7 @@ async function fetchOrders() {
       const addressText = [o.address, o.pincode].filter(Boolean).join(', ');
       return `
         <tr>
+          <td><input type="checkbox" class="row-check order-check" value="${sanitizeInput(o.id)}"></td>
           <td>#${sanitizeInput(o.id)}</td>
           <td>${sanitizeInput(date)}</td>
           <td>${sanitizeInput(o.name)}</td>
@@ -451,13 +496,91 @@ async function fetchOrders() {
           <td>₹${sanitizeInput(Number(o.total).toLocaleString('en-IN'))}</td>
           <td>${sanitizeInput(o.paymentId || '')}</td>
           <td><span class="status-badge">${sanitizeInput(o.status || 'paid')}</span></td>
+          <td class="action-links"><button type="button" class="delete" onclick="deleteOrder('${o.id}')">Delete</button></td>
         </tr>
       `;
     }).join('');
+    wireRowCheckboxes('order-check', 'orders');
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="8">Could not load orders.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11">Could not load orders.</td></tr>';
   }
 }
+
+window.deleteOrder = async function(id) {
+  if (!confirm('Delete this order permanently? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`/api/orders/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': ADMIN_API_KEY },
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Could not delete this order.');
+      return;
+    }
+    fetchOrders();
+  } catch (err) {
+    alert('Could not reach the server. Please try again.');
+  }
+};
+
+async function deleteSelectedOrders() {
+  const ids = Array.from(document.querySelectorAll('.order-check:checked')).map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm(`Delete ${ids.length} order(s) permanently? This cannot be undone.`)) return;
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+      body: JSON.stringify({ ids }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Could not delete the selected orders.');
+      return;
+    }
+    fetchOrders();
+  } catch (err) {
+    alert('Could not reach the server. Please try again.');
+  }
+}
+
+// --- Shared select-all / bulk-delete wiring for Orders & Customers ---
+function updateDeleteSelectedState(kind) {
+  const checks = document.querySelectorAll(`.${kind === 'orders' ? 'order-check' : 'customer-check'}:checked`);
+  const btn = document.getElementById(kind === 'orders' ? 'btnDeleteSelectedOrders' : 'btnDeleteSelectedCustomers');
+  const countEl = document.getElementById(kind === 'orders' ? 'ordersSelectedCount' : 'customersSelectedCount');
+  if (countEl) countEl.textContent = checks.length;
+  if (btn) btn.disabled = checks.length === 0;
+}
+
+function wireRowCheckboxes(rowClass, kind) {
+  document.querySelectorAll(`.${rowClass}`).forEach(cb => {
+    cb.addEventListener('change', () => updateDeleteSelectedState(kind));
+  });
+  const selectAll = document.getElementById(kind === 'orders' ? 'ordersSelectAll' : 'customersSelectAll');
+  if (selectAll) selectAll.checked = false;
+  updateDeleteSelectedState(kind);
+}
+
+const ordersSelectAll = document.getElementById('ordersSelectAll');
+if (ordersSelectAll) {
+  ordersSelectAll.addEventListener('change', () => {
+    document.querySelectorAll('.order-check').forEach(cb => { cb.checked = ordersSelectAll.checked; });
+    updateDeleteSelectedState('orders');
+  });
+}
+const customersSelectAll = document.getElementById('customersSelectAll');
+if (customersSelectAll) {
+  customersSelectAll.addEventListener('change', () => {
+    document.querySelectorAll('.customer-check').forEach(cb => { cb.checked = customersSelectAll.checked; });
+    updateDeleteSelectedState('customers');
+  });
+}
+const btnDeleteSelectedOrders = document.getElementById('btnDeleteSelectedOrders');
+if (btnDeleteSelectedOrders) btnDeleteSelectedOrders.addEventListener('click', deleteSelectedOrders);
+const btnDeleteSelectedCustomers = document.getElementById('btnDeleteSelectedCustomers');
+if (btnDeleteSelectedCustomers) btnDeleteSelectedCustomers.addEventListener('click', deleteSelectedCustomers);
 
 // Table Rendering
 let currentCategoryFilter = 'all';

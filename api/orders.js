@@ -102,6 +102,14 @@ const pgStore = {
     const rows = await sql`SELECT * FROM orders WHERE user_id = ${userId} ORDER BY created_at DESC`;
     return rows.map(rowToOrder);
   },
+  async remove(id) {
+    await ensureSchema();
+    await sql`DELETE FROM orders WHERE id = ${id}`;
+  },
+  async removeMany(ids) {
+    await ensureSchema();
+    await sql`DELETE FROM orders WHERE id = ANY(${ids})`;
+  },
 };
 
 /* ============================================================
@@ -151,9 +159,21 @@ const fileStore = {
   async listForUser(userId) {
     return readOrdersFile().filter(o => o.userId === userId);
   },
+  async remove(id) {
+    writeOrdersFile(readOrdersFile().filter(o => o.id !== id));
+  },
+  async removeMany(ids) {
+    const idSet = new Set(ids);
+    writeOrdersFile(readOrdersFile().filter(o => !idSet.has(o.id)));
+  },
 };
 
 const store = sql ? pgStore : fileStore;
+
+function matchRoute(regex, pathname) {
+  const match = pathname.match(regex);
+  return match ? match[1] : null;
+}
 
 async function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -225,6 +245,35 @@ export default async (req, res) => {
       }
       const orders = await store.listAll();
       return res.end(JSON.stringify(orders));
+    }
+
+    if (pathname === '/api/orders' && method === 'DELETE') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.filter(id => typeof id === 'string' && id) : [];
+      if (!ids.length) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'No order ids provided.' }));
+      }
+      await store.removeMany(ids);
+      return res.end(JSON.stringify({ success: true, deleted: ids.length }));
+    }
+
+    if (pathname.startsWith('/api/orders/') && pathname !== '/api/orders/mine' && method === 'DELETE') {
+      if (!isAdmin(req)) {
+        res.statusCode = 401;
+        return res.end(JSON.stringify({ error: 'Admin access required.' }));
+      }
+      const id = decodeURIComponent(matchRoute(/^\/api\/orders\/(.+)$/, pathname));
+      if (!id) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Missing order id' }));
+      }
+      await store.remove(id);
+      return res.end(JSON.stringify({ success: true }));
     }
 
     if (pathname === '/api/orders/mine' && method === 'GET') {
