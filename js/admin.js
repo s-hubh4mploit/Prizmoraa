@@ -129,13 +129,17 @@ async function initDashboard() {
 async function loadStockNotificationRequests() {
   const dashboardTbody = document.getElementById('restockRequestsBody');
   const fullTbody = document.getElementById('notifyStockTableBody');
+  const historyTbody = document.getElementById('notifyHistoryTableBody');
+  const mostWantedTbody = document.getElementById('mostWantedTableBody');
   const statAlert = document.getElementById('statRestockAlerts');
   const countBadge = document.getElementById('restockRequestCount');
   const totalCountBadge = document.getElementById('notifyStockTotalCount');
-  const loaders = [dashboardTbody, fullTbody].filter(Boolean);
+  const historyCountBadge = document.getElementById('notifyHistoryTotalCount');
+  const mostWantedCountBadge = document.getElementById('mostWantedCount');
+  const loaders = [dashboardTbody, fullTbody, historyTbody, mostWantedTbody].filter(Boolean);
 
   loaders.forEach(tbody => {
-    tbody.innerHTML = '<tr><td colspan="5">Loading restock requests...</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
   });
 
   try {
@@ -146,29 +150,34 @@ async function loadStockNotificationRequests() {
 
     const data = await res.json();
     const notifications = Array.isArray(data.stockNotifications) ? data.stockNotifications : [];
+    const history = Array.isArray(data.stockNotificationHistory) ? data.stockNotificationHistory : [];
     stockNotificationCount = notifications.length;
     const productMap = new Map((Array.isArray(data.inventory) ? data.inventory : inventory).map(item => [item.id, item]));
 
     if (statAlert) statAlert.textContent = notifications.length;
     if (countBadge) countBadge.textContent = notifications.length;
     if (totalCountBadge) totalCountBadge.textContent = notifications.length;
+    if (historyCountBadge) historyCountBadge.textContent = history.length;
 
-    const renderRows = notifications.map((entry) => {
+    const describeEntry = (entry, dateField) => {
       const product = productMap.get(entry.product_id) || null;
-      const productName = product ? product.name : 'Unknown piece';
+      const productName = product ? product.name : (entry.product_name || 'Unknown piece');
       const productImage = product && (product.images && product.images.length ? product.images[0] : product.image) ? (product.images && product.images.length ? product.images[0] : product.image) : 'images/hero.jpg';
       const category = product ? (product.category || '—') : '—';
-      const requestedOn = entry.created_at ? new Date(entry.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+      const dateValue = entry[dateField] ? new Date(entry[dateField]).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
       return {
         customer: sanitizeInput(entry.email || '—'),
         productName,
         productImage,
         category: sanitizeInput(category),
-        requestedOn: sanitizeInput(requestedOn),
+        dateLabel: sanitizeInput(dateValue),
         nameLabel: sanitizeInput(productName),
         productId: entry.product_id || '',
       };
-    });
+    };
+
+    const renderRows = notifications.map((entry) => describeEntry(entry, 'created_at'));
+    const historyRows = history.map((entry) => describeEntry(entry, 'notified_at'));
 
     const dashboardHtml = renderRows.length ? renderRows.map((entry) => `
       <tr>
@@ -176,7 +185,7 @@ async function loadStockNotificationRequests() {
         <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
         <td>${entry.category}</td>
         <td>${entry.customer}</td>
-        <td>${entry.requestedOn}</td>
+        <td>${entry.dateLabel}</td>
       </tr>
     `).join('') : '<tr><td colspan="5">No restock requests yet.</td></tr>';
 
@@ -186,19 +195,73 @@ async function loadStockNotificationRequests() {
         <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
         <td><img class="restock-piece-image" src="${encodeURI(entry.productImage)}" alt="${entry.nameLabel}"></td>
         <td>${entry.category}</td>
-        <td>${entry.requestedOn}</td>
+        <td>${entry.dateLabel}</td>
       </tr>
     `).join('') : '<tr><td colspan="5">No notify stock requests yet.</td></tr>';
 
+    const historyHtml = historyRows.length ? historyRows.map((entry) => `
+      <tr>
+        <td><strong>${entry.customer}</strong></td>
+        <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
+        <td>${entry.category}</td>
+        <td>${entry.dateLabel}</td>
+      </tr>
+    `).join('') : '<tr><td colspan="4">No customers notified yet.</td></tr>';
+
+    // Aggregate pending + already-notified requests per product so the
+    // admin can see which pieces customers actually want restocked most,
+    // not just who's currently waiting.
+    const demandMap = new Map();
+    const bumpDemand = (productId, key) => {
+      if (!productId) return;
+      const entry = demandMap.get(productId) || { pending: 0, notified: 0 };
+      entry[key] += 1;
+      demandMap.set(productId, entry);
+    };
+    notifications.forEach((entry) => bumpDemand(entry.product_id, 'pending'));
+    history.forEach((entry) => bumpDemand(entry.product_id, 'notified'));
+
+    const demandRows = Array.from(demandMap.entries()).map(([productId, counts]) => {
+      const product = productMap.get(productId) || null;
+      const productName = product ? product.name : 'Unknown piece';
+      const category = product ? (product.category || '—') : '—';
+      return {
+        productId,
+        nameLabel: sanitizeInput(productName),
+        category: sanitizeInput(category),
+        pending: counts.pending,
+        notified: counts.notified,
+        total: counts.pending + counts.notified,
+      };
+    }).sort((a, b) => b.total - a.total);
+
+    if (mostWantedCountBadge) mostWantedCountBadge.textContent = demandRows.length;
+
+    const mostWantedHtml = demandRows.length ? demandRows.map((entry) => `
+      <tr>
+        <td><a class="restock-product-link" href="product.html?id=${encodeURIComponent(entry.productId)}" target="_blank" rel="noopener">${entry.nameLabel}</a></td>
+        <td>${entry.category}</td>
+        <td>${entry.pending}</td>
+        <td>${entry.notified}</td>
+        <td><strong>${entry.total}</strong></td>
+      </tr>
+    `).join('') : '<tr><td colspan="5">No demand data yet.</td></tr>';
+
     if (dashboardTbody) dashboardTbody.innerHTML = dashboardHtml;
     if (fullTbody) fullTbody.innerHTML = notifyHtml;
+    if (historyTbody) historyTbody.innerHTML = historyHtml;
+    if (mostWantedTbody) mostWantedTbody.innerHTML = mostWantedHtml;
   } catch (err) {
     stockNotificationCount = 0;
     if (statAlert) statAlert.textContent = '0';
     if (countBadge) countBadge.textContent = '0';
     if (totalCountBadge) totalCountBadge.textContent = '0';
+    if (historyCountBadge) historyCountBadge.textContent = '0';
+    if (mostWantedCountBadge) mostWantedCountBadge.textContent = '0';
     if (dashboardTbody) dashboardTbody.innerHTML = '<tr><td colspan="5">Restock requests are unavailable right now.</td></tr>';
     if (fullTbody) fullTbody.innerHTML = '<tr><td colspan="5">Notify stock requests are unavailable right now.</td></tr>';
+    if (historyTbody) historyTbody.innerHTML = '<tr><td colspan="4">Notification history is unavailable right now.</td></tr>';
+    if (mostWantedTbody) mostWantedTbody.innerHTML = '<tr><td colspan="5">Demand summary is unavailable right now.</td></tr>';
   }
 }
 
@@ -434,6 +497,9 @@ function renderTable(filterText = currentSearchText) {
       <td>
         <button type="button" class="star-btn ${item.featured ? 'active' : ''}" title="${item.featured ? 'Remove from Featured Pieces' : 'Add to Featured Pieces'}" onclick="toggleFeatured('${item.id}')">${item.featured ? '★' : '☆'}</button>
       </td>
+      <td>
+        <button type="button" class="star-btn ${item.lowStockAlert ? 'active' : ''}" title="${item.lowStockAlert ? 'Hide the low stock alert for this piece' : 'Show \'Only X left in stock\' for this piece'}" onclick="toggleLowStockAlert('${item.id}')">${item.lowStockAlert ? '🔔' : '🔕'}</button>
+      </td>
       <td class="action-links">
         <button type="button" onclick="editItem('${item.id}')">Edit</button>
         <button type="button" class="delete" onclick="deleteItem('${item.id}')">Delete</button>
@@ -616,22 +682,23 @@ if (cancelModal) cancelModal.addEventListener('click', closeAndReset);
 if (itemForm) {
   itemForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const id = sanitizeInput(document.getElementById('itemId').value) || 'item-' + Date.now().toString();
-    const name = sanitizeInput(document.getElementById('itemName').value);
+    const id = (document.getElementById('itemId').value || '').trim() || 'item-' + Date.now().toString();
+    const name = (document.getElementById('itemName').value || '').trim();
     const price = parseInt(document.getElementById('itemPrice').value) || 0;
     const discountPercent = Math.min(100, Math.max(0, parseInt(document.getElementById('itemDiscount').value, 10) || 0));
-    const category = sanitizeInput(document.getElementById('itemCategory').value);
-    const subcategory = sanitizeInput(document.getElementById('itemSubCategory').value);
+    const category = (document.getElementById('itemCategory').value || '').trim();
+    const subcategory = (document.getElementById('itemSubCategory').value || '').trim();
     const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
     const featured = document.getElementById('itemFeatured').checked;
-    const imageInput = sanitizeInput(document.getElementById('itemImage').value);
+    const lowStockAlert = document.getElementById('itemLowStockAlert').checked;
+    const imageInput = (document.getElementById('itemImage').value || '').trim();
     const images = currentImages.length ? currentImages : [imageInput || 'images/hero.jpg'];
     const image = currentImages.length ? currentImages[mainImageIndex] : images[0];
-    const desc = sanitizeInput(document.getElementById('itemDesc').value);
+    const desc = (document.getElementById('itemDesc').value || '').trim();
 
     const existingIndex = inventory.findIndex(i => i.id === id);
 
-    const newItem = { id, name, price, discountPercent, category, subcategory, stock, featured, image, images, desc, status: 'Active' };
+    const newItem = { id, name, price, discountPercent, category, subcategory, stock, featured, lowStockAlert, image, images, desc, status: 'Active' };
 
     if (existingIndex > -1) {
       inventory[existingIndex] = newItem;
@@ -680,6 +747,7 @@ window.editItem = function(id) {
     document.getElementById('itemSubCategory').value = item.subcategory || '';
     document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;
     document.getElementById('itemFeatured').checked = !!item.featured;
+    document.getElementById('itemLowStockAlert').checked = !!item.lowStockAlert;
     document.getElementById('itemImage').value = '';
     document.getElementById('itemDesc').value = item.desc || '';
     document.getElementById('modalTitle').textContent = 'Edit Item';
@@ -697,6 +765,20 @@ window.toggleFeatured = async function(id) {
     renderTable();
   } catch (err) {
     item.featured = !item.featured;
+    handleAdminAuthError(err);
+  }
+};
+
+window.toggleLowStockAlert = async function(id) {
+  const item = inventory.find(i => i.id === id);
+  if (!item) return;
+  item.lowStockAlert = !item.lowStockAlert;
+  const pm = getProductManager();
+  try {
+    await pm.saveProduct(item, ADMIN_API_KEY);
+    renderTable();
+  } catch (err) {
+    item.lowStockAlert = !item.lowStockAlert;
     handleAdminAuthError(err);
   }
 };

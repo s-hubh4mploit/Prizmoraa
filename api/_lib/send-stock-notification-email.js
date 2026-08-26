@@ -10,18 +10,17 @@ export async function sendBackInStockEmail({ to, name, productName, productUrl }
     return { sent: false, reason: 'not_configured' };
   }
 
-  // The branded header is fine — the body content stays deliberately plain
-  // (no colored button, no "Shop Now"/urgency language). Gmail's Promotions
-  // classifier weighs those content signals heavily, not the header; a
-  // plain, personal-reading body is more likely (though never guaranteed —
-  // Gmail exposes no way for a sender to force Primary-tab placement) to
-  // land in the primary inbox.
   const fromAddress = process.env.RESEND_FROM || 'PRIZMORAA <onboarding@resend.dev>';
+  const escapedProduct = escapeHtml(productName);
   const html = renderEmailShell(`
     <p>Hi ${escapeHtml(name || 'there')},</p>
-    <p>You asked to be notified when <strong>${escapeHtml(productName)}</strong> was available again — it's back in stock now.</p>
-    <p><a href="${productUrl}" style="color:#B08A4E;">${escapeHtml(productUrl)}</a></p>
-    <p>Thanks,<br>PRIZMORAA</p>
+    <p>The wait is over. ✨</p>
+    <p>Your <strong>${escapedProduct}</strong> is back in stock — and ready to find its way to you.</p>
+    <p>A delicate little reminder that some pieces are worth waiting for. 🤍</p>
+    <p style="margin:28px 0; text-align:center;">
+      <a href="${productUrl}" style="background:#3A2A1D; color:#FBF7F1; padding:14px 28px; text-decoration:none; letter-spacing:0.08em; text-transform:uppercase; font-size:13px; font-family:'Jost',Arial,Helvetica,sans-serif; display:inline-block;">Shop ${escapedProduct}</a>
+    </p>
+    <p>With love,<br>PRIZMORAA</p>
   `);
 
   try {
@@ -34,7 +33,7 @@ export async function sendBackInStockEmail({ to, name, productName, productUrl }
       body: JSON.stringify({
         from: fromAddress,
         to,
-        subject: `${productName} is available again`,
+        subject: `${productName} is Back ✨`,
         html,
       }),
     });

@@ -169,6 +169,7 @@ return `
 <img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}">
 ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
 ${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
+${inStock && p.lowStockAlert && Number.isFinite(p.stock) ? `<span class="oos-badge low-stock-badge">Only ${p.stock} left</span>` : ''}
 ${hasDiscount ? `<span class="discount-tag">${p.discountPercent}% OFF</span>` : ''}
 <button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(p.image)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>

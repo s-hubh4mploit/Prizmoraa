@@ -19,13 +19,23 @@ const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
-    schemaReady = sql`CREATE TABLE IF NOT EXISTS stock_notifications (
-      product_id TEXT NOT NULL,
-      user_id TEXT NOT NULL,
-      email TEXT NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT now(),
-      PRIMARY KEY (product_id, user_id)
-    )`;
+    schemaReady = Promise.all([
+      sql`CREATE TABLE IF NOT EXISTS stock_notifications (
+        product_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        email TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        PRIMARY KEY (product_id, user_id)
+      )`,
+      sql`CREATE TABLE IF NOT EXISTS stock_notification_history (
+        id SERIAL PRIMARY KEY,
+        product_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        email TEXT NOT NULL,
+        product_name TEXT,
+        notified_at TIMESTAMPTZ DEFAULT now()
+      )`,
+    ]);
   }
   await schemaReady;
 }
@@ -58,35 +68,54 @@ const pgStore = {
     await ensureSchema();
     await sql`DELETE FROM stock_notifications WHERE product_id = ${productId} AND user_id = ${userId}`;
   },
+  async logNotified(productId, userId, email, productName) {
+    await ensureSchema();
+    await sql`INSERT INTO stock_notification_history (product_id, user_id, email, product_name)
+      VALUES (${productId}, ${userId}, ${email}, ${productName})`;
+  },
+  async listHistory() {
+    await ensureSchema();
+    return sql`SELECT * FROM stock_notification_history ORDER BY notified_at DESC`;
+  },
 };
 
 const DATA_DIR = process.env.VERCEL ? os.tmpdir() : path.join(__dirname, '..', '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'prizmoraa_stock_notifications.json');
 const LOCK_FILE = path.join(DATA_DIR, 'prizmoraa_stock_notifications.lock');
+const HISTORY_FILE = path.join(DATA_DIR, 'prizmoraa_stock_notification_history.json');
+const HISTORY_LOCK_FILE = path.join(DATA_DIR, 'prizmoraa_stock_notification_history.lock');
 
-function withLock(callback) {
+function withLock(lockFile, callback) {
   const start = Date.now();
-  while (fs.existsSync(LOCK_FILE)) {
+  while (fs.existsSync(lockFile)) {
     if (Date.now() - start > 3000) throw new Error('Could not acquire lock');
   }
-  fs.writeFileSync(LOCK_FILE, process.pid ? process.pid.toString() : 'lock', 'utf8');
-  try { return callback(); } finally { try { fs.unlinkSync(LOCK_FILE); } catch (e) {} }
+  fs.writeFileSync(lockFile, process.pid ? process.pid.toString() : 'lock', 'utf8');
+  try { return callback(); } finally { try { fs.unlinkSync(lockFile); } catch (e) {} }
 }
 
-function readFile() {
+function readJsonArray(file) {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '[]', 'utf8');
+  if (!fs.existsSync(file)) fs.writeFileSync(file, '[]', 'utf8');
   try {
-    const parsed = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
     return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     return [];
   }
 }
 
-function writeFileData(data) {
+function writeJsonArray(file, lockFile, data) {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  return withLock(() => fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8'));
+  return withLock(lockFile, () => fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8'));
+}
+
+function readFile() {
+  return readJsonArray(DATA_FILE);
+}
+
+function writeFileData(data) {
+  return writeJsonArray(DATA_FILE, LOCK_FILE, data);
 }
 
 const fileStore = {
@@ -111,6 +140,14 @@ const fileStore = {
   },
   async remove(productId, userId) {
     writeFileData(readFile().filter(r => !(r.product_id === productId && r.user_id === userId)));
+  },
+  async logNotified(productId, userId, email, productName) {
+    const all = readJsonArray(HISTORY_FILE);
+    all.push({ product_id: productId, user_id: userId, email, product_name: productName, notified_at: new Date().toISOString() });
+    writeJsonArray(HISTORY_FILE, HISTORY_LOCK_FILE, all);
+  },
+  async listHistory() {
+    return readJsonArray(HISTORY_FILE).slice().sort((a, b) => new Date(b.notified_at || 0) - new Date(a.notified_at || 0));
   },
 };
 

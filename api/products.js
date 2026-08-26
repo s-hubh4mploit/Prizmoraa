@@ -204,6 +204,7 @@ async function notifyIfRestocked(host, existingProduct, newItem) {
     try {
       const result = await sendBackInStockEmail({ to: sub.email, name: null, productName: newItem.name, productUrl });
       if (result.sent) {
+        await stockNotifyStore.logNotified(newItem.id, sub.user_id, sub.email, newItem.name);
         await stockNotifyStore.remove(newItem.id, sub.user_id);
       }
     } catch (err) {
@@ -227,9 +228,12 @@ export default async (req, res) => {
           setJsonHeaders(res);
           return res.end(JSON.stringify({ error: 'Admin access required.' }));
         }
-        const stockNotifications = await stockNotifyStore.listAll();
+        const [stockNotifications, stockNotificationHistory] = await Promise.all([
+          stockNotifyStore.listAll(),
+          stockNotifyStore.listHistory(),
+        ]);
         setJsonHeaders(res);
-        return res.end(JSON.stringify({ inventory, stockNotifications }));
+        return res.end(JSON.stringify({ inventory, stockNotifications, stockNotificationHistory }));
       }
       setJsonHeaders(res);
       return res.end(JSON.stringify(inventory));

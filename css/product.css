@@ -156,6 +156,7 @@
   margin-top: -8px; margin-bottom: 24px;
 }
 .stock-status.in-stock { color: var(--sage); }
+.stock-status.low-stock { color: var(--gold); }
 .stock-status.out-of-stock { color: #b3261e; }
 
 /* Luxury Description Callout Box */

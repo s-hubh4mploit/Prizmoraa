@@ -180,6 +180,7 @@
                 <th>Stock</th>
                 <th>Status</th>
                 <th>Featured</th>
+                <th>Low Stock Alert</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -199,7 +200,30 @@
       <div id="view-notify-stock" class="view">
         <div class="notification-panel notify-stock-panel">
           <div class="panel-header">
-            <h3>Notify Stock</h3>
+            <h3>Most Wanted</h3>
+            <span class="tiny-badge" id="mostWantedCount">0</span>
+          </div>
+          <div class="table-container restock-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Piece</th>
+                  <th>Category</th>
+                  <th>Pending Requests</th>
+                  <th>Already Notified</th>
+                  <th>Total Demand</th>
+                </tr>
+              </thead>
+              <tbody id="mostWantedTableBody">
+                <tr><td colspan="5">Loading demand summary...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="notification-panel notify-stock-panel">
+          <div class="panel-header">
+            <h3>Pending Requests</h3>
             <span class="tiny-badge" id="notifyStockTotalCount">0</span>
           </div>
           <div class="table-container restock-table">
@@ -215,6 +239,28 @@
               </thead>
               <tbody id="notifyStockTableBody">
                 <tr><td colspan="5">Loading notify stock requests...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="notification-panel notify-stock-panel">
+          <div class="panel-header">
+            <h3>Notification History</h3>
+            <span class="tiny-badge" id="notifyHistoryTotalCount">0</span>
+          </div>
+          <div class="table-container restock-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Piece</th>
+                  <th>Category</th>
+                  <th>Notified On</th>
+                </tr>
+              </thead>
+              <tbody id="notifyHistoryTableBody">
+                <tr><td colspan="4">Loading notification history...</td></tr>
               </tbody>
             </table>
           </div>
@@ -332,6 +378,14 @@
         <div class="input-group">
           <label>Stock (pieces available)</label>
           <input type="number" id="itemStock" min="0" step="1" required>
+        </div>
+        <div class="input-group">
+          <label>Low Stock Alert</label>
+          <label class="checkbox-field">
+            <input type="checkbox" id="itemLowStockAlert">
+            <span>Show "Only X left in stock" on the storefront</span>
+          </label>
+          <small class="field-note">Uses the current stock count as X. Only shown while the piece is in stock.</small>
         </div>
         <div class="input-group">
           <label>Homepage</label>

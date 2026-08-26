@@ -117,6 +117,13 @@
   font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
   padding: 5px 10px; border-radius: 2px;
 }
+.oos-badge.low-stock-badge {
+  /* Mutually exclusive with the out-of-stock badge (this only shows while
+     in stock), so it's safe to reuse the same corner. Gold rather than the
+     discount tag's red, so the two don't read as the same kind of alert. */
+  background: var(--gold);
+  color: var(--espresso);
+}
 .discount-tag {
   /* Stacked below the wishlist heart (top:10px, 30px tall) rather than
      top:10px on the same corner, which collided with it. */

@@ -107,6 +107,7 @@ ${productImages.map((img, idx) => `
 ` : '';
 
 const inStock = Number.isFinite(product.stock) ? product.stock > 0 : true;
+const showLowStock = inStock && product.lowStockAlert && Number.isFinite(product.stock);
 const effPrice = getEffectivePrice(product);
 const hasDiscount = effPrice < product.price;
 
@@ -125,7 +126,7 @@ ${thumbsHtml}
 ${hasDiscount ? `<s class="price-was">₹${product.price.toLocaleString('en-IN')}</s><span class="discount-tag">${product.discountPercent}% OFF</span>` : ''}
 <span class="tax-tag">(Taxes Included · Delivered in 5-7 Days)</span>
 </div>
-<span class="stock-status ${inStock ? 'in-stock' : 'out-of-stock'}">${inStock ? '● Available in Stock' : '● Out of Stock'}</span>
+<span class="stock-status ${inStock ? (showLowStock ? 'low-stock' : 'in-stock') : 'out-of-stock'}">${inStock ? (showLowStock ? `● Only ${product.stock} left in stock` : '● Available in Stock') : '● Out of Stock'}</span>
 <div class="prod-desc-box">
 <p>${product.desc}</p>
 </div>
