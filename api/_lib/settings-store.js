@@ -4,17 +4,9 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 const DEFAULTS = { shippingCharge: 0, discountPercent: 0 };
 
@@ -22,7 +14,7 @@ let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
     schemaReady = sql`CREATE TABLE IF NOT EXISTS site_settings (
-      id INTEGER PRIMARY KEY DEFAULT 1,
+      id INTEGER PRIMARY KEY,
       shipping_charge NUMERIC NOT NULL DEFAULT 0,
       discount_percent NUMERIC NOT NULL DEFAULT 0
     )`;
@@ -41,7 +33,7 @@ const pgStore = {
     await ensureSchema();
     await sql`INSERT INTO site_settings (id, shipping_charge, discount_percent)
       VALUES (1, ${shippingCharge}, ${discountPercent})
-      ON CONFLICT (id) DO UPDATE SET shipping_charge = ${shippingCharge}, discount_percent = ${discountPercent}`;
+      ON CONFLICT(id) DO UPDATE SET shipping_charge = ${shippingCharge}, discount_percent = ${discountPercent}`;
     return { shippingCharge, discountPercent };
   },
 };
@@ -72,5 +64,5 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 export default store;

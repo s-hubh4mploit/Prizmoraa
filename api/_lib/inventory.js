@@ -5,17 +5,9 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb, parseJson } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 const DATA_DIR = process.env.VERCEL ? os.tmpdir() : path.join(__dirname, '..', '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'prizmoraa_products.json');
@@ -35,14 +27,14 @@ function withLock(callback) {
 export async function decrementStock(items) {
   if (!Array.isArray(items) || items.length === 0) return;
 
-  if (sql) {
-    await sql`CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, data JSONB NOT NULL)`;
+  if (hasDb) {
+    await sql`CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, data TEXT NOT NULL)`;
     for (const { id, qty } of items) {
       if (!id || !qty) continue;
       try {
         const rows = await sql`SELECT data FROM products WHERE id = ${id} LIMIT 1`;
         if (!rows.length) continue;
-        const product = rows[0].data;
+        const product = parseJson(rows[0].data);
         const currentStock = Number.isFinite(product.stock) ? product.stock : 0;
         product.stock = Math.max(0, currentStock - qty);
         await sql`UPDATE products SET data = ${JSON.stringify(product)} WHERE id = ${id}`;

@@ -6,18 +6,10 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb, parseJson } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_DATA_FILE = path.join(__dirname, '..', '..', 'generated_products_encoded.json');
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 function readDefaultInventory() {
   try {
@@ -46,10 +38,13 @@ export async function getProductsByIds(ids) {
   const map = new Map();
   if (uniqueIds.length === 0) return map;
 
-  if (sql) {
-    await sql`CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, data JSONB NOT NULL)`;
-    const rows = await sql`SELECT data FROM products WHERE id = ANY(${uniqueIds})`;
-    for (const row of rows) map.set(row.data.id, row.data);
+  if (hasDb) {
+    await sql`CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, data TEXT NOT NULL)`;
+    const rows = await sql`SELECT data FROM products WHERE id IN ${uniqueIds}`;
+    for (const row of rows) {
+      const product = parseJson(row.data);
+      map.set(product.id, product);
+    }
     return map;
   }
 

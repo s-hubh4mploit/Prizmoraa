@@ -5,17 +5,9 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 let schemaReady = null;
 async function ensureSchema() {
@@ -23,7 +15,7 @@ async function ensureSchema() {
     schemaReady = sql`CREATE TABLE IF NOT EXISTS email_otps (
       email TEXT PRIMARY KEY,
       code TEXT NOT NULL,
-      expires_at TIMESTAMPTZ NOT NULL
+      expires_at TEXT NOT NULL
     )`;
   }
   await schemaReady;
@@ -33,7 +25,7 @@ const pgStore = {
   async save(email, code, expiresAt) {
     await ensureSchema();
     await sql`INSERT INTO email_otps (email, code, expires_at) VALUES (${email}, ${code}, ${expiresAt.toISOString()})
-      ON CONFLICT (email) DO UPDATE SET code = ${code}, expires_at = ${expiresAt.toISOString()}`;
+      ON CONFLICT(email) DO UPDATE SET code = ${code}, expires_at = ${expiresAt.toISOString()}`;
   },
   async get(email) {
     await ensureSchema();
@@ -88,5 +80,5 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 export default store;

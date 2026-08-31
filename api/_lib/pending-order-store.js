@@ -7,25 +7,17 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb, parseJson } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
     schemaReady = sql`CREATE TABLE IF NOT EXISTS pending_orders (
       razorpay_order_id TEXT PRIMARY KEY,
-      data JSONB NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT now()
+      data TEXT NOT NULL,
+      created_at TEXT NOT NULL
     )`;
   }
   await schemaReady;
@@ -34,13 +26,13 @@ async function ensureSchema() {
 const pgStore = {
   async save(razorpayOrderId, data) {
     await ensureSchema();
-    await sql`INSERT INTO pending_orders (razorpay_order_id, data) VALUES (${razorpayOrderId}, ${JSON.stringify(data)})
-      ON CONFLICT (razorpay_order_id) DO UPDATE SET data = ${JSON.stringify(data)}`;
+    await sql`INSERT INTO pending_orders (razorpay_order_id, data, created_at) VALUES (${razorpayOrderId}, ${JSON.stringify(data)}, ${new Date().toISOString()})
+      ON CONFLICT(razorpay_order_id) DO UPDATE SET data = ${JSON.stringify(data)}`;
   },
   async get(razorpayOrderId) {
     await ensureSchema();
     const rows = await sql`SELECT data FROM pending_orders WHERE razorpay_order_id = ${razorpayOrderId} LIMIT 1`;
-    return rows.length ? rows[0].data : null;
+    return rows.length ? parseJson(rows[0].data) : null;
   },
   async remove(razorpayOrderId) {
     await ensureSchema();
@@ -80,5 +72,5 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 export default store;

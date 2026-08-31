@@ -5,17 +5,9 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 const DATA_DIR = process.env.VERCEL ? os.tmpdir() : path.join(__dirname, '..', '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'prizmoraa_orders.json');
@@ -24,13 +16,17 @@ const DATA_FILE = path.join(DATA_DIR, 'prizmoraa_orders.json');
 export async function getLatestAddressesByUserId() {
   const map = new Map();
 
-  if (sql) {
+  if (hasDb) {
     try {
+      // SQLite/libSQL has no DISTINCT ON, so the "latest order per user"
+      // pick is done with a window function instead.
       const rows = await sql`
-        SELECT DISTINCT ON (user_id) user_id, address, pincode
-        FROM orders
-        WHERE user_id IS NOT NULL
-        ORDER BY user_id, created_at DESC
+        SELECT user_id, address, pincode FROM (
+          SELECT user_id, address, pincode,
+            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS rn
+          FROM orders
+          WHERE user_id IS NOT NULL
+        ) WHERE rn = 1
       `;
       for (const r of rows) map.set(r.user_id, { address: r.address, pincode: r.pincode });
     } catch (err) {

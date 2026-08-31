@@ -2,31 +2,22 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb, parseJson } from './_lib/db.js';
 import stockNotifyStore from './_lib/stock-notify-store.js';
 import { sendBackInStockEmail } from './_lib/send-stock-notification-email.js';
+import { isAdminRequest } from './_lib/admin-config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_DATA_FILE = path.join(__dirname, '..', 'generated_products_encoded.json');
 
-// Vercel's Postgres (Neon) integration injects one of these automatically once a
-// database is attached to the project in the Vercel dashboard (Storage tab -> Create
-// Database -> Postgres). When present, product data is stored there so edits made in
-// the admin dashboard persist for every visitor. Without it, we fall back to a local
-// JSON file — fine for local development, but NOT durable on Vercel's serverless
-// filesystem, since each invocation can run in a fresh, ephemeral container.
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
+// A Turso (libSQL) database, configured via TURSO_DATABASE_URL/TURSO_AUTH_TOKEN,
+// stores product data so edits made in the admin dashboard persist for every
+// visitor. Without it, we fall back to a local JSON file — fine for local
+// development, but NOT durable on Vercel's serverless filesystem, since each
+// invocation can run in a fresh, ephemeral container.
 
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
-
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
 function isAdmin(req) {
-  if (!ADMIN_API_KEY) return false;
-  return req.headers['x-admin-key'] === ADMIN_API_KEY;
+  return isAdminRequest(req);
 }
 
 function readJsonFile(filePath) {
@@ -55,7 +46,7 @@ async function ensureSchema() {
   if (!schemaReady) {
     schemaReady = sql`CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
-      data JSONB NOT NULL
+      data TEXT NOT NULL
     )`;
   }
   await schemaReady;
@@ -63,12 +54,12 @@ async function ensureSchema() {
 
 async function seedIfEmpty() {
   await ensureSchema();
-  const [{ count }] = await sql`SELECT COUNT(*)::int AS count FROM products`;
+  const [{ count }] = await sql`SELECT COUNT(*) AS count FROM products`;
   if (count > 0) return;
   const defaults = readDefaultInventory();
   for (const item of defaults) {
     await sql`INSERT INTO products (id, data) VALUES (${item.id}, ${JSON.stringify(item)})
-      ON CONFLICT (id) DO NOTHING`;
+      ON CONFLICT(id) DO NOTHING`;
   }
 }
 
@@ -76,17 +67,17 @@ const pgStore = {
   async getInventory() {
     await seedIfEmpty();
     const rows = await sql`SELECT data FROM products ORDER BY id`;
-    return rows.map(r => r.data);
+    return rows.map(r => parseJson(r.data));
   },
   async findProductById(id) {
     await ensureSchema();
     const rows = await sql`SELECT data FROM products WHERE id = ${id} LIMIT 1`;
-    return rows.length ? rows[0].data : null;
+    return rows.length ? parseJson(rows[0].data) : null;
   },
   async saveProduct(item) {
     await ensureSchema();
     await sql`INSERT INTO products (id, data) VALUES (${item.id}, ${JSON.stringify(item)})
-      ON CONFLICT (id) DO UPDATE SET data = ${JSON.stringify(item)}`;
+      ON CONFLICT(id) DO UPDATE SET data = ${JSON.stringify(item)}`;
     return item;
   },
   async deleteProduct(id) {
@@ -95,7 +86,7 @@ const pgStore = {
   },
   async resetToDefaults() {
     await ensureSchema();
-    await sql`TRUNCATE TABLE products`;
+    await sql`DELETE FROM products`;
     const defaults = readDefaultInventory();
     for (const item of defaults) {
       await sql`INSERT INTO products (id, data) VALUES (${item.id}, ${JSON.stringify(item)})`;
@@ -177,7 +168,7 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 
 function matchRoute(regex, pathname) {
   const match = pathname.match(regex);

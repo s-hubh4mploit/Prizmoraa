@@ -4,17 +4,9 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 let schemaReady = null;
 async function ensureSchema() {
@@ -24,16 +16,16 @@ async function ensureSchema() {
         product_id TEXT NOT NULL,
         user_id TEXT NOT NULL,
         email TEXT NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT now(),
+        created_at TEXT NOT NULL,
         PRIMARY KEY (product_id, user_id)
       )`,
       sql`CREATE TABLE IF NOT EXISTS stock_notification_history (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id TEXT NOT NULL,
         user_id TEXT NOT NULL,
         email TEXT NOT NULL,
         product_name TEXT,
-        notified_at TIMESTAMPTZ DEFAULT now()
+        notified_at TEXT NOT NULL
       )`,
     ]);
   }
@@ -43,9 +35,9 @@ async function ensureSchema() {
 const pgStore = {
   async subscribe(productId, userId, email) {
     await ensureSchema();
-    await sql`INSERT INTO stock_notifications (product_id, user_id, email)
-      VALUES (${productId}, ${userId}, ${email})
-      ON CONFLICT (product_id, user_id) DO NOTHING`;
+    await sql`INSERT INTO stock_notifications (product_id, user_id, email, created_at)
+      VALUES (${productId}, ${userId}, ${email}, ${new Date().toISOString()})
+      ON CONFLICT(product_id, user_id) DO NOTHING`;
   },
   async isSubscribed(productId, userId) {
     await ensureSchema();
@@ -70,8 +62,8 @@ const pgStore = {
   },
   async logNotified(productId, userId, email, productName) {
     await ensureSchema();
-    await sql`INSERT INTO stock_notification_history (product_id, user_id, email, product_name)
-      VALUES (${productId}, ${userId}, ${email}, ${productName})`;
+    await sql`INSERT INTO stock_notification_history (product_id, user_id, email, product_name, notified_at)
+      VALUES (${productId}, ${userId}, ${email}, ${productName}, ${new Date().toISOString()})`;
   },
   async listHistory() {
     await ensureSchema();
@@ -151,5 +143,5 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 export default store;

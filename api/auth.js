@@ -4,32 +4,23 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { neon } from '@neondatabase/serverless';
 import crypto from 'crypto';
+import { sql, hasDb } from './_lib/db.js';
 import { verifyFirebaseIdToken } from './_lib/verify-firebase-token.js';
 import { sendPasswordResetEmail } from './_lib/send-password-reset-email.js';
 import { sendEmailOtp } from './_lib/send-email-otp.js';
 import emailOtpStore from './_lib/email-otp-store.js';
 import { getLatestAddressesByUserId } from './_lib/latest-order-address.js';
 import rateLimitStore from './_lib/rate-limit-store.js';
+import { isAdminRequest } from './_lib/admin-config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
-
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_TTL = '30d';
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY_V2 || process.env.ADMIN_API_KEY;
 
 function isAdmin(req) {
-  if (!ADMIN_API_KEY) return false;
-  return req.headers['x-admin-key'] === ADMIN_API_KEY;
+  return isAdminRequest(req);
 }
 
 function setJsonHeaders(res) {
@@ -64,26 +55,24 @@ async function checkRateLimit(key) {
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
-    schemaReady = (async () => {
-      await sql`CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        phone TEXT,
-        password_hash TEXT NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT now()
-      )`;
-      // Relaxed for Google/phone sign-in, where there's no password and
-      // sometimes no email (phone-only accounts) — safe to re-run every
-      // cold start since dropping an already-nullable constraint is a no-op.
-      await sql`ALTER TABLE users ALTER COLUMN email DROP NOT NULL`;
-      await sql`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`;
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_uid TEXT UNIQUE`;
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS picture TEXT`;
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS signin_provider TEXT`;
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT`;
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ`;
-    })();
+    // Columns that started life as later Postgres-era ALTER TABLE migrations
+    // (email/password_hash relaxed to nullable for Google/phone sign-in;
+    // firebase_uid, picture, signin_provider, reset_token*) are folded
+    // directly into the CREATE TABLE here since this is a fresh database
+    // with no legacy rows to migrate.
+    schemaReady = sql`CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE,
+      phone TEXT,
+      password_hash TEXT,
+      firebase_uid TEXT UNIQUE,
+      picture TEXT,
+      signin_provider TEXT,
+      reset_token TEXT,
+      reset_token_expires TEXT,
+      created_at TEXT NOT NULL
+    )`;
   }
   await schemaReady;
 }
@@ -111,13 +100,13 @@ const pgStore = {
   },
   async create({ id, name, email, phone, passwordHash }) {
     await ensureSchema();
-    await sql`INSERT INTO users (id, name, email, phone, password_hash, signin_provider)
-      VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash}, 'password')`;
+    await sql`INSERT INTO users (id, name, email, phone, password_hash, signin_provider, created_at)
+      VALUES (${id}, ${name}, ${email.toLowerCase()}, ${phone || ''}, ${passwordHash}, 'password', ${new Date().toISOString()})`;
   },
   async createPasswordlessUser({ id, name, email, phone, firebaseUid, picture, provider }) {
     await ensureSchema();
-    await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture, signin_provider)
-      VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null}, ${provider || null})`;
+    await sql`INSERT INTO users (id, name, email, phone, firebase_uid, picture, signin_provider, created_at)
+      VALUES (${id}, ${name}, ${email ? email.toLowerCase() : null}, ${phone || ''}, ${firebaseUid}, ${picture || null}, ${provider || null}, ${new Date().toISOString()})`;
   },
   async linkFirebaseUid(id, firebaseUid, provider) {
     await ensureSchema();
@@ -146,7 +135,7 @@ const pgStore = {
   },
   async removeMany(ids) {
     await ensureSchema();
-    await sql`DELETE FROM users WHERE id = ANY(${ids})`;
+    await sql`DELETE FROM users WHERE id IN ${ids}`;
   },
 };
 
@@ -254,7 +243,7 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 
 function matchRoute(regex, pathname) {
   const match = pathname.match(regex);

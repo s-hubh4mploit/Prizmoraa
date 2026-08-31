@@ -6,27 +6,19 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { neon } from '@neondatabase/serverless';
+import { sql, hasDb } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const CONNECTION_STRING =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_URL_NON_POOLING;
-
-const sql = CONNECTION_STRING ? neon(CONNECTION_STRING) : null;
 
 let schemaReady = null;
 async function ensureSchema() {
   if (!schemaReady) {
     schemaReady = sql`CREATE TABLE IF NOT EXISTS page_views (
-      id SERIAL PRIMARY KEY,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       visitor_id TEXT NOT NULL,
       path TEXT NOT NULL,
       referrer TEXT,
-      created_at TIMESTAMPTZ DEFAULT now()
+      created_at TEXT NOT NULL
     )`;
   }
   await schemaReady;
@@ -49,22 +41,30 @@ function fillLast7Days(rows) {
 const pgStore = {
   async logVisit({ visitorId, path: pagePath, referrer }) {
     await ensureSchema();
-    await sql`INSERT INTO page_views (visitor_id, path, referrer) VALUES (${visitorId}, ${pagePath}, ${referrer || null})`;
+    await sql`INSERT INTO page_views (visitor_id, path, referrer, created_at) VALUES (${visitorId}, ${pagePath}, ${referrer || null}, ${new Date().toISOString()})`;
   },
   async getSummary() {
     await ensureSchema();
-    const [totals] = await sql`SELECT COUNT(*)::int AS views, COUNT(DISTINCT visitor_id)::int AS visitors FROM page_views`;
-    const [today] = await sql`SELECT COUNT(*)::int AS views, COUNT(DISTINCT visitor_id)::int AS visitors FROM page_views WHERE created_at >= CURRENT_DATE`;
+    const [totals] = await sql`SELECT COUNT(*) AS views, COUNT(DISTINCT visitor_id) AS visitors FROM page_views`;
+    const startOfToday = new Date();
+    startOfToday.setUTCHours(0, 0, 0, 0);
+    const [today] = await sql`SELECT COUNT(*) AS views, COUNT(DISTINCT visitor_id) AS visitors FROM page_views WHERE created_at >= ${startOfToday.toISOString()}`;
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 7);
+    // created_at is always written as an ISO 8601 UTC string, so its first
+    // 10 characters are already the YYYY-MM-DD day bucket.
     const dailyRows = await sql`
-      SELECT to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS day,
-        COUNT(*)::int AS views, COUNT(DISTINCT visitor_id)::int AS visitors
+      SELECT substr(created_at, 1, 10) AS day,
+        COUNT(*) AS views, COUNT(DISTINCT visitor_id) AS visitors
       FROM page_views
-      WHERE created_at >= now() - interval '7 days'
+      WHERE created_at >= ${sevenDaysAgo.toISOString()}
       GROUP BY day ORDER BY day`;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30);
     const topPages = await sql`
-      SELECT path, COUNT(*)::int AS views
+      SELECT path, COUNT(*) AS views
       FROM page_views
-      WHERE created_at >= now() - interval '30 days'
+      WHERE created_at >= ${thirtyDaysAgo.toISOString()}
       GROUP BY path ORDER BY views DESC LIMIT 8`;
     return {
       totalViews: totals.views, totalVisitors: totals.visitors,
@@ -153,5 +153,5 @@ const fileStore = {
   },
 };
 
-const store = sql ? pgStore : fileStore;
+const store = hasDb ? pgStore : fileStore;
 export default store;
