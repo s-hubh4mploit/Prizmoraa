@@ -149,6 +149,68 @@
   color: var(--espresso); border-left: 2px solid var(--gold); padding-left: 20px;
 }
 
+/* ---------- NEW ARRIVALS SECTION ---------- */
+.new-arrivals-section {
+  padding: 100px 0 80px;
+  background: linear-gradient(180deg, var(--ivory) 0%, #f8f4ef 40%, var(--ivory) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.new-arrivals-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(176,138,78,0.3), transparent);
+}
+.new-arrivals-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(176,138,78,0.3), transparent);
+}
+.new-arrivals-head {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.new-arrivals-head h2 {
+  font-size: clamp(28px, 3.5vw, 44px);
+  color: var(--espresso);
+  margin-bottom: 14px;
+}
+.new-arrivals-head p {
+  font-size: 16px;
+  color: var(--espresso-soft);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+.new-arrivals-cta {
+  text-align: center;
+  margin-top: 52px;
+}
+
+/* "New" badge on product cards */
+.new-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #b08a4e 0%, #d4a85a 50%, #b08a4e 100%);
+  background-size: 200% auto;
+  animation: shimmer 3s ease-in-out infinite;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 2px;
+  z-index: 3;
+  box-shadow: 0 2px 8px rgba(176,138,78,0.35);
+}
+
 /* ---------- CTA / NEWSLETTER ---------- */
 .cta { padding: 130px 0; text-align: center; background: var(--ivory); }
 .cta .wrap { max-width: 620px; }
@@ -179,3 +241,4 @@
   .btn { width: 100%; justify-content: center; padding: 15px 20px; }
   .btn-ghost { padding-bottom: 6px; }
 }
+

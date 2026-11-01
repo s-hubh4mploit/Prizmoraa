@@ -597,6 +597,246 @@
       "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-22-at-10-37-55-pm.jpeg",
       "images/prizmora/necklace/verona-emerald-pendant-necklace/whatsapp-image-2026-07-23-at-5-52-11-pm.jpeg"
     ]
+  },
+  {
+    "id": "item-1793527254213",
+    "name": "Eterna Glow Bangle",
+    "category": "bracelets",
+    "subcategory": "Bangle",
+    "price": 999,
+    "status": "Active",
+    "stock": 3,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "A stunning bangle that radiates timeless glow and elegance. Crafted with precision for the modern woman.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793527445447",
+    "name": "Golden Grace Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bracelet",
+    "price": 899,
+    "status": "Active",
+    "stock": 1,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Delicate golden grace bracelet for the woman who loves subtle luxury and refined craftsmanship.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793527664318",
+    "name": "Marquise Luxe Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bracelet",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Inspired by the marquise cut, this luxe bracelet is a statement of sophisticated style and beauty.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793527961604",
+    "name": "Orlina Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bracelet",
+    "price": 899,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "The Orlina Bracelet blends classic charm with contemporary design for an effortlessly chic look.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528088055",
+    "name": "Radiance Bangle Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bangle",
+    "price": 999,
+    "status": "Active",
+    "stock": 1,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "A radiant bangle bracelet that catches light beautifully, bringing a glow to every outfit.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528158974",
+    "name": "Seraphina Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bangle",
+    "price": 899,
+    "status": "Active",
+    "stock": 3,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Ethereal and delicate, the Seraphina Bracelet is crafted for those who appreciate angelic beauty.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528308256",
+    "name": "Solara Bracelet",
+    "category": "bracelets",
+    "subcategory": "Bangle",
+    "price": 899,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Sun-inspired design radiating warmth and brilliance. The Solara Bracelet is your daily dose of sunshine.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528414773",
+    "name": "Tiger Luxe Bangle",
+    "category": "bracelets",
+    "subcategory": "Bangle",
+    "price": 899,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Bold and fierce — the Tiger Luxe Bangle channels raw power into an elegant wrist statement.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528628070",
+    "name": "Aurelia Amber Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Warm amber tones meet golden craftsmanship in this exquisite Aurelia Amber Necklace.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528698853",
+    "name": "Aurelia Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "The signature Aurelia Necklace — a timeless piece that elevates every look with understated luxury.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528774688",
+    "name": "Aurelia Sapphire Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Deep sapphire blue set in gleaming gold — the Aurelia Sapphire Necklace is pure royalty.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528900673",
+    "name": "Duo Glow Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "A layered duo necklace that glows from every angle — double the elegance, double the charm.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793528987524",
+    "name": "Elara Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 899,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Named after a moon of Jupiter, the Elara Necklace shines with celestial grace and beauty.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793529057991",
+    "name": "Luna Drop Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 1099,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Crescent-inspired teardrop pendant that catches every beam of light with lunar magic.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793529219041",
+    "name": "Pearlina Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 1099,
+    "status": "Active",
+    "stock": 1,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Lustrous pearl-inspired pendant on a delicate gold chain — the Pearlina Necklace is pure sophistication.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
+  },
+  {
+    "id": "item-1793529311543",
+    "name": "Stella Necklace",
+    "category": "necklaces",
+    "subcategory": "Necklace",
+    "price": 999,
+    "status": "Active",
+    "stock": 2,
+    "featured": false,
+    "newArrival": true,
+    "hidden": false,
+    "desc": "Star-shaped pendant glittering with cubic zirconia — the Stella Necklace is your night sky.",
+    "image": "images/hero.jpg",
+    "images": ["images/hero.jpg"]
   }
 ];
 
@@ -668,12 +908,16 @@
     return defaultProducts;
   }
 
-  async function getProducts() {
+  async function getProducts({ includeHidden = false } = {}) {
     const serverData = await fetchJson('/api/products');
-    if (serverData && Array.isArray(serverData)) {
-      return serverData;
-    }
-    return getLocalProducts();
+    const all = (serverData && Array.isArray(serverData)) ? serverData : getLocalProducts();
+    if (includeHidden) return all;
+    return all.filter(p => !p.hidden);
+  }
+
+  async function getNewArrivals() {
+    const products = await getProducts();
+    return products.filter(p => p.newArrival === true);
   }
 
   async function saveProduct(item, adminKey) {
@@ -735,6 +979,12 @@
     return products.filter(p => p.category.toLowerCase() === category.toLowerCase());
   }
 
+  async function getAllProductsAdmin() {
+    // For admin: returns all products including hidden ones
+    const serverData = await fetchJson('/api/products');
+    return (serverData && Array.isArray(serverData)) ? serverData : getLocalProducts();
+  }
+
   async function getAllCategories() {
     const products = await getProducts();
     const categories = new Set(products.map(p => p.category));
@@ -751,6 +1001,8 @@
 
   window.PrizmoraaProducts = {
     getProducts,
+    getNewArrivals,
+    getAllProductsAdmin,
     saveProduct,
     deleteProduct,
     resetInventoryToDefault,

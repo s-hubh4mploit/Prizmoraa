@@ -99,6 +99,10 @@ let products = cat === 'all' ? await getProducts() : await getProductsByCategory
 if (cat === 'all') {
 products = await getProducts();
 document.getElementById('colTitle').textContent = 'All Jewellery';
+} else if (cat === 'new-arrivals') {
+products = (await getProducts()).filter(p => p.newArrival);
+document.getElementById('colTitle').textContent = 'New Arrivals';
+document.getElementById('colEyebrow').textContent = 'Just Arrived';
 }
 
 const grid = document.getElementById('productGrid');
@@ -123,6 +127,7 @@ ${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="$
 ${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
 ${inStock && p.lowStockAlert && Number.isFinite(p.stock) ? `<span class="oos-badge low-stock-badge">Only ${p.stock} left</span>` : ''}
 ${hasDiscount ? `<span class="discount-tag">${p.discountPercent}% OFF</span>` : ''}
+${p.newArrival ? '<span class="new-badge">New</span>' : ''}
 <button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(imgSrc)}"
   onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
 ${cleanDesc ? `<div class="hover-overlay">

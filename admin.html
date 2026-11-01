@@ -48,6 +48,9 @@
       <a href="#" class="nav-item" data-view="inventory">
         <span class="icon">💍</span> Inventory
       </a>
+      <a href="#" class="nav-item" data-view="new-arrivals">
+        <span class="icon">✨</span> New Arrivals
+      </a>
       <a href="#" class="nav-item" data-view="notify-stock">
         <span class="icon">🔔</span> Notify Stock
       </a>
@@ -222,6 +225,8 @@
                 <th>Stock</th>
                 <th>Status</th>
                 <th>Featured</th>
+                <th>New Arrival</th>
+                <th>Visible</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -234,6 +239,20 @@
         <div class="table-footer">
           <button class="btn btn-outline" id="btnExport">Export JSON</button>
           <button class="btn btn-outline" id="btnResetCatalog" style="margin-left:auto; border-color:#d32f2f; color:#d32f2f;">Reset Catalog with Images</button>
+        </div>
+      </div>
+
+      <!-- New Arrivals Management View -->
+      <div id="view-new-arrivals" class="view">
+        <div class="notification-panel">
+          <div class="panel-header">
+            <h3>New Arrivals Management</h3>
+            <span class="tiny-badge" id="newArrivalCount">0</span>
+          </div>
+          <p class="field-note" style="padding: 0 0 16px 0;">Select which jewellery pieces appear in the <strong>New Arrivals</strong> section on the homepage. Changes are saved immediately when you click the star button.</p>
+          <div id="newArrivalsManagerGrid" class="na-manager-grid">
+            <p class="field-note">Loading products...</p>
+          </div>
         </div>
       </div>
 
@@ -445,6 +464,22 @@
             <span>Show in Featured Pieces</span>
           </label>
           <small class="field-note">The homepage shows up to 4 featured items.</small>
+        </div>
+        <div class="input-group">
+          <label>New Arrival</label>
+          <label class="checkbox-field">
+            <input type="checkbox" id="itemNewArrival">
+            <span>Show in New Arrivals section on homepage</span>
+          </label>
+          <small class="field-note">Marks this piece with a "New" badge and includes it in the New Arrivals grid.</small>
+        </div>
+        <div class="input-group">
+          <label>Visibility</label>
+          <label class="checkbox-field">
+            <input type="checkbox" id="itemHidden">
+            <span>Hide from storefront (not visible to customers)</span>
+          </label>
+          <small class="field-note">Hidden pieces are invisible on the shop, collection, and search pages. Only admins can see them here.</small>
         </div>
         <div class="input-group full-width">
           <label>Product Images</label>

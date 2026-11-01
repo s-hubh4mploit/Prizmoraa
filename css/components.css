@@ -188,3 +188,24 @@ footer {
   .cta-form { flex-direction: column; gap: 14px; align-items: flex-start; border-bottom: none; }
   .cta-form input { border-bottom: 1px solid var(--espresso); width: 100%; }
 }
+
+/* --- New Arrival Badge (shared across pages) --- */
+.new-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #b08a4e 0%, #d4a85a 60%, #b08a4e 100%);
+  background-size: 200% auto;
+  animation: shimmer 3s ease-in-out infinite;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 2px;
+  z-index: 3;
+  box-shadow: 0 2px 8px rgba(176,138,78,0.3);
+  pointer-events: none;
+}

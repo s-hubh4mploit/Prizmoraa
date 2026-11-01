@@ -55,7 +55,7 @@
 <h1>PRIZMORAA</h1>
 <p class="hero-tagline">The jewellery that reflects light, beauty, and multiple shades of elegance — a place for radiant beauty and colourful sparkle.</p>
 <div class="hero-actions">
-<a href="collection.html?cat=all" class="btn">Shop New Arrivals</a>
+<a href="#new-arrivals" class="btn">Shop New Arrivals</a>
 <a href="collections.html" class="btn-ghost">View Collections</a>
 </div>
 </div>
@@ -75,6 +75,22 @@
 PRIZMORAA was born for the moments that don't need permission to shine — where timeless elegance meets everyday confidence. Every piece is thoughtfully chosen. Every detail is made to be remembered. Because luxury isn't about being loud. It's about how you feel when you wear it.
 </p>
 <span class="story-sign">This is more than fashion. This is your statement.</span>
+</div>
+</section>
+
+<section class="new-arrivals-section" id="new-arrivals">
+<div class="wrap">
+<div class="new-arrivals-head reveal">
+<span class="eyebrow">Just Arrived</span>
+<h2>New Arrivals</h2>
+<p>Fresh designs, freshly crafted — be the first to wear what's new.</p>
+</div>
+<div class="product-grid reveal" id="newArrivalsGrid">
+<!-- Populated dynamically via JS -->
+</div>
+<div class="new-arrivals-cta reveal">
+<a href="collection.html?cat=all" class="btn-ghost">View All Jewellery →</a>
+</div>
 </div>
 </section>
 
@@ -190,6 +206,51 @@ ${inStock
 </a>
 `;
 }).join('');
+}
+
+// Populate New Arrivals Grid
+const { getNewArrivals } = window.PrizmoraaProducts;
+const newArrivals = await getNewArrivals();
+const newArrivalsGrid = document.getElementById('newArrivalsGrid');
+if (newArrivalsGrid) {
+  if (newArrivals.length === 0) {
+    newArrivalsGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding: 40px 0; color: var(--espresso-soft);">New arrivals coming soon — stay tuned!</p>';
+  } else {
+    newArrivalsGrid.innerHTML = newArrivals.map(p => {
+      const hasSecondary = p.images && p.images.length > 1;
+      const secondaryImg = hasSecondary ? p.images[1] : p.image;
+      const inStock = Number.isFinite(p.stock) ? p.stock > 0 : true;
+      const effPrice = getEffectivePrice(p);
+      const hasDiscount = effPrice < p.price;
+      return `
+<a href="product.html?id=${p.id}" class="prod-card">
+<div class="img-wrap">
+<img class="main-pic" src="${encodeURI(p.image)}" alt="${p.name}" loading="lazy">
+${hasSecondary ? `<img class="hover-pic" src="${encodeURI(secondaryImg)}" alt="${p.name}">` : ''}
+<span class="new-badge">New</span>
+${!inStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
+${inStock && p.lowStockAlert && Number.isFinite(p.stock) ? `<span class="oos-badge low-stock-badge">Only ${p.stock} left</span>` : ''}
+${hasDiscount ? `<span class="discount-tag">${p.discountPercent}% OFF</span>` : ''}
+<button class="wishlist-btn" data-wishlist-id="${p.id}" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(p.image)}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.wishlistFromBtn(this);">♡</button>
+<div class="hover-overlay">
+<p class="hover-desc">${p.desc}</p>
+<span class="hover-btn">View Details →</span>
+</div>
+</div>
+<span class="sub-badge">${p.subcategory || p.category}</span>
+<h3>${p.name}</h3>
+<div class="card-bottom-row">
+<span class="price">₹${effPrice.toLocaleString('en-IN')}${hasDiscount ? ` <s class="price-was">₹${p.price.toLocaleString('en-IN')}</s>` : ''}</span>
+${inStock
+  ? `<button class="quick-add-btn" data-id="${p.id}" data-name="${p.name}" data-price="${effPrice}" data-image="${encodeURI(p.image)}" data-stock="${Number.isFinite(p.stock) ? p.stock : ''}"
+  onclick="event.preventDefault(); event.stopPropagation(); window.PrizmoraaCart.addFromBtn(this);">Add to Bag</button>`
+  : `<span class="quick-add-btn disabled">Out of Stock</span>`}
+</div>
+</a>
+`;
+    }).join('');
+  }
 }
 
 // Populate Category Cards Grid

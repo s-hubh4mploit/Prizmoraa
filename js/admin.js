@@ -120,7 +120,8 @@ let stockNotificationCount = 0;
 
 async function initDashboard() {
   const pm = getProductManager();
-  inventory = await pm.getProducts();
+  // Admin sees ALL products (including hidden ones)
+  inventory = await pm.getAllProductsAdmin();
   await loadStockNotificationRequests();
   renderTable();
   updateStats();
@@ -333,8 +334,61 @@ navItems.forEach(item => {
     if (viewId === 'orders') fetchOrders();
     if (viewId === 'customers') fetchCustomers();
     if (viewId === 'settings') loadSettings();
+    if (viewId === 'new-arrivals') loadNewArrivalsManager();
   });
 });
+
+// --- New Arrivals Manager ---
+async function loadNewArrivalsManager() {
+  const grid = document.getElementById('newArrivalsManagerGrid');
+  const badge = document.getElementById('newArrivalCount');
+  if (!grid) return;
+  grid.innerHTML = '<p class="field-note">Loading products...</p>';
+
+  const pm = getProductManager();
+  const allProducts = await pm.getAllProductsAdmin();
+  const newArrivalItems = allProducts.filter(p => p.newArrival);
+  if (badge) badge.textContent = newArrivalItems.length;
+
+  if (!allProducts.length) {
+    grid.innerHTML = '<p class="field-note">No products in inventory yet.</p>';
+    return;
+  }
+
+  // Group by category for better UX
+  const categories = [...new Set(allProducts.map(p => p.category))];
+  let html = '';
+  categories.forEach(cat => {
+    const catLabel = cat.charAt(0).toUpperCase() + cat.slice(1);
+    html += `<div class="na-category-group">
+      <h4 class="na-cat-label">${sanitizeInput(catLabel)}</h4>
+      <div class="na-items-row">`;
+    allProducts.filter(p => p.category === cat).forEach(p => {
+      const isNA = !!p.newArrival;
+      const isHidden = !!p.hidden;
+      const imgSrc = p.image ? encodeURI(p.image) : 'images/hero.jpg';
+      html += `
+        <div class="na-item-card ${isNA ? 'is-new-arrival' : ''} ${isHidden ? 'is-hidden-item' : ''}" id="na-card-${p.id}">
+          <img src="${imgSrc}" alt="${sanitizeInput(p.name)}" class="na-item-img">
+          <div class="na-item-info">
+            <span class="na-item-name">${sanitizeInput(p.name)}</span>
+            <span class="na-item-price">₹${p.price ? p.price.toLocaleString('en-IN') : '0'}</span>
+          </div>
+          <div class="na-item-actions">
+            <button type="button" class="na-toggle-btn ${isNA ? 'active' : ''}" title="${isNA ? 'Remove from New Arrivals' : 'Add to New Arrivals'}" onclick="toggleNewArrival('${p.id}')">
+              ${isNA ? '✨ New Arrival' : '☆ Add to New Arrivals'}
+            </button>
+            <button type="button" class="na-hide-btn ${isHidden ? 'hidden-active' : ''}" title="${isHidden ? 'Unhide (currently hidden from shop)' : 'Hide from shop'}" onclick="toggleHidden('${p.id}')">
+              ${isHidden ? '👁️ Hidden' : '👁️‍🗨️ Visible'}
+            </button>
+          </div>
+        </div>`;
+    });
+    html += '</div></div>';
+  });
+
+  grid.innerHTML = html;
+}
 
 // --- Settings (shipping charge + discount) ---
 async function loadSettings() {
@@ -654,10 +708,12 @@ function renderTable(filterText = currentSearchText) {
     const encodedImage = encodeURI(imgSrc);
     const stock = Number.isFinite(item.stock) ? item.stock : 0;
     const inStock = stock > 0;
+    const isHidden = !!item.hidden;
+    const isNewArrival = !!item.newArrival;
     tr.innerHTML = `
       <td>#${sanitizeInput(item.id)}</td>
       <td><img src="${encodedImage}" alt="${sanitizeInput(item.name)}" style="width:44px; height:44px; object-fit:cover; border-radius:4px; border: 1px solid rgba(58,42,29,0.1);"></td>
-      <td><strong>${sanitizeInput(item.name)}</strong></td>
+      <td><strong>${sanitizeInput(item.name)}</strong>${isHidden ? ' <span style="font-size:10px;color:#888;background:#f0f0f0;padding:2px 6px;border-radius:3px;">Hidden</span>' : ''}</td>
       <td style="text-transform: capitalize;">${sanitizeInput(item.category)}</td>
       <td>${sanitizeInput(item.subcategory || '')}</td>
       <td>₹${sanitizeInput(item.price ? item.price.toLocaleString('en-IN') : '0')}${item.discountPercent > 0 ? `<br><span class="discount-badge">${item.discountPercent}% off</span>` : ''}</td>
@@ -665,6 +721,12 @@ function renderTable(filterText = currentSearchText) {
       <td><span class="status-badge ${inStock ? '' : 'out-of-stock'}">${inStock ? 'In Stock' : 'Out of Stock'}</span></td>
       <td>
         <button type="button" class="star-btn ${item.featured ? 'active' : ''}" title="${item.featured ? 'Remove from Featured Pieces' : 'Add to Featured Pieces'}" onclick="toggleFeatured('${item.id}')">${item.featured ? '★' : '☆'}</button>
+      </td>
+      <td>
+        <button type="button" class="star-btn ${isNewArrival ? 'active' : ''}" title="${isNewArrival ? 'Remove from New Arrivals' : 'Add to New Arrivals'}" onclick="toggleNewArrival('${item.id}')">✨</button>
+      </td>
+      <td>
+        <button type="button" class="star-btn ${isHidden ? '' : 'active'}" title="${isHidden ? 'Unhide — show on storefront' : 'Hide from storefront'}" onclick="toggleHidden('${item.id}')">${isHidden ? '🙈' : '👁️'}</button>
       </td>
       <td class="action-links">
         <button type="button" class="star-btn ${item.lowStockAlert ? 'active' : ''}" title="${item.lowStockAlert ? 'Hide the low stock alert for this piece' : 'Show \'Only X left in stock\' for this piece'}" onclick="toggleLowStockAlert('${item.id}')">${item.lowStockAlert ? '🔔' : '🔕'}</button>
@@ -674,6 +736,7 @@ function renderTable(filterText = currentSearchText) {
     `;
     tbody.appendChild(tr);
   });
+
 
   const featuredWarning = document.getElementById('featuredWarning');
   if (featuredWarning) {
@@ -857,6 +920,8 @@ if (itemForm) {
     const subcategory = (document.getElementById('itemSubCategory').value || '').trim();
     const stock = Math.max(0, parseInt(document.getElementById('itemStock').value, 10) || 0);
     const featured = document.getElementById('itemFeatured').checked;
+    const newArrival = document.getElementById('itemNewArrival') ? document.getElementById('itemNewArrival').checked : false;
+    const hidden = document.getElementById('itemHidden') ? document.getElementById('itemHidden').checked : false;
     const lowStockAlert = document.getElementById('itemLowStockAlert').checked;
     const imageInput = (document.getElementById('itemImage').value || '').trim();
     const images = currentImages.length ? currentImages : [imageInput || 'images/hero.jpg'];
@@ -865,7 +930,7 @@ if (itemForm) {
 
     const existingIndex = inventory.findIndex(i => i.id === id);
 
-    const newItem = { id, name, price, discountPercent, category, subcategory, stock, featured, lowStockAlert, image, images, desc, status: 'Active' };
+    const newItem = { id, name, price, discountPercent, category, subcategory, stock, featured, newArrival, hidden, lowStockAlert, image, images, desc, status: 'Active' };
 
     if (existingIndex > -1) {
       inventory[existingIndex] = newItem;
@@ -914,6 +979,8 @@ window.editItem = function(id) {
     document.getElementById('itemSubCategory').value = item.subcategory || '';
     document.getElementById('itemStock').value = Number.isFinite(item.stock) ? item.stock : 0;
     document.getElementById('itemFeatured').checked = !!item.featured;
+    if (document.getElementById('itemNewArrival')) document.getElementById('itemNewArrival').checked = !!item.newArrival;
+    if (document.getElementById('itemHidden')) document.getElementById('itemHidden').checked = !!item.hidden;
     document.getElementById('itemLowStockAlert').checked = !!item.lowStockAlert;
     document.getElementById('itemImage').value = '';
     document.getElementById('itemDesc').value = item.desc || '';
@@ -971,3 +1038,45 @@ window.deleteItem = async function(id) {
     }
   }
 };
+
+// --- Toggle New Arrival ---
+window.toggleNewArrival = async function(id) {
+  const item = inventory.find(i => i.id === id);
+  if (!item) return;
+  item.newArrival = !item.newArrival;
+  renderTable();
+  const pm = getProductManager();
+  try {
+    await pm.saveProduct(item, ADMIN_API_KEY);
+    // If the New Arrivals manager is visible, refresh it
+    const naGrid = document.getElementById('newArrivalsManagerGrid');
+    if (naGrid && naGrid.querySelector('.na-item-card')) {
+      loadNewArrivalsManager();
+    }
+  } catch (err) {
+    item.newArrival = !item.newArrival;
+    renderTable();
+    handleAdminAuthError(err);
+  }
+};
+
+// --- Toggle Hidden (visibility) ---
+window.toggleHidden = async function(id) {
+  const item = inventory.find(i => i.id === id);
+  if (!item) return;
+  item.hidden = !item.hidden;
+  renderTable();
+  const pm = getProductManager();
+  try {
+    await pm.saveProduct(item, ADMIN_API_KEY);
+    const naGrid = document.getElementById('newArrivalsManagerGrid');
+    if (naGrid && naGrid.querySelector('.na-item-card')) {
+      loadNewArrivalsManager();
+    }
+  } catch (err) {
+    item.hidden = !item.hidden;
+    renderTable();
+    handleAdminAuthError(err);
+  }
+};
+
